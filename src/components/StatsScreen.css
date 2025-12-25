@@ -1,0 +1,144 @@
+/* Stats Screen - Pink Cozy Retro */
+.stats-screen {
+  min-height: 100vh;
+  padding: 20px 20px 100px;
+  position: relative;
+  width: 100%;
+}
+
+.stats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: var(--cream);
+  border: 3px solid var(--border-color);
+  box-shadow: 3px 3px 0px var(--shadow-color);
+}
+
+.stats-title {
+  font-size: 1.4rem;
+  color: var(--text-primary);
+  margin: 0;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.stats-subtitle {
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  font-family: 'Press Start 2P', cursive;
+}
+
+.stats-section-card {
+  background: var(--cream);
+  border: 3px solid var(--border-color);
+  padding: 12px;
+  margin-bottom: 16px;
+  box-shadow: 3px 3px 0px var(--shadow-color);
+}
+
+.stats-section-header {
+  font-size: 0.7rem;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--pink-accent);
+  font-family: 'Press Start 2P', cursive;
+  text-align: center;
+}
+
+.stats-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.stat-row-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background: var(--pink-bg-light);
+  border: 2px solid var(--pink-accent);
+}
+
+.stat-label-stats {
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  font-family: 'Press Start 2P', cursive;
+}
+
+.stat-value-stats {
+  font-size: 0.65rem;
+  color: var(--text-primary);
+  font-family: 'Press Start 2P', cursive;
+  font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stats-screen {
+    padding: 15px 15px 95px;
+  }
+
+  .stats-title {
+    font-size: 1.2rem;
+  }
+
+  .stats-subtitle {
+    font-size: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-screen {
+    padding: 12px 12px 100px;
+  }
+
+  .stats-title {
+    font-size: 1rem;
+  }
+
+  .stats-subtitle {
+    font-size: 0.45rem;
+  }
+
+  .stats-section-header {
+    font-size: 0.6rem;
+  }
+
+  .stat-label-stats {
+    font-size: 0.5rem;
+  }
+
+  .stat-value-stats {
+    font-size: 0.55rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .stats-screen {
+    padding: 10px 10px 105px;
+  }
+
+  .stats-title {
+    font-size: 0.9rem;
+  }
+
+  .stats-subtitle {
+    font-size: 0.4rem;
+  }
+
+  .stats-section-header {
+    font-size: 0.55rem;
+  }
+
+  .stat-label-stats {
+    font-size: 0.45rem;
+  }
+
+  .stat-value-stats {
+    font-size: 0.5rem;
+  }
+}

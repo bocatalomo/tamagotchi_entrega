@@ -1,0 +1,137 @@
+/* Navegación inferior - Pink Cozy Retro */
+.bottom-navigation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--pink-bg-medium);
+  border-top: 4px solid var(--border-color);
+  box-shadow: 0 -4px 8px var(--shadow-color);
+  z-index: 100;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 10px;
+  gap: 12px;
+}
+
+.nav-item {
+  background: var(--cream);
+  border: 3px solid var(--border-color);
+  padding: 10px 6px;
+  cursor: pointer;
+  font-family: 'Press Start 2P', cursive;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.1s;
+  position: relative;
+  box-shadow: 2px 2px 0 var(--text-primary);
+  image-rendering: pixelated;
+  flex: 1;
+  max-width: 140px;
+  min-width: 90px;
+}
+
+.nav-item:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--text-primary);
+}
+
+.nav-item:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--text-primary);
+}
+
+.nav-item.active {
+  background: var(--pink-accent);
+  border-color: var(--pink-dark);
+  box-shadow: 3px 3px 0 var(--text-primary);
+}
+
+.nav-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-icon {
+  font-size: 1.5rem;
+}
+
+.nav-item:hover .nav-icon {
+  transform: scale(1.05);
+}
+
+.nav-item.active .nav-icon {
+  /* Sin animación para mantener simplicidad */
+}
+
+.nav-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--danger);
+  color: white;
+  font-size: 0.4rem;
+  padding: 2px 5px;
+  border: 2px solid var(--text-primary);
+  min-width: 16px;
+  text-align: center;
+}
+
+.nav-label {
+  font-size: 0.4rem;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.nav-item.active .nav-label {
+  color: var(--text-primary);
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .nav-container {
+    padding: 6px 8px 10px;
+    gap: 6px;
+  }
+
+  .nav-item {
+    padding: 8px 4px;
+  }
+
+  .nav-icon {
+    font-size: 1.5rem;
+  }
+
+  .nav-label {
+    font-size: 0.4rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .nav-container {
+    gap: 4px;
+  }
+
+  .nav-item {
+    padding: 6px 2px;
+  }
+
+  .nav-icon {
+    font-size: 1.3rem;
+  }
+
+  .nav-label {
+    font-size: 0.35rem;
+  }
+}

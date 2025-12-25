@@ -1,0 +1,151 @@
+/* PixelPet - Componente de sprite pixel art */
+.pixel-pet-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.pixel-pet-container {
+  display: block;
+  position: relative;
+  /* Forzar renderizado pixelado en todos los navegadores */
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  -ms-interpolation-mode: nearest-neighbor;
+  /* Sin filtros que puedan causar blur */
+  filter: none;
+  /* Evitar suavizado */
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  /* Evitar transformaciones que causen blur */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  /* Asegurar que el fondo del contenedor no interfiera */
+  background-color: transparent;
+  /* Opacidad completa para el sprite */
+  opacity: 1 !important;
+  z-index: 10;
+}
+
+/* Asegurar renderizado pixelado en todos los navegadores */
+.pixel-pet-container * {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: crisp-edges;
+  -ms-interpolation-mode: nearest-neighbor;
+}
+
+/* Animaciones para el contenedor */
+@keyframes petBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes petShake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+.pixel-pet-container.bouncing {
+  animation: petBounce 0.6s ease-in-out;
+}
+
+.pixel-pet-container.shaking {
+  animation: petShake 0.5s ease-in-out;
+}
+
+/* Contenedor de zzz para cuando duerme */
+.sleep-zzz-container {
+  position: absolute;
+  top: -40px;
+  left: -100px;
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* Estilos de los zzz */
+.zzz {
+  position: absolute;
+  font-family: 'Press Start 2P', cursive;
+  color: var(--text-primary);
+  font-weight: bold;
+  opacity: 0;
+  animation: floatZzz 3s ease-in-out infinite;
+}
+
+.zzz-1 {
+  font-size: 1.2rem;
+  top: 0;
+  left: 0;
+  animation-delay: 0s;
+}
+
+.zzz-2 {
+  font-size: 1.5rem;
+  top: -10px;
+  left: 15px;
+  animation-delay: 1s;
+}
+
+.zzz-3 {
+  font-size: 1.8rem;
+  top: -25px;
+  left: 30px;
+  animation-delay: 2s;
+}
+
+/* Animación de flotación de los zzz */
+@keyframes floatZzz {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.8);
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-30px) scale(1.2);
+  }
+}
+
+/* Responsive para móvil */
+@media (max-width: 768px) {
+  .sleep-zzz-container {
+    top: -30px;
+    left: -75px;
+  }
+
+  .zzz-1 {
+    font-size: 1rem;
+  }
+
+  .zzz-2 {
+    font-size: 1.2rem;
+    left: 12px;
+  }
+
+  .zzz-3 {
+    font-size: 1.4rem;
+    left: 24px;
+  }
+}

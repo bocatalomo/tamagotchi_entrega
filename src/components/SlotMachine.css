@@ -1,0 +1,307 @@
+.slot-machine {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  padding: 20px;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.slot-info {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.slot-rule {
+  background: #ffd93d;
+  padding: 8px 15px;
+  border: 3px solid black;
+  font-size: 10px;
+  font-family: 'Press Start 2P';
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.2);
+}
+
+.slot-display {
+  display: flex;
+  gap: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 30px;
+  border: 6px solid black;
+  border-radius: 20px;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.3), inset 0 -4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.slot-reel {
+  width: 100px;
+  height: 100px;
+  background: white;
+  border: 4px solid black;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 4px 0 rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.slot-reel.spinning {
+  animation: spin 0.1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.slot-symbol {
+  font-size: 60px;
+  animation: symbolPop 0.3s ease-out;
+}
+
+@keyframes symbolPop {
+  0% {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.slot-result {
+  padding: 15px 25px;
+  border: 4px solid black;
+  border-radius: 10px;
+  font-family: 'Press Start 2P';
+  font-size: 12px;
+  text-align: center;
+  animation: resultBounce 0.5s ease-out;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.2);
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes resultBounce {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.slot-result.jackpot {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  animation: jackpotPulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes jackpotPulse {
+  from {
+    transform: scale(1);
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.2);
+  }
+  to {
+    transform: scale(1.05);
+    box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.slot-result.win {
+  background: #4ecca3;
+  color: white;
+}
+
+.slot-result.lose {
+  background: #ff6b6b;
+  color: white;
+}
+
+.slot-result.error {
+  background: #ffd93d;
+  color: black;
+}
+
+.slot-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  align-items: center;
+}
+
+.bet-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+}
+
+.bet-label {
+  font-family: 'Press Start 2P';
+  font-size: 12px;
+  color: #333;
+}
+
+.bet-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.bet-button {
+  padding: 10px 15px;
+  background: #93c5fd;
+  border: 3px solid black;
+  font-family: 'Press Start 2P';
+  font-size: 10px;
+  cursor: pointer;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+  transition: all 0.1s;
+  min-width: 50px;
+}
+
+.bet-button:hover:not(:disabled) {
+  background: #60a5fa;
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
+}
+
+.bet-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bet-amount {
+  padding: 12px 20px;
+  background: white;
+  border: 4px solid black;
+  font-family: 'Press Start 2P';
+  font-size: 14px;
+  min-width: 100px;
+  text-align: center;
+  box-shadow: inset 0 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+.bet-presets {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.preset-button {
+  padding: 10px 20px;
+  background: #fbbf24;
+  border: 3px solid black;
+  font-family: 'Press Start 2P';
+  font-size: 10px;
+  cursor: pointer;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+  transition: all 0.1s;
+  min-width: 60px;
+}
+
+.preset-button:hover:not(:disabled) {
+  background: #f59e0b;
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
+}
+
+.preset-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.spin-button {
+  padding: 20px 40px;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  border: 5px solid black;
+  font-family: 'Press Start 2P';
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.3);
+  transition: all 0.1s;
+  color: white;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.spin-button:hover:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.3);
+}
+
+.spin-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #ccc;
+}
+
+.coins-display {
+  font-family: 'Press Start 2P';
+  font-size: 11px;
+  color: #333;
+  background: #ffd93d;
+  padding: 12px 20px;
+  border: 3px solid black;
+  border-radius: 5px;
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .slot-display {
+    gap: 10px;
+    padding: 20px;
+  }
+
+  .slot-reel {
+    width: 80px;
+    height: 80px;
+  }
+
+  .slot-symbol {
+    font-size: 50px;
+  }
+
+  .slot-result {
+    font-size: 10px;
+    padding: 12px 20px;
+  }
+
+  .spin-button {
+    padding: 15px 30px;
+    font-size: 12px;
+  }
+
+  .bet-amount {
+    font-size: 12px;
+    min-width: 80px;
+  }
+}

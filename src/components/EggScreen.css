@@ -1,0 +1,276 @@
+/* Egg Screen - Pink Cozy Retro */
+.egg-screen {
+  min-height: 100vh;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--pink-bg) 0%, var(--cream) 100%);
+}
+
+.egg-container {
+  max-width: 500px;
+  width: 100%;
+  padding: 20px;
+}
+
+.egg-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.egg-title {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 1.2rem;
+  color: var(--text-primary);
+  margin-bottom: 15px;
+  text-shadow: 2px 2px 0 rgba(255, 182, 193, 0.3);
+}
+
+.egg-subtitle {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.egg-display {
+  background: var(--pink-bg-light);
+  border: 4px solid var(--border-color);
+  box-shadow: 4px 4px 0px var(--shadow-color);
+  padding: 60px 40px;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.1s;
+  position: relative;
+  overflow: hidden;
+  min-height: 280px;
+}
+
+.egg-display:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px var(--shadow-color);
+}
+
+.egg-display:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px var(--shadow-color);
+}
+
+.egg-display.shaking {
+  animation: shake 0.5s infinite;
+}
+
+.egg-display.cracking {
+  animation: crack 0.3s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(-3px) rotate(-2deg); }
+  50% { transform: translateX(3px) rotate(2deg); }
+  75% { transform: translateX(-3px) rotate(-1deg); }
+}
+
+@keyframes crack {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.05) rotate(2deg); }
+  50% { transform: scale(0.95) rotate(-2deg); }
+  75% { transform: scale(1.05) rotate(1deg); }
+}
+
+.egg-progress-section {
+  background: var(--peach-soft);
+  border: 3px solid var(--warning);
+  padding: 20px;
+  box-shadow: 3px 3px 0px rgba(255, 204, 153, 0.4);
+  margin-bottom: 20px;
+}
+
+.progress-label {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.6rem;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.egg-progress-bar {
+  height: 24px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 3px solid var(--text-primary);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.egg-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--success) 0%, var(--warning) 100%);
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.progress-shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shine 2s infinite;
+}
+
+@keyframes shine {
+  0% { left: -100%; }
+  50%, 100% { left: 100%; }
+}
+
+.progress-text {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.5rem;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.egg-info {
+  margin-bottom: 20px;
+}
+
+.info-card-egg {
+  background: linear-gradient(135deg,
+    rgba(255, 240, 245, 0.9) 0%,
+    rgba(255, 228, 225, 0.9) 100%
+  );
+  border: 3px solid var(--pink-accent);
+  padding: 16px;
+  box-shadow: 3px 3px 0px rgba(255, 182, 193, 0.3);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.info-icon-egg {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.info-content-egg {
+  flex: 1;
+}
+
+.info-title-egg {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.6rem;
+  color: var(--pink-dark);
+  margin-bottom: 8px;
+}
+
+.info-text-egg {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.5rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.egg-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.egg-stat {
+  background: var(--cream);
+  border: 3px solid var(--border-color);
+  padding: 12px;
+  box-shadow: 2px 2px 0px var(--shadow-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.egg-stat .stat-icon {
+  font-size: 1.5rem;
+}
+
+.egg-stat .stat-label {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.45rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .egg-title {
+    font-size: 1rem;
+  }
+
+  .egg-subtitle {
+    font-size: 0.5rem;
+  }
+
+  .egg-display {
+    padding: 40px 30px;
+    min-height: 250px;
+  }
+}
+
+@media (max-width: 500px) {
+  .egg-screen {
+    padding: 15px;
+  }
+
+  .egg-title {
+    font-size: 0.8rem;
+  }
+
+  .egg-subtitle {
+    font-size: 0.45rem;
+  }
+
+  .egg-display {
+    padding: 30px 20px;
+    min-height: 220px;
+  }
+
+  .progress-label {
+    font-size: 0.5rem;
+  }
+
+  .info-title-egg {
+    font-size: 0.5rem;
+  }
+
+  .info-text-egg {
+    font-size: 0.45rem;
+  }
+
+  .egg-stat .stat-label {
+    font-size: 0.4rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .egg-title {
+    font-size: 0.7rem;
+  }
+
+  .egg-subtitle {
+    font-size: 0.4rem;
+  }
+
+  .egg-stats {
+    grid-template-columns: 1fr;
+  }
+}

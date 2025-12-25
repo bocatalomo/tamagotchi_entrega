@@ -1,0 +1,632 @@
+/* Overlay de mini-juegos - Pink Cozy Retro */
+.minigame-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 201, 224, 0.98);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.minigame-container {
+  background: var(--cream);
+  border: 4px solid var(--border-color);
+  padding: 24px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow:
+    6px 6px 0 var(--shadow-color),
+    8px 8px 0 rgba(139, 79, 125, 0.15);
+  position: relative;
+}
+
+.minigame-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.minigame-title {
+  font-size: 1.2rem;
+  color: var(--text-primary);
+  text-shadow:
+    2px 2px 0 var(--pink-bg-light),
+    3px 3px 0 rgba(255, 179, 217, 0.4);
+  margin: 0;
+}
+
+.minigame-close {
+  background: var(--danger);
+  border: 3px solid var(--text-primary);
+  color: white;
+  width: 40px;
+  height: 40px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  font-family: 'Press Start 2P', cursive;
+  box-shadow: 3px 3px 0 var(--text-primary);
+  transition: all 0.1s;
+}
+
+.minigame-close:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--text-primary);
+}
+
+.minigame-close:active {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 var(--text-primary);
+}
+
+.minigame-intro {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* Grid de juegos */
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.game-card {
+  background: var(--pink-bg-light);
+  border: 3px solid var(--border-color);
+  padding: 20px 15px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.1s;
+  box-shadow: 4px 4px 0 var(--shadow-color);
+  font-family: 'Press Start 2P', cursive;
+}
+
+.game-card:hover {
+  background: var(--pink-accent);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--shadow-color);
+}
+
+.game-card:active {
+  transform: translate(1px, 1px);
+  box-shadow: 3px 3px 0 var(--shadow-color);
+}
+
+.game-icon {
+  font-size: 3rem;
+  filter: drop-shadow(2px 2px 0 rgba(139, 79, 125, 0.2));
+}
+
+.game-name {
+  font-size: 0.7rem;
+  color: var(--text-primary);
+  text-align: center;
+  line-height: 1.4;
+}
+
+.game-description {
+  font-size: 0.5rem;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.3;
+}
+
+.game-difficulty {
+  font-size: 0.45rem;
+  color: var(--text-primary);
+  background: var(--success);
+  padding: 4px 8px;
+  border: 2px solid var(--pink-dark);
+}
+
+.game-reward {
+  font-size: 0.5rem;
+  color: var(--text-primary);
+  background: var(--warning);
+  padding: 6px 10px;
+  border: 2px solid var(--pink-darker);
+  margin-top: 4px;
+}
+
+/* Pantalla de juego */
+.game-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.game-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.back-button {
+  background: var(--pink-bg-light);
+  border: 3px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 10px 15px;
+  font-size: 0.6rem;
+  cursor: pointer;
+  font-family: 'Press Start 2P', cursive;
+  transition: all 0.1s;
+  box-shadow: 3px 3px 0 var(--shadow-color);
+}
+
+.back-button:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--shadow-color);
+  background: var(--pink-accent);
+}
+
+.back-button:active {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 var(--shadow-color);
+}
+
+.game-title {
+  font-size: 1rem;
+  color: var(--text-primary);
+  text-shadow: 2px 2px 0 var(--pink-bg-light);
+  margin: 0;
+}
+
+.game-info {
+  background: var(--pink-bg-light);
+  padding: 15px;
+  border: 3px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 3px 3px 0 var(--shadow-color);
+}
+
+.round-info, .turn-info, .guess-info {
+  font-size: 0.7rem;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.score-info {
+  display: flex;
+  justify-content: space-around;
+  font-size: 0.7rem;
+}
+
+.player-score {
+  color: var(--success);
+}
+
+.pet-score {
+  color: var(--pink-dark);
+}
+
+/* ===================================== */
+/* PIEDRA, PAPEL O TIJERA */
+/* ===================================== */
+
+.rps-battle {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 30px 0;
+  background: var(--pink-bg-light);
+  border: 3px solid var(--border-color);
+  box-shadow: 3px 3px 0 var(--shadow-color);
+}
+
+.rps-player, .rps-pet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.rps-label {
+  font-size: 0.7rem;
+  color: var(--text-primary);
+}
+
+.rps-choice {
+  font-size: 5rem;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cream);
+  border: 3px solid var(--pink-accent);
+  box-shadow: 3px 3px 0 rgba(255, 133, 192, 0.3);
+}
+
+.rps-choice.thinking {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.rps-vs {
+  font-size: 1.5rem;
+  color: var(--pink-dark);
+  font-weight: bold;
+  text-shadow: 2px 2px 0 var(--cream);
+}
+
+.rps-result {
+  text-align: center;
+  font-size: 0.9rem;
+  padding: 15px;
+  border: 3px solid var(--border-color);
+  animation: popIn 0.3s;
+  box-shadow: 3px 3px 0 var(--shadow-color);
+}
+
+.rps-result.win {
+  background: var(--success);
+  color: var(--text-primary);
+}
+
+.rps-result.lose {
+  background: var(--danger);
+  color: white;
+}
+
+.rps-result.tie {
+  background: var(--warning);
+  color: var(--text-primary);
+}
+
+.rps-choices {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.choice-button {
+  background: var(--pink-bg-light);
+  border: 3px solid var(--border-color);
+  padding: 20px 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.1s;
+  box-shadow: 4px 4px 0 var(--shadow-color);
+  font-family: 'Press Start 2P', cursive;
+}
+
+.choice-button:hover {
+  background: var(--pink-accent);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--shadow-color);
+}
+
+.choice-button:active {
+  transform: translate(1px, 1px);
+  box-shadow: 3px 3px 0 var(--shadow-color);
+}
+
+.choice-emoji {
+  font-size: 3rem;
+}
+
+.choice-label {
+  font-size: 0.6rem;
+  color: var(--text-primary);
+}
+
+/* ===================================== */
+/* MEMORIA */
+/* ===================================== */
+
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  background: var(--pink-bg-light);
+  padding: 20px;
+  border: 3px solid var(--border-color);
+  box-shadow: 3px 3px 0 var(--shadow-color);
+}
+
+.memory-card {
+  aspect-ratio: 1;
+  background: var(--cream);
+  border: 3px solid var(--pink-accent);
+  cursor: pointer;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  position: relative;
+  box-shadow: 3px 3px 0 rgba(255, 133, 192, 0.3);
+}
+
+.memory-card.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.memory-card:not(.disabled):hover {
+  transform: scale(1.05);
+  box-shadow: 4px 4px 0 rgba(255, 133, 192, 0.4);
+}
+
+.memory-card .card-front,
+.memory-card .card-back {
+  position: absolute;
+  backface-visibility: hidden;
+  transition: transform 0.3s;
+}
+
+.memory-card .card-back {
+  transform: rotateY(180deg);
+}
+
+.memory-card.flipped .card-front {
+  transform: rotateY(180deg);
+}
+
+.memory-card.flipped .card-back {
+  transform: rotateY(0deg);
+}
+
+/* ===================================== */
+/* TIEMPO DE REACCIÓN */
+/* ===================================== */
+
+.reaction-game {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.reaction-area {
+  width: 100%;
+  height: 300px;
+  background: var(--cream);
+  border: 4px solid var(--border-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Press Start 2P', cursive;
+  transition: all 0.1s;
+  box-shadow: 4px 4px 0 var(--shadow-color);
+}
+
+.reaction-area.ready {
+  background: var(--warning);
+}
+
+.reaction-area.waiting {
+  background: var(--danger);
+}
+
+.reaction-area.show {
+  background: var(--success);
+  animation: pulse 0.5s ease-in-out infinite;
+}
+
+.reaction-area:not(:disabled):hover {
+  transform: scale(1.02);
+  box-shadow: 5px 5px 0 var(--shadow-color);
+}
+
+.reaction-text {
+  font-size: 1.2rem;
+  color: var(--text-primary);
+  text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.5);
+}
+
+.reaction-emoji {
+  font-size: 6rem;
+  animation: pulse 0.5s ease-in-out infinite;
+}
+
+.reaction-result {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.reaction-result .winner {
+  font-size: 1rem;
+  color: var(--success);
+  margin-top: 10px;
+}
+
+.early-click {
+  font-size: 1.2rem;
+  color: var(--danger);
+}
+
+.reaction-instructions {
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--text-primary);
+  background: var(--pink-bg-light);
+  padding: 12px;
+  border: 3px solid var(--border-color);
+  box-shadow: 3px 3px 0 var(--shadow-color);
+}
+
+/* ===================================== */
+/* ADIVINA EL NÚMERO */
+/* ===================================== */
+
+.guess-game {
+  background: var(--pink-bg-light);
+  padding: 30px;
+  border: 3px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 300px;
+  justify-content: center;
+  box-shadow: 3px 3px 0 var(--shadow-color);
+}
+
+.guess-input-group {
+  display: flex;
+  gap: 10px;
+}
+
+.guess-input {
+  flex: 1;
+  padding: 15px;
+  font-size: 1.2rem;
+  border: 3px solid var(--border-color);
+  background: var(--cream);
+  color: var(--text-primary);
+  font-family: 'Press Start 2P', cursive;
+  text-align: center;
+  box-shadow: 3px 3px 0 var(--shadow-color);
+}
+
+.guess-input:focus {
+  outline: none;
+  border-color: var(--pink-dark);
+}
+
+.guess-button {
+  padding: 15px 20px;
+  background: var(--success);
+  border: 3px solid var(--pink-dark);
+  color: var(--text-primary);
+  font-size: 0.7rem;
+  cursor: pointer;
+  font-family: 'Press Start 2P', cursive;
+  transition: all 0.1s;
+  box-shadow: 3px 3px 0 var(--shadow-color);
+}
+
+.guess-button:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--shadow-color);
+  background: var(--pink-accent);
+}
+
+.guess-button:active {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 var(--shadow-color);
+}
+
+.guess-hint {
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  text-align: center;
+  padding: 12px;
+  background: var(--warning);
+  border: 3px solid var(--border-color);
+  animation: popIn 0.3s;
+  box-shadow: 3px 3px 0 var(--shadow-color);
+}
+
+.guess-pet-thinking {
+  font-size: 0.7rem;
+  color: var(--text-primary);
+  text-align: center;
+  padding: 15px;
+  background: var(--cream);
+  border: 3px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 3px 3px 0 var(--shadow-color);
+}
+
+.pet-range {
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+}
+
+.guess-won {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.won-emoji {
+  font-size: 5rem;
+  animation: bounce 0.5s ease-in-out infinite;
+}
+
+.won-text {
+  font-size: 1rem;
+  color: var(--success);
+  text-align: center;
+}
+
+.won-attempts {
+  font-size: 0.7rem;
+  color: var(--text-primary);
+}
+
+/* ===================================== */
+/* ANIMATIONS */
+/* ===================================== */
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .games-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .rps-choices {
+    grid-template-columns: 1fr;
+  }
+  
+  .memory-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .rps-choice {
+    width: 80px;
+    height: 80px;
+    font-size: 3rem;
+  }
+  
+  .minigame-title {
+    font-size: 0.9rem;
+  }
+  
+  .game-card {
+    padding: 15px 10px;
+  }
+  
+  .game-icon {
+    font-size: 2rem;
+  }
+}

@@ -1,0 +1,307 @@
+/* Overlay de logros */
+.achievements-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(26, 15, 51, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.achievements-container {
+  background: var(--pixel-primary);
+  border: 6px solid var(--pixel-warning);
+  padding: 24px;
+  max-width: 700px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 
+    0 0 0 2px var(--pixel-bg-dark),
+    0 0 0 4px var(--pixel-warning),
+    0 0 40px rgba(255, 217, 61, 0.3);
+}
+
+.achievements-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.achievements-title {
+  font-size: 1.2rem;
+  color: var(--pixel-warning);
+  text-shadow: 
+    2px 2px 0 var(--pixel-bg-dark),
+    4px 4px 0 rgba(0, 0, 0, 0.3);
+  margin: 0;
+}
+
+.achievements-close {
+  background: var(--pixel-danger);
+  border: 3px solid #cc5555;
+  color: white;
+  width: 40px;
+  height: 40px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  font-family: 'Press Start 2P', cursive;
+  box-shadow: 
+    inset -2px -2px 0 rgba(0, 0, 0, 0.3),
+    2px 2px 0 rgba(0, 0, 0, 0.4);
+  transition: all 0.1s;
+}
+
+.achievements-close:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 
+    inset -2px -2px 0 rgba(0, 0, 0, 0.3),
+    4px 4px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* Estadísticas de logros */
+.achievements-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+  background: var(--pixel-bg-dark);
+  padding: 15px;
+  border: 3px solid var(--pixel-border);
+}
+
+.achievement-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-icon {
+  font-size: 1.5rem;
+  filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.3));
+}
+
+.stat-text {
+  font-size: 0.7rem;
+  color: var(--pixel-text);
+  font-weight: bold;
+}
+
+/* Tabs de categorías */
+.achievements-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.achievement-tab {
+  background: var(--pixel-secondary);
+  border: 3px solid var(--pixel-border);
+  padding: 8px 12px;
+  cursor: pointer;
+  font-family: 'Press Start 2P', cursive;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.1s;
+  font-size: 0.5rem;
+  color: var(--pixel-text);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4);
+}
+
+.achievement-tab:hover {
+  background: var(--pixel-accent);
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.4);
+}
+
+.achievement-tab.active {
+  background: var(--pixel-warning);
+  color: var(--pixel-bg-dark);
+  border-color: #d4b02a;
+  box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+.tab-icon {
+  font-size: 1rem;
+}
+
+.tab-name {
+  font-size: 0.5rem;
+}
+
+/* Lista de logros */
+.achievements-list {
+  display: grid;
+  gap: 12px;
+  max-height: 50vh;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.achievement-card {
+  background: var(--pixel-secondary);
+  border: 4px solid var(--pixel-border);
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: all 0.2s;
+  position: relative;
+  box-shadow: 
+    inset -3px -3px 0 rgba(0, 0, 0, 0.3),
+    3px 3px 0 rgba(0, 0, 0, 0.4);
+}
+
+.achievement-card.unlocked {
+  border-color: var(--pixel-warning);
+  background: linear-gradient(135deg, var(--pixel-secondary) 0%, rgba(255, 217, 61, 0.1) 100%);
+  animation: unlockPulse 0.5s ease-out;
+}
+
+.achievement-card.locked {
+  opacity: 0.6;
+  filter: grayscale(0.8);
+}
+
+.achievement-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    inset -3px -3px 0 rgba(0, 0, 0, 0.3),
+    3px 5px 0 rgba(0, 0, 0, 0.4);
+}
+
+.achievement-icon {
+  font-size: 2.5rem;
+  filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.3));
+  flex-shrink: 0;
+}
+
+.achievement-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.achievement-name {
+  font-size: 0.7rem;
+  color: var(--pixel-text);
+  font-weight: bold;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+.achievement-description {
+  font-size: 0.5rem;
+  color: var(--pixel-warning);
+  line-height: 1.4;
+}
+
+.achievement-reward {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.reward-item {
+  font-size: 0.5rem;
+  color: var(--pixel-success);
+  background: var(--pixel-bg-dark);
+  padding: 4px 8px;
+  border: 2px solid var(--pixel-border);
+}
+
+.achievement-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--pixel-success);
+  color: var(--pixel-bg-dark);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: 3px solid #3dad83;
+  box-shadow: 0 0 10px rgba(78, 204, 163, 0.5);
+}
+
+/* Animaciones */
+@keyframes unlockPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 
+      inset -3px -3px 0 rgba(0, 0, 0, 0.3),
+      0 0 20px rgba(255, 217, 61, 0.8);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Scrollbar personalizado */
+.achievements-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.achievements-list::-webkit-scrollbar-track {
+  background: var(--pixel-bg-dark);
+  border: 2px solid var(--pixel-border);
+}
+
+.achievements-list::-webkit-scrollbar-thumb {
+  background: var(--pixel-accent);
+  border: 2px solid var(--pixel-border);
+}
+
+.achievements-list::-webkit-scrollbar-thumb:hover {
+  background: var(--pixel-warning);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .achievements-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .achievements-tabs {
+    gap: 6px;
+  }
+  
+  .achievement-tab {
+    padding: 6px 10px;
+  }
+  
+  .tab-name {
+    display: none;
+  }
+  
+  .achievement-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .achievement-badge {
+    top: 5px;
+    right: 5px;
+    width: 25px;
+    height: 25px;
+    font-size: 1rem;
+  }
+}

@@ -1,0 +1,121 @@
+/* Barra de navegación inferior */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--pixel-secondary);
+  border-top: 5px solid var(--pixel-border);
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0;
+  z-index: 100;
+  box-shadow: 
+    0 -4px 0 rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.nav-item {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+  transition: all 0.2s;
+  font-family: 'Press Start 2P', cursive;
+  position: relative;
+  flex: 1;
+  max-width: 120px;
+}
+
+.nav-item::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 3px;
+  background: var(--pixel-accent);
+  transition: width 0.3s;
+}
+
+.nav-item:hover::before {
+  width: 80%;
+}
+
+.nav-item.active::before {
+  width: 80%;
+  background: var(--pixel-warning);
+  box-shadow: 0 0 10px var(--pixel-warning);
+}
+
+.nav-item:hover {
+  background: rgba(255, 107, 157, 0.1);
+}
+
+.nav-item.active {
+  background: rgba(255, 217, 61, 0.15);
+}
+
+.nav-icon {
+  font-size: 1.5rem;
+  filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.3));
+  transition: transform 0.2s;
+}
+
+.nav-item:hover .nav-icon {
+  transform: scale(1.1) translateY(-2px);
+}
+
+.nav-item.active .nav-icon {
+  transform: scale(1.15);
+  animation: navIconBounce 0.5s ease-out;
+}
+
+@keyframes navIconBounce {
+  0%, 100% { transform: scale(1.15) translateY(0); }
+  50% { transform: scale(1.2) translateY(-4px); }
+}
+
+.nav-label {
+  font-size: 0.45rem;
+  color: var(--pixel-text);
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.nav-item:hover .nav-label,
+.nav-item.active .nav-label {
+  opacity: 1;
+  color: var(--pixel-warning);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .nav-label {
+    font-size: 0.4rem;
+  }
+  
+  .nav-icon {
+    font-size: 1.3rem;
+  }
+  
+  .nav-item {
+    padding: 6px 8px;
+  }
+}
+
+@media (max-width: 400px) {
+  .nav-label {
+    display: none;
+  }
+  
+  .nav-icon {
+    font-size: 1.6rem;
+  }
+}

@@ -1,0 +1,273 @@
+/* Shop Screen - Pink Cozy Retro */
+.shop-screen {
+  min-height: 100vh;
+  padding: 20px 20px 100px;
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.shop-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: var(--cream);
+  border: 3px solid var(--border-color);
+  box-shadow: 3px 3px 0px var(--shadow-color);
+}
+
+.shop-title {
+  font-size: 1.4rem;
+  color: var(--text-primary);
+  margin: 0;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.shop-subtitle {
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  font-family: 'Press Start 2P', cursive;
+}
+
+.wallet-card {
+  background: var(--cream);
+  border: 3px solid var(--border-color);
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  box-shadow: 3px 3px 0px var(--shadow-color);
+}
+
+.wallet-icon {
+  font-size: 2rem;
+}
+
+.wallet-info {
+  flex: 1;
+}
+
+.wallet-label {
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.wallet-amount {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  font-family: 'Press Start 2P', cursive;
+  font-weight: bold;
+}
+
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.shop-item-card {
+  background: var(--cream);
+  border: 3px solid var(--border-color);
+  padding: 12px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  box-shadow: 3px 3px 0px var(--shadow-color);
+  transition: all 0.1s;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.shop-item-card:not(:disabled):hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px var(--shadow-color);
+  background: var(--pink-bg-light);
+}
+
+.shop-item-card:active {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0px var(--shadow-color);
+}
+
+.shop-item-card:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.item-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--success);
+  color: var(--text-primary);
+  padding: 4px 8px;
+  font-size: 0.4rem;
+  border: 2px solid var(--pink-dark);
+  box-shadow: 2px 2px 0px var(--text-primary);
+}
+
+.item-icon {
+  font-size: 2.5rem;
+}
+
+.item-name {
+  font-size: 0.7rem;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.item-description {
+  font-size: 0.55rem;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.4;
+}
+
+.item-price {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--warning);
+  padding: 6px 12px;
+  border: 2px solid var(--pink-darker);
+  box-shadow: 2px 2px 0px var(--text-primary);
+}
+
+.price-icon {
+  font-size: 1rem;
+}
+
+.price-value {
+  font-size: 0.7rem;
+  color: var(--text-primary);
+  font-weight: bold;
+}
+
+.insufficient-funds {
+  background: var(--danger);
+  color: white;
+  padding: 4px 8px;
+  font-size: 0.45rem;
+  border: 2px solid var(--text-primary);
+  box-shadow: 2px 2px 0px var(--text-primary);
+}
+
+.shop-tip {
+  background: var(--peach-soft);
+  border: 3px solid var(--warning);
+  padding: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  box-shadow: 3px 3px 0px rgba(255, 204, 153, 0.4);
+}
+
+.tip-icon-shop {
+  display: none;
+}
+
+.tip-content-shop {
+  flex: 1;
+}
+
+.tip-title-shop {
+  font-size: 0.55rem;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.tip-text-shop {
+  font-size: 0.5rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  font-family: 'Press Start 2P', cursive;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .shop-screen {
+    padding: 15px 15px 95px;
+  }
+
+  .shop-title {
+    font-size: 1.2rem;
+  }
+
+  .shop-subtitle {
+    font-size: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .shop-screen {
+    padding: 12px 12px 100px;
+  }
+
+  .shop-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .shop-title {
+    font-size: 1rem;
+  }
+
+  .shop-subtitle {
+    font-size: 0.45rem;
+  }
+
+  .item-icon {
+    font-size: 2rem;
+  }
+
+  .item-name {
+    font-size: 0.55rem;
+  }
+
+  .tip-title-shop {
+    font-size: 0.55rem;
+  }
+
+  .tip-text-shop {
+    font-size: 0.5rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .shop-screen {
+    padding: 10px 10px 105px;
+  }
+
+  .shop-title {
+    font-size: 0.9rem;
+  }
+
+  .shop-subtitle {
+    font-size: 0.4rem;
+  }
+
+  .wallet-icon {
+    font-size: 1.8rem;
+  }
+
+  .wallet-amount {
+    font-size: 0.7rem;
+  }
+
+  .item-name {
+    font-size: 0.5rem;
+  }
+
+  .item-icon {
+    font-size: 1.8rem;
+  }
+}

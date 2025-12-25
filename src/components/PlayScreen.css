@@ -1,0 +1,571 @@
+/* Play Screen - Estilo Cozy Pixel Art */
+.play-screen {
+  min-height: 100vh;
+  background: linear-gradient(180deg,
+    #e1bee7 0%,
+    #f3e5f5 50%,
+    #fce4ec 100%
+  );
+  padding: 20px 20px 100px;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.play-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.play-title {
+  font-size: 1.2rem;
+  color: #ab47bc;
+  text-shadow: 
+    3px 3px 0 #e1bee7,
+    5px 5px 0 rgba(0, 0, 0, 0.1);
+  margin: 0 0 10px 0;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.play-subtitle {
+  font-size: 0.6rem;
+  color: #9c27b0;
+  margin: 0;
+  font-family: 'Press Start 2P', cursive;
+}
+
+/* Game stats */
+.game-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.game-stat-card {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(243, 229, 245, 0.95) 100%
+  );
+  border: 3px solid #ce93d8;
+  border-radius: 15px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 
+    0 3px 0 #ba68c8,
+    0 5px 8px rgba(171, 71, 188, 0.2);
+}
+
+.game-stat-icon {
+  font-size: 1.8rem;
+  filter: drop-shadow(2px 2px 0 rgba(171, 71, 188, 0.3));
+}
+
+.game-stat-info {
+  text-align: center;
+}
+
+.game-stat-label {
+  font-size: 0.5rem;
+  color: #9c27b0;
+  margin-bottom: 4px;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.game-stat-value {
+  font-size: 0.6rem;
+  color: #7b1fa2;
+  font-family: 'Press Start 2P', cursive;
+}
+
+/* Sections */
+.minigames-section,
+.skate-game-section,
+.achievements-section,
+.simple-play-section,
+.play-info-section {
+  margin-bottom: 25px;
+}
+
+
+
+.section-icon-play {
+  font-size: 1.5rem;
+  filter: drop-shadow(2px 2px 0 rgba(171, 71, 188, 0.4));
+}
+
+.section-title-play {
+  font-size: 0.8rem;
+  color: #ab47bc;
+  font-family: 'Press Start 2P', cursive;
+}
+
+/* Minigames card */
+.minigames-card {
+  width: 100%;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(243, 229, 245, 0.95) 100%
+  );
+  border: 5px solid #ce93d8;
+  border-radius: 20px;
+  padding: 25px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  position: relative;
+  box-shadow: 
+    0 5px 0 #ba68c8,
+    0 8px 15px rgba(171, 71, 188, 0.3);
+  transition: all 0.2s;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.minigames-card:not(:disabled):hover {
+  transform: translateY(-3px);
+  box-shadow: 
+    0 8px 0 #ba68c8,
+    0 12px 20px rgba(171, 71, 188, 0.4);
+}
+
+.minigames-card:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.card-decoration {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+}
+
+.deco-star {
+  font-size: 1.5rem;
+  animation: starRotate 3s ease-in-out infinite;
+}
+
+.deco-star:nth-child(2) { animation-delay: -1s; }
+.deco-star:nth-child(3) { animation-delay: -2s; }
+
+@keyframes starRotate {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.2); }
+}
+
+.minigames-icon {
+  font-size: 3.5rem;
+  text-align: center;
+  filter: drop-shadow(3px 3px 0 rgba(171, 71, 188, 0.4));
+}
+
+.minigames-content {
+  text-align: center;
+}
+
+.minigames-title {
+  font-size: 0.9rem;
+  color: #ab47bc;
+  margin-bottom: 8px;
+}
+
+.minigames-description {
+  font-size: 0.5rem;
+  color: #9c27b0;
+  line-height: 1.6;
+}
+
+.minigames-games {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.mini-game-badge {
+  background: linear-gradient(135deg, #ce93d8 0%, #ba68c8 100%);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 0.5rem;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.energy-warning {
+  background: linear-gradient(135deg, #ffb74d 0%, #ff9800 100%);
+  color: white;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 0.55rem;
+  border: 2px solid #fff3e0;
+}
+
+/* Skate Game card */
+.skate-game-card {
+  width: 100%;
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(224, 247, 250, 0.95) 100%
+  );
+  border: 5px solid #4dd0e1;
+  border-radius: 20px;
+  padding: 25px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  position: relative;
+  box-shadow:
+    0 5px 0 #26c6da,
+    0 8px 15px rgba(77, 208, 225, 0.3);
+  transition: all 0.2s;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.skate-game-card:not(:disabled):hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 8px 0 #26c6da,
+    0 12px 20px rgba(77, 208, 225, 0.4);
+}
+
+.skate-game-card:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.skate-game-icon {
+  font-size: 3.5rem;
+  text-align: center;
+  filter: drop-shadow(3px 3px 0 rgba(38, 198, 218, 0.4));
+}
+
+.skate-game-content {
+  text-align: center;
+}
+
+.skate-game-title {
+  font-size: 0.9rem;
+  color: #00acc1;
+  margin-bottom: 8px;
+}
+
+.skate-game-description {
+  font-size: 0.5rem;
+  color: #0097a7;
+  line-height: 1.6;
+}
+
+.skate-game-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.feature-badge {
+  background: linear-gradient(135deg, #4dd0e1 0%, #26c6da 100%);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 0.5rem;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Achievements card */
+.achievements-card {
+  width: 100%;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(255, 249, 196, 0.95) 100%
+  );
+  border: 5px solid #ffd54f;
+  border-radius: 20px;
+  padding: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 
+    0 5px 0 #ffca28,
+    0 8px 15px rgba(255, 213, 79, 0.3);
+  transition: all 0.2s;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.achievements-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 
+    0 8px 0 #ffca28,
+    0 12px 20px rgba(255, 213, 79, 0.4);
+}
+
+.achievements-icon {
+  font-size: 3rem;
+  filter: drop-shadow(2px 2px 0 rgba(255, 202, 40, 0.4));
+}
+
+.achievements-content {
+  flex: 1;
+}
+
+.achievements-title {
+  font-size: 0.8rem;
+  color: #f9a825;
+  margin-bottom: 10px;
+}
+
+.achievements-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.progress-bar-play {
+  background: #fff9c4;
+  border: 3px solid #ffee58;
+  border-radius: 10px;
+  height: 20px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.progress-fill-play {
+  height: 100%;
+  background: linear-gradient(90deg, 
+    #ffd93d 0%, 
+    #f9ca24 50%, 
+    #ffd93d 100%
+  );
+  transition: width 0.5s;
+  position: relative;
+}
+
+.progress-shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.6) 50%, 
+    transparent 100%
+  );
+  animation: shine 2s ease-in-out infinite;
+}
+
+.progress-text {
+  font-size: 0.5rem;
+  color: #f57f17;
+}
+
+.achievements-badge {
+  background: linear-gradient(135deg, #ffd93d 0%, #f9ca24 100%);
+  color: #8b6914;
+  padding: 15px;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  border: 4px solid #fff9e6;
+  box-shadow: 0 4px 8px rgba(249, 202, 36, 0.4);
+  min-width: 60px;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* Recent achievements */
+.recent-achievements {
+  margin-top: 15px;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.8) 0%, 
+    rgba(255, 249, 196, 0.8) 100%
+  );
+  border: 3px solid #fff176;
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 0 3px 0 #ffee58;
+}
+
+.recent-title {
+  font-size: 0.6rem;
+  color: #f9a825;
+  margin-bottom: 10px;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.recent-badges {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.recent-badge {
+  font-size: 2rem;
+  filter: drop-shadow(2px 2px 0 rgba(249, 202, 36, 0.4));
+  animation: badgeBounce 2s ease-in-out infinite;
+}
+
+.recent-badge:nth-child(2) { animation-delay: -0.7s; }
+.recent-badge:nth-child(3) { animation-delay: -1.4s; }
+
+@keyframes badgeBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Simple play card */
+.simple-play-card {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.9) 0%, 
+    rgba(243, 229, 245, 0.9) 100%
+  );
+  border: 4px solid #ce93d8;
+  border-radius: 15px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 
+    0 4px 0 #ba68c8,
+    0 6px 10px rgba(171, 71, 188, 0.2);
+}
+
+.simple-play-icon {
+  font-size: 2.5rem;
+  filter: drop-shadow(2px 2px 0 rgba(171, 71, 188, 0.3));
+}
+
+.simple-play-info {
+  flex: 1;
+}
+
+.simple-play-title {
+  font-size: 0.7rem;
+  color: #ab47bc;
+  margin-bottom: 6px;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.simple-play-desc {
+  font-size: 0.5rem;
+  color: #9c27b0;
+  font-family: 'Press Start 2P', cursive;
+}
+
+/* Info card */
+.info-card-play {
+  background: linear-gradient(135deg, 
+    rgba(179, 229, 252, 0.95) 0%, 
+    rgba(129, 212, 250, 0.95) 100%
+  );
+  border: 4px solid #4fc3f7;
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  gap: 15px;
+  box-shadow: 
+    0 4px 0 #29b6f6,
+    0 6px 12px rgba(79, 195, 247, 0.3);
+}
+
+.info-icon-play {
+  font-size: 2rem;
+  filter: drop-shadow(2px 2px 0 rgba(41, 182, 246, 0.4));
+}
+
+.info-content-play {
+  flex: 1;
+}
+
+.info-title-play {
+  font-size: 0.7rem;
+  color: #0277bd;
+  margin-bottom: 8px;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.info-text-play {
+  font-size: 0.5rem;
+  color: #01579b;
+  line-height: 1.6;
+  font-family: 'Press Start 2P', cursive;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .play-screen {
+    padding: 15px 15px 95px;
+  }
+
+  .play-title {
+    font-size: 1rem;
+  }
+
+  .play-subtitle {
+    font-size: 0.55rem;
+  }
+
+  .game-stats {
+    gap: 10px;
+  }
+
+  .game-stat-icon {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .play-screen {
+    padding: 12px 12px 100px;
+  }
+
+  .play-title {
+    font-size: 0.9rem;
+  }
+
+  .play-subtitle {
+    font-size: 0.5rem;
+  }
+
+  .game-stats {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .minigames-card, .achievements-card {
+    padding: 20px 15px;
+  }
+
+  .section-title-play {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .play-screen {
+    padding: 10px 10px 105px;
+  }
+
+  .play-title {
+    font-size: 0.8rem;
+  }
+
+  .minigames-icon {
+    font-size: 3rem;
+  }
+
+  .achievements-icon {
+    font-size: 2.5rem;
+  }
+}

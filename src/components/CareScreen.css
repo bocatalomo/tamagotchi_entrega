@@ -1,0 +1,221 @@
+/* Care Screen - Estilo Cozy Pixel Art */
+.care-screen {
+  min-height: 100vh;
+  background: linear-gradient(180deg, 
+    #e8f5e9 0%, 
+    #f1f8e9 50%, 
+    #fff9c4 100%
+  );
+  padding: 20px 20px 100px;
+}
+
+.care-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.care-title {
+  font-size: 1.2rem;
+  color: #81c784;
+  text-shadow: 
+    3px 3px 0 #c8e6c9,
+    5px 5px 0 rgba(0, 0, 0, 0.1);
+  margin: 0 0 10px 0;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.care-subtitle {
+  font-size: 0.6rem;
+  color: #66bb6a;
+  margin: 0;
+  font-family: 'Press Start 2P', cursive;
+}
+
+/* Estado general */
+.health-status {
+  margin-bottom: 25px;
+}
+
+.status-card {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(232, 245, 233, 0.95) 100%
+  );
+  border: 4px solid #aed581;
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 
+    0 4px 0 #9ccc65,
+    0 6px 12px rgba(129, 199, 132, 0.3);
+}
+
+.status-icon {
+  font-size: 3rem;
+  filter: drop-shadow(2px 2px 0 rgba(129, 199, 132, 0.4));
+}
+
+.status-info {
+  flex: 1;
+}
+
+.status-label {
+  font-size: 0.6rem;
+  color: #66bb6a;
+  margin-bottom: 6px;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.status-value {
+  font-size: 1rem;
+  color: #388e3c;
+  font-family: 'Press Start 2P', cursive;
+  text-shadow: 2px 2px 0 rgba(200, 230, 201, 0.8);
+}
+
+/* Secciones */
+.stats-section,
+.actions-section,
+.tips-section {
+  margin-bottom: 25px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  padding: 12px 15px;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.9) 0%, 
+    rgba(232, 245, 233, 0.9) 100%
+  );
+  border: 3px solid #aed581;
+  border-radius: 15px;
+  box-shadow: 0 3px 0 #9ccc65;
+}
+
+.section-icon {
+  font-size: 1.5rem;
+  filter: drop-shadow(2px 2px 0 rgba(129, 199, 132, 0.4));
+}
+
+.section-title {
+  font-size: 0.8rem;
+  color: #66bb6a;
+  font-family: 'Press Start 2P', cursive;
+}
+
+/* Grid de stats */
+.stats-grid {
+  display: grid;
+  gap: 15px;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(232, 245, 233, 0.95) 100%
+  );
+  border: 4px solid #c5e1a5;
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 
+    0 3px 0 #aed581,
+    0 5px 8px rgba(129, 199, 132, 0.2);
+}
+
+.stat-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.stat-emoji {
+  font-size: 1.5rem;
+  filter: drop-shadow(2px 2px 0 rgba(129, 199, 132, 0.3));
+}
+
+.stat-name {
+  font-size: 0.7rem;
+  color: #66bb6a;
+  font-family: 'Press Start 2P', cursive;
+}
+
+/* Grid de acciones */
+.actions-grid-care {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+/* Consejos */
+.tips-section {
+  margin-top: 30px;
+}
+
+.tip-card {
+  background: linear-gradient(135deg, 
+    rgba(255, 249, 196, 0.95) 0%, 
+    rgba(255, 245, 157, 0.95) 100%
+  );
+  border: 4px solid #fff176;
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  gap: 15px;
+  box-shadow: 
+    0 4px 0 #ffee58,
+    0 6px 12px rgba(255, 241, 118, 0.3);
+  animation: tipGlow 3s ease-in-out infinite;
+}
+
+@keyframes tipGlow {
+  0%, 100% { 
+    box-shadow: 
+      0 4px 0 #ffee58,
+      0 6px 12px rgba(255, 241, 118, 0.3);
+  }
+  50% { 
+    box-shadow: 
+      0 4px 0 #ffee58,
+      0 6px 12px rgba(255, 241, 118, 0.6);
+  }
+}
+
+.tip-icon {
+  font-size: 2rem;
+  filter: drop-shadow(2px 2px 0 rgba(249, 168, 37, 0.4));
+}
+
+.tip-content {
+  flex: 1;
+}
+
+.tip-title {
+  font-size: 0.7rem;
+  color: #f9a825;
+  margin-bottom: 8px;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.tip-text {
+  font-size: 0.6rem;
+  color: #f57f17;
+  line-height: 1.6;
+  font-family: 'Press Start 2P', cursive;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .care-title {
+    font-size: 1rem;
+  }
+  
+  .actions-grid-care {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,169 @@
+/* Variables de colores - Pink Cozy ASMR Retro */
+:root {
+  /* Paleta principal rosa cozy */
+  --pink-bg-light: #ffe0f0;
+  --pink-bg-medium: #ffc9e0;
+  --pink-accent: #ffb3d9;
+  --pink-dark: #ff85c0;
+  --pink-darker: #e6739f;
+
+  /* Tonos complementarios */
+  --cream: #fff5f7;
+  --lavender-light: #f0e6ff;
+  --peach-soft: #ffe5e0;
+
+  /* Bordes y sombras */
+  --border-color: #ffb3d9;
+  --shadow-color: rgba(255, 133, 192, 0.3);
+  --text-primary: #8b4f7d;
+  --text-secondary: #a66999;
+
+  /* Estados */
+  --success: #c9a0dc;
+  --warning: #ffcc99;
+  --danger: #ff9999;
+}
+
+/* Reset y estilos globales */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Press Start 2P', cursive;
+  background: linear-gradient(180deg,
+    var(--pink-bg-light) 0%,
+    var(--cream) 50%,
+    var(--lavender-light) 100%
+  );
+  overflow-x: hidden;
+  image-rendering: pixelated;
+}
+
+.app-container {
+  position: relative;
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+
+/* Contenedor general */
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* Animaciones globales */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.9; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+@keyframes shine {
+  0% { left: -100%; }
+  100% { left: 200%; }
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cream);
+  border: 2px solid var(--border-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--pink-accent);
+  border: 2px solid var(--pink-dark);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--pink-dark);
+}
+
+/* Estilo para el botón de reiniciar */
+.reset-button {
+  display: block;
+  margin: 30px auto;
+  padding: 15px 25px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
+  color: white;
+  background-color: var(--danger);
+  border: 4px solid var(--text-primary);
+  box-shadow: 4px 4px 0px var(--text-primary);
+  cursor: pointer;
+  transition: all 0.1s ease;
+  animation: fadeIn 0.5s ease-out;
+  image-rendering: pixelated;
+}
+
+.reset-button:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px var(--text-primary);
+}
+
+.reset-button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px var(--text-primary);
+}
+
+/* Contenedor específico en StatsScreen si es necesario */
+.stats-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .app-container {
+    padding-bottom: 90px;
+  }
+
+  .container {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-container {
+    padding-bottom: 95px;
+  }
+
+  .container {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 360px) {
+  .app-container {
+    padding-bottom: 100px;
+  }
+
+  .container {
+    padding: 8px;
+  }
+}
