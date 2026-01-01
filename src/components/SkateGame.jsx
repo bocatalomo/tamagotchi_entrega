@@ -16,9 +16,13 @@ const SkateGame = ({ onGameEnd }) => {
       height: 40,
       velocityY: 0,
       gravity: 0.8,
-      jumpPower: -15,
+      floatPower: -0.65, // Poder de elevación al mantener presionado
+      maxJumpHeight: 150, // Altura máxima del salto
+      jumpStartY: 0, // Posición Y cuando empezó el salto
       isGrounded: false,
-      hasDoubleJump: false
+      isHolding: false, // Si está manteniendo presionado
+      jumpsRemaining: 0, // Saltos disponibles (0, 1, o 2)
+      isJumping: false // Si está actualmente en un salto activo
     },
     platforms: [],
     speed: 5,
@@ -66,26 +70,26 @@ const SkateGame = ({ onGameEnd }) => {
       game.lastPlatformX = platform.x + width;
     };
 
-    // Saltar
-    const jump = () => {
+    // Eventos de presionar y soltar
+    const handlePressStart = (e) => {
+      e.preventDefault();
       if (!game.gameRunning) return;
 
-      if (game.skater.isGrounded) {
-        // Primer salto
-        game.skater.velocityY = game.skater.jumpPower;
-        game.skater.isGrounded = false;
-        game.skater.hasDoubleJump = true;
-      } else if (game.skater.hasDoubleJump) {
-        // Doble salto
-        game.skater.velocityY = game.skater.jumpPower;
-        game.skater.hasDoubleJump = false;
+      // Iniciar salto si hay saltos disponibles
+      if (game.skater.jumpsRemaining > 0) {
+        game.skater.isHolding = true;
+        game.skater.isJumping = true;
+        game.skater.jumpStartY = game.skater.y;
+        game.skater.jumpsRemaining--;
+        game.skater.velocityY = 0; // Resetear velocidad al empezar el salto
       }
     };
 
-    // Evento de click/touch
-    const handleInput = (e) => {
+    const handlePressEnd = (e) => {
       e.preventDefault();
-      jump();
+      if (!game.gameRunning) return;
+      game.skater.isHolding = false;
+      game.skater.isJumping = false;
     };
 
     // Iniciar juego cuando isPlaying cambia a true
@@ -93,7 +97,10 @@ const SkateGame = ({ onGameEnd }) => {
       game.skater.y = 200;
       game.skater.velocityY = 0;
       game.skater.isGrounded = false;
-      game.skater.hasDoubleJump = false;
+      game.skater.isHolding = false;
+      game.skater.jumpsRemaining = 0;
+      game.skater.isJumping = false;
+      game.skater.jumpStartY = 0;
       game.speed = 5;
       game.distance = 0;
       game.gameRunning = true;
@@ -104,8 +111,24 @@ const SkateGame = ({ onGameEnd }) => {
     const update = () => {
       if (!game.gameRunning) return;
 
-      // Aplicar gravedad
-      game.skater.velocityY += game.skater.gravity;
+      // Si está saltando y manteniendo presionado
+      if (game.skater.isJumping && game.skater.isHolding) {
+        // Verificar si ha alcanzado la altura máxima del salto
+        const heightTraveled = game.skater.jumpStartY - game.skater.y;
+
+        if (heightTraveled < game.skater.maxJumpHeight) {
+          // Aún puede subir, aplicar fuerza de elevación
+          game.skater.velocityY += game.skater.floatPower;
+        } else {
+          // Alcanzó la altura máxima, terminar el salto
+          game.skater.isJumping = false;
+          game.skater.velocityY += game.skater.gravity;
+        }
+      } else {
+        // Si no está saltando activamente, aplicar gravedad
+        game.skater.velocityY += game.skater.gravity;
+      }
+
       game.skater.y += game.skater.velocityY;
 
       // Resetear estado de suelo
@@ -135,7 +158,8 @@ const SkateGame = ({ onGameEnd }) => {
           game.skater.y = platform.y - game.skater.height;
           game.skater.velocityY = 0;
           game.skater.isGrounded = true;
-          game.skater.hasDoubleJump = false;
+          game.skater.jumpsRemaining = 2; // Resetear a 2 saltos al tocar el suelo
+          game.skater.isJumping = false;
         }
       });
 
@@ -203,8 +227,12 @@ const SkateGame = ({ onGameEnd }) => {
     };
 
     // Eventos
-    canvas.addEventListener('click', handleInput);
-    canvas.addEventListener('touchstart', handleInput);
+    canvas.addEventListener('mousedown', handlePressStart);
+    canvas.addEventListener('mouseup', handlePressEnd);
+    canvas.addEventListener('mouseleave', handlePressEnd); // Si el cursor sale del canvas
+    canvas.addEventListener('touchstart', handlePressStart);
+    canvas.addEventListener('touchend', handlePressEnd);
+    canvas.addEventListener('touchcancel', handlePressEnd);
 
     // Iniciar
     initPlatforms();
@@ -214,8 +242,12 @@ const SkateGame = ({ onGameEnd }) => {
     // Cleanup
     return () => {
       cancelAnimationFrame(animationId);
-      canvas.removeEventListener('click', handleInput);
-      canvas.removeEventListener('touchstart', handleInput);
+      canvas.removeEventListener('mousedown', handlePressStart);
+      canvas.removeEventListener('mouseup', handlePressEnd);
+      canvas.removeEventListener('mouseleave', handlePressEnd);
+      canvas.removeEventListener('touchstart', handlePressStart);
+      canvas.removeEventListener('touchend', handlePressEnd);
+      canvas.removeEventListener('touchcancel', handlePressEnd);
     };
   }, [isPlaying]);
 
@@ -251,8 +283,9 @@ const SkateGame = ({ onGameEnd }) => {
             <div className="game-overlay" onClick={handleStart}>
               <div className="start-message">
                 <h3>Skate Jump</h3>
-                <p>Toca para saltar</p>
-                <p>Toca en el aire para doble salto</p>
+                <p>Tienes 2 saltos antes de tocar el suelo</p>
+                <p>Mantén presionado para alcanzar altura máxima</p>
+                <p>Suelta para caer</p>
                 <p className="start-hint">Toca para empezar</p>
               </div>
             </div>
@@ -272,11 +305,11 @@ const SkateGame = ({ onGameEnd }) => {
         <div className="game-instructions">
           <div className="instruction-item">
             <span className="instruction-icon">👆</span>
-            <span className="instruction-text">Toca = Salto</span>
+            <span className="instruction-text">Mantén = Subir (altura máx.)</span>
           </div>
           <div className="instruction-item">
-            <span className="instruction-icon">👆👆</span>
-            <span className="instruction-text">Toca en aire = Doble salto</span>
+            <span className="instruction-icon">✌️</span>
+            <span className="instruction-text">2 saltos disponibles</span>
           </div>
         </div>
       </div>
