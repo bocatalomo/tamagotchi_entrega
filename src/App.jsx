@@ -5,7 +5,6 @@ import HomeScreen from './components/HomeScreen';
 import ShopScreen from './components/ShopScreen';
 import StatsScreen from './components/StatsScreen';
 import NameInput from './components/NameInput';
-import PetSelector from './components/PetSelector';
 import Minigames from './components/Minigames';
 import SkateGame from './components/SkateGame';
 import EggScreen from './components/EggScreen';
@@ -14,7 +13,6 @@ function App() {
   // ==================== ESTADOS ====================
   const [currentScreen, setCurrentScreen] = useState('home');
   const [showNameInput, setShowNameInput] = useState(true);
-  const [showPetSelector, setShowPetSelector] = useState(false);
   const [showMinigames, setShowMinigames] = useState(false);
   const [showSkateGame, setShowSkateGame] = useState(false);
   const [message, setMessage] = useState('');
@@ -276,11 +274,11 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!showNameInput && !showPetSelector && pet.name) {
+    if (!showNameInput && pet.name) {
       localStorage.setItem('tamagotchiPet', JSON.stringify(pet));
       localStorage.setItem('tamagotchiInventory', JSON.stringify(inventory));
     }
-  }, [pet, inventory, showNameInput, showPetSelector]);
+  }, [pet, inventory, showNameInput]);
 
   // ==================== SISTEMA DE EVOLUCIÓN ====================
   useEffect(() => {
@@ -313,7 +311,7 @@ function App() {
   // ==================== SISTEMA DE DETERIORO ====================
   useEffect(() => {
     // No deteriorar si está en etapa de huevo, en selección, muerto, o durmiendo
-    if (showNameInput || showPetSelector || !pet.isAlive || pet.stage === 'egg') return;
+    if (showNameInput || !pet.isAlive || pet.stage === 'egg') return;
 
     const decayInterval = setInterval(() => {
       setPet(prev => {
@@ -454,13 +452,13 @@ function App() {
     }, 30000); // Cada 30 segundos
 
     return () => clearInterval(decayInterval);
-  }, [showNameInput, showPetSelector, pet.isAlive]);
+  }, [showNameInput, pet.isAlive]);
 
   // ==================== SISTEMA DE EDAD ====================
   // Edad en días reales (24 horas = 1 día)
   // El intervalo se ejecuta cada hora para mantener la edad actualizada
   useEffect(() => {
-    if (showNameInput || showPetSelector || !pet.isAlive) return;
+    if (showNameInput || !pet.isAlive) return;
 
     const ageInterval = setInterval(() => {
       setPet(prev => ({
@@ -470,7 +468,7 @@ function App() {
     }, 3600000); // Actualizar cada hora (3600000 ms)
 
     return () => clearInterval(ageInterval);
-  }, [showNameInput, showPetSelector, pet.isAlive]);
+  }, [showNameInput, pet.isAlive]);
 
   // ==================== FUNCIONES DE UTILIDAD ====================
   const showMessage = useCallback((msg) => {
@@ -554,7 +552,7 @@ function App() {
 
   // ==================== SISTEMA DE CACAS - GENERACIÓN ====================
   useEffect(() => {
-    if (showNameInput || showPetSelector || !pet.isAlive || pet.stage === 'egg') return;
+    if (showNameInput || !pet.isAlive || pet.stage === 'egg') return;
 
     // Generar caca cuando la limpieza ha bajado cierta cantidad
     const cleanlinessDropThreshold = 15; // Genera caca cada vez que baja 15 puntos
@@ -573,7 +571,7 @@ function App() {
       // Limpiar todas las cacas cuando limpian
       setPoops([]);
     }
-  }, [pet.cleanliness, pet.isAlive, pet.stage, showNameInput, showPetSelector, generatePoop]);
+  }, [pet.cleanliness, pet.isAlive, pet.stage, showNameInput, generatePoop]);
 
   // ==================== ACCIONES DE CUIDADO ====================
   const feed = useCallback(() => {
@@ -773,14 +771,8 @@ function App() {
 
   // ==================== MANEJO DE INPUTS ====================
   const handleNameSubmit = useCallback((name) => {
-    setPet(prev => ({ ...prev, name, birthDate: Date.now() }));
+    setPet(prev => ({ ...prev, name, birthDate: Date.now(), type: 'cat', color: 'white' }));
     setShowNameInput(false);
-    setShowPetSelector(true);
-  }, []);
-
-  const handlePetSelect = useCallback((type, color) => {
-    setPet(prev => ({ ...prev, type, color }));
-    setShowPetSelector(false);
   }, []);
 
   // ==================== SISTEMA DE MINI-JUEGOS ====================
@@ -860,10 +852,6 @@ function App() {
   // ==================== RENDERIZADO CONDICIONAL ====================
   if (showNameInput) {
     return <NameInput onSubmit={handleNameSubmit} />;
-  }
-
-  if (showPetSelector) {
-    return <PetSelector petName={pet.name} onSelect={handlePetSelect} />;
   }
 
   // Mostrar pantalla de huevo si está en etapa egg
