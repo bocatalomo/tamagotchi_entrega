@@ -17,6 +17,7 @@ const SkateGame = ({ onGameEnd }) => {
       velocityY: 0,
       gravity: 0.8,
       floatPower: -0.65, // Poder de elevación al mantener presionado
+      minJumpHeight: 40, // Altura mínima del salto (toque rápido)
       maxJumpHeight: 150, // Altura máxima del salto
       jumpStartY: 0, // Posición Y cuando empezó el salto
       isGrounded: false,
@@ -111,18 +112,29 @@ const SkateGame = ({ onGameEnd }) => {
     const update = () => {
       if (!game.gameRunning) return;
 
-      // Si está saltando y manteniendo presionado
-      if (game.skater.isJumping && game.skater.isHolding) {
-        // Verificar si ha alcanzado la altura máxima del salto
-        const heightTraveled = game.skater.jumpStartY - game.skater.y;
+      const heightTraveled = game.skater.jumpStartY - game.skater.y;
 
-        if (heightTraveled < game.skater.maxJumpHeight) {
-          // Aún puede subir, aplicar fuerza de elevación
-          game.skater.velocityY += game.skater.floatPower;
+      // Si está saltando
+      if (game.skater.isJumping) {
+        // Si está manteniendo presionado
+        if (game.skater.isHolding) {
+          if (heightTraveled < game.skater.maxJumpHeight) {
+            // Aún puede subir, aplicar fuerza de elevación
+            game.skater.velocityY += game.skater.floatPower;
+          } else {
+            // Alcanzó la altura máxima, terminar el salto
+            game.skater.isJumping = false;
+            game.skater.velocityY += game.skater.gravity;
+          }
         } else {
-          // Alcanzó la altura máxima, terminar el salto
-          game.skater.isJumping = false;
-          game.skater.velocityY += game.skater.gravity;
+          // Soltó el botón: si ya alcanzó la altura mínima, terminar salto
+          if (heightTraveled >= game.skater.minJumpHeight) {
+            game.skater.isJumping = false;
+            game.skater.velocityY += game.skater.gravity;
+          } else {
+            // Aún no alcanza la altura mínima, seguir subiendo
+            game.skater.velocityY += game.skater.floatPower;
+          }
         }
       } else {
         // Si no está saltando activamente, aplicar gravedad
