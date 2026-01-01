@@ -7,28 +7,26 @@ const SkateGame = ({ onGameEnd }) => {
   const [isGameOver, setIsGameOver] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // Estado del juego
+  // Estado del juego estilo Pou
   const gameStateRef = useRef({
     skater: {
       x: 100,
       y: 200,
-      width: 30,
-      height: 40,
+      width: 35,
+      height: 45,
       velocityY: 0,
-      gravity: 0.8,
-      floatPower: -0.65, // Poder de elevación al mantener presionado
-      minJumpHeight: 40, // Altura mínima del salto (toque rápido)
-      maxJumpHeight: 150, // Altura máxima del salto
-      jumpStartY: 0, // Posición Y cuando empezó el salto
-      isGrounded: false,
-      isHolding: false, // Si está manteniendo presionado
-      jumpsRemaining: 0, // Saltos disponibles (0, 1, o 2)
-      isJumping: false // Si está actualmente en un salto activo
+      gravity: 0.6,
+      jumpPower: -12,
+      isGrounded: false
     },
-    platforms: [],
-    speed: 5,
+    obstacles: [],
+    coins: [],
+    groundY: 350,
+    speed: 6,
     distance: 0,
-    lastPlatformX: 0,
+    coinsCollected: 0,
+    lastObstacleX: 600,
+    lastCoinX: 300,
     gameRunning: false
   });
 
@@ -39,187 +37,212 @@ const SkateGame = ({ onGameEnd }) => {
     const ctx = canvas.getContext('2d');
     const game = gameStateRef.current;
 
-    // Inicializar plataformas
-    const initPlatforms = () => {
-      game.platforms = [];
-      game.lastPlatformX = 0;
-
-      // Crear plataformas iniciales
-      for (let i = 0; i < 8; i++) {
-        addPlatform();
-      }
-    };
-
-    // Añadir nueva plataforma
-    const addPlatform = () => {
-      const minGap = 80;
-      const maxGap = 200;
+    // Añadir obstáculo
+    const addObstacle = () => {
+      const minGap = 300;
+      const maxGap = 500;
       const gap = minGap + Math.random() * (maxGap - minGap);
 
-      const minWidth = 60;
-      const maxWidth = 150;
-      const width = minWidth + Math.random() * (maxWidth - minWidth);
-
-      const platform = {
-        x: game.lastPlatformX + gap,
-        y: 350,
-        width: width,
-        height: 20
+      const obstacle = {
+        x: game.lastObstacleX + gap,
+        y: game.groundY - 30,
+        width: 30,
+        height: 30,
+        type: 'rock'
       };
 
-      game.platforms.push(platform);
-      game.lastPlatformX = platform.x + width;
+      game.obstacles.push(obstacle);
+      game.lastObstacleX = obstacle.x;
     };
 
-    // Eventos de presionar y soltar
-    const handlePressStart = (e) => {
-      e.preventDefault();
-      if (!game.gameRunning) return;
+    // Añadir moneda
+    const addCoin = () => {
+      const minGap = 150;
+      const maxGap = 300;
+      const gap = minGap + Math.random() * (maxGap - minGap);
 
-      // Iniciar salto si hay saltos disponibles
-      if (game.skater.jumpsRemaining > 0) {
-        game.skater.isHolding = true;
-        game.skater.isJumping = true;
-        game.skater.jumpStartY = game.skater.y;
-        game.skater.jumpsRemaining--;
-        game.skater.velocityY = 0; // Resetear velocidad al empezar el salto
+      const heightVariations = [
+        game.groundY - 60,
+        game.groundY - 120,
+        game.groundY - 180
+      ];
+
+      const coin = {
+        x: game.lastCoinX + gap,
+        y: heightVariations[Math.floor(Math.random() * heightVariations.length)],
+        width: 20,
+        height: 20,
+        collected: false
+      };
+
+      game.coins.push(coin);
+      game.lastCoinX = coin.x;
+    };
+
+    // Saltar
+    const jump = () => {
+      if (!game.gameRunning) return;
+      if (game.skater.isGrounded) {
+        game.skater.velocityY = game.skater.jumpPower;
+        game.skater.isGrounded = false;
       }
     };
 
-    const handlePressEnd = (e) => {
+    // Evento de toque/click
+    const handleJump = (e) => {
       e.preventDefault();
-      if (!game.gameRunning) return;
-      game.skater.isHolding = false;
-      game.skater.isJumping = false;
+      jump();
     };
 
-    // Iniciar juego cuando isPlaying cambia a true
+    // Iniciar juego
     if (isPlaying && !game.gameRunning) {
-      game.skater.y = 200;
+      game.skater.y = game.groundY - game.skater.height;
       game.skater.velocityY = 0;
-      game.skater.isGrounded = false;
-      game.skater.isHolding = false;
-      game.skater.jumpsRemaining = 0;
-      game.skater.isJumping = false;
-      game.skater.jumpStartY = 0;
-      game.speed = 5;
+      game.skater.isGrounded = true;
+      game.obstacles = [];
+      game.coins = [];
+      game.speed = 6;
       game.distance = 0;
+      game.coinsCollected = 0;
+      game.lastObstacleX = 600;
+      game.lastCoinX = 300;
       game.gameRunning = true;
-      initPlatforms();
+
+      // Crear obstáculos y monedas iniciales
+      for (let i = 0; i < 5; i++) {
+        addObstacle();
+        addCoin();
+      }
     }
 
     // Actualizar física
     const update = () => {
       if (!game.gameRunning) return;
 
-      const heightTraveled = game.skater.jumpStartY - game.skater.y;
-
-      // Si está saltando
-      if (game.skater.isJumping) {
-        // Si está manteniendo presionado
-        if (game.skater.isHolding) {
-          if (heightTraveled < game.skater.maxJumpHeight) {
-            // Aún puede subir, aplicar fuerza de elevación
-            game.skater.velocityY += game.skater.floatPower;
-          } else {
-            // Alcanzó la altura máxima, terminar el salto
-            game.skater.isJumping = false;
-            game.skater.velocityY += game.skater.gravity;
-          }
-        } else {
-          // Soltó el botón: si ya alcanzó la altura mínima, terminar salto
-          if (heightTraveled >= game.skater.minJumpHeight) {
-            game.skater.isJumping = false;
-            game.skater.velocityY += game.skater.gravity;
-          } else {
-            // Aún no alcanza la altura mínima, seguir subiendo
-            game.skater.velocityY += game.skater.floatPower;
-          }
-        }
-      } else {
-        // Si no está saltando activamente, aplicar gravedad
-        game.skater.velocityY += game.skater.gravity;
-      }
-
+      // Aplicar gravedad
+      game.skater.velocityY += game.skater.gravity;
       game.skater.y += game.skater.velocityY;
 
-      // Resetear estado de suelo
-      game.skater.isGrounded = false;
-
-      // Mover plataformas
-      game.platforms.forEach(platform => {
-        platform.x -= game.speed;
-      });
-
-      // Remover plataformas fuera de pantalla y añadir nuevas
-      game.platforms = game.platforms.filter(p => p.x + p.width > -50);
-
-      while (game.platforms.length < 8) {
-        addPlatform();
+      // Colisión con el suelo
+      if (game.skater.y >= game.groundY - game.skater.height) {
+        game.skater.y = game.groundY - game.skater.height;
+        game.skater.velocityY = 0;
+        game.skater.isGrounded = true;
       }
 
-      // Colisión con plataformas
-      game.platforms.forEach(platform => {
-        if (
-          game.skater.x + game.skater.width > platform.x &&
-          game.skater.x < platform.x + platform.width &&
-          game.skater.y + game.skater.height > platform.y &&
-          game.skater.y + game.skater.height < platform.y + platform.height + 15 &&
-          game.skater.velocityY > 0
-        ) {
-          game.skater.y = platform.y - game.skater.height;
-          game.skater.velocityY = 0;
-          game.skater.isGrounded = true;
-          game.skater.jumpsRemaining = 2; // Resetear a 2 saltos al tocar el suelo
-          game.skater.isJumping = false;
+      // Mover obstáculos
+      game.obstacles.forEach(obstacle => {
+        obstacle.x -= game.speed;
+      });
+
+      // Mover monedas
+      game.coins.forEach(coin => {
+        if (!coin.collected) {
+          coin.x -= game.speed;
         }
       });
 
-      // Incrementar velocidad gradualmente
-      game.speed += 0.002;
-      game.distance += game.speed;
-      setScore(Math.floor(game.distance / 10));
-
-      // Game Over si cae fuera de pantalla
-      if (game.skater.y > canvas.height) {
-        gameOver();
+      // Eliminar obstáculos fuera de pantalla y añadir nuevos
+      game.obstacles = game.obstacles.filter(o => o.x + o.width > -50);
+      while (game.obstacles.length < 5) {
+        addObstacle();
       }
+
+      // Eliminar monedas fuera de pantalla y añadir nuevas
+      game.coins = game.coins.filter(c => c.x + c.width > -50);
+      while (game.coins.length < 8) {
+        addCoin();
+      }
+
+      // Colisión con obstáculos
+      game.obstacles.forEach(obstacle => {
+        if (
+          game.skater.x + game.skater.width > obstacle.x &&
+          game.skater.x < obstacle.x + obstacle.width &&
+          game.skater.y + game.skater.height > obstacle.y &&
+          game.skater.y < obstacle.y + obstacle.height
+        ) {
+          gameOver();
+        }
+      });
+
+      // Colisión con monedas
+      game.coins.forEach(coin => {
+        if (
+          !coin.collected &&
+          game.skater.x + game.skater.width > coin.x &&
+          game.skater.x < coin.x + coin.width &&
+          game.skater.y + game.skater.height > coin.y &&
+          game.skater.y < coin.y + coin.height
+        ) {
+          coin.collected = true;
+          game.coinsCollected++;
+        }
+      });
+
+      // Incrementar distancia y velocidad
+      game.distance += game.speed;
+      game.speed += 0.001;
+      setScore(Math.floor(game.distance / 10));
     };
 
     // Renderizar
     const render = () => {
-      // Limpiar canvas
+      // Fondo
       ctx.fillStyle = '#87CEEB';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Dibujar plataformas
+      // Suelo
       ctx.fillStyle = '#8B4513';
-      game.platforms.forEach(platform => {
-        ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+      ctx.fillRect(0, game.groundY, canvas.width, canvas.height - game.groundY);
+      ctx.fillStyle = '#A0522D';
+      ctx.fillRect(0, game.groundY, canvas.width, 5);
 
-        // Borde superior
-        ctx.fillStyle = '#A0522D';
-        ctx.fillRect(platform.x, platform.y, platform.width, 5);
-        ctx.fillStyle = '#8B4513';
-      });
-
-      // Dibujar skater (representado como un rectángulo con detalles)
+      // Skater
       ctx.fillStyle = '#FF6B9D';
       ctx.fillRect(game.skater.x, game.skater.y, game.skater.width, game.skater.height);
 
       // Detalles del skater
       ctx.fillStyle = '#333';
-      ctx.fillRect(game.skater.x + 5, game.skater.y + 5, 8, 8); // Cabeza
+      ctx.fillRect(game.skater.x + 8, game.skater.y + 5, 10, 10); // Cabeza
       ctx.fillStyle = '#FFB3D9';
-      ctx.fillRect(game.skater.x + 2, game.skater.y + game.skater.height - 10, game.skater.width - 4, 8); // Tabla
+      ctx.fillRect(game.skater.x + 3, game.skater.y + game.skater.height - 8, game.skater.width - 6, 6); // Tabla
 
-      // Mostrar score si está jugando
+      // Obstáculos
+      game.obstacles.forEach(obstacle => {
+        ctx.fillStyle = '#555';
+        ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+
+        // Detalles del obstáculo (puntos para parecer una roca)
+        ctx.fillStyle = '#444';
+        ctx.fillRect(obstacle.x + 5, obstacle.y + 5, 8, 8);
+        ctx.fillRect(obstacle.x + 18, obstacle.y + 12, 6, 6);
+      });
+
+      // Monedas
+      game.coins.forEach(coin => {
+        if (!coin.collected) {
+          ctx.fillStyle = '#FFD700';
+          ctx.beginPath();
+          ctx.arc(coin.x + coin.width / 2, coin.y + coin.height / 2, coin.width / 2, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Brillo de la moneda
+          ctx.fillStyle = '#FFF59D';
+          ctx.beginPath();
+          ctx.arc(coin.x + coin.width / 2 - 3, coin.y + coin.height / 2 - 3, 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+
+      // UI
       if (game.gameRunning) {
         ctx.fillStyle = '#333';
         ctx.font = '20px "Press Start 2P"';
         ctx.fillText(`Score: ${Math.floor(game.distance / 10)}`, 10, 30);
-        ctx.font = '12px "Press Start 2P"';
-        ctx.fillText(`Speed: ${game.speed.toFixed(1)}x`, 10, 55);
+        ctx.font = '16px "Press Start 2P"';
+        ctx.fillText(`Coins: ${game.coinsCollected}`, 10, 55);
+        ctx.fillText(`Speed: ${game.speed.toFixed(1)}x`, 10, 80);
       }
     };
 
@@ -239,27 +262,18 @@ const SkateGame = ({ onGameEnd }) => {
     };
 
     // Eventos
-    canvas.addEventListener('mousedown', handlePressStart);
-    canvas.addEventListener('mouseup', handlePressEnd);
-    canvas.addEventListener('mouseleave', handlePressEnd); // Si el cursor sale del canvas
-    canvas.addEventListener('touchstart', handlePressStart);
-    canvas.addEventListener('touchend', handlePressEnd);
-    canvas.addEventListener('touchcancel', handlePressEnd);
+    canvas.addEventListener('click', handleJump);
+    canvas.addEventListener('touchstart', handleJump);
 
     // Iniciar
-    initPlatforms();
     render();
     gameLoop();
 
     // Cleanup
     return () => {
       cancelAnimationFrame(animationId);
-      canvas.removeEventListener('mousedown', handlePressStart);
-      canvas.removeEventListener('mouseup', handlePressEnd);
-      canvas.removeEventListener('mouseleave', handlePressEnd);
-      canvas.removeEventListener('touchstart', handlePressStart);
-      canvas.removeEventListener('touchend', handlePressEnd);
-      canvas.removeEventListener('touchcancel', handlePressEnd);
+      canvas.removeEventListener('click', handleJump);
+      canvas.removeEventListener('touchstart', handleJump);
     };
   }, [isPlaying]);
 
@@ -295,9 +309,8 @@ const SkateGame = ({ onGameEnd }) => {
             <div className="game-overlay" onClick={handleStart}>
               <div className="start-message">
                 <h3>Skate Jump</h3>
-                <p>Tienes 2 saltos antes de tocar el suelo</p>
-                <p>Mantén presionado para alcanzar altura máxima</p>
-                <p>Suelta para caer</p>
+                <p>Toca para saltar</p>
+                <p>Esquiva obstáculos y recoge monedas</p>
                 <p className="start-hint">Toca para empezar</p>
               </div>
             </div>
@@ -317,11 +330,11 @@ const SkateGame = ({ onGameEnd }) => {
         <div className="game-instructions">
           <div className="instruction-item">
             <span className="instruction-icon">👆</span>
-            <span className="instruction-text">Mantén = Subir (altura máx.)</span>
+            <span className="instruction-text">Toca = Saltar</span>
           </div>
           <div className="instruction-item">
-            <span className="instruction-icon">✌️</span>
-            <span className="instruction-text">2 saltos disponibles</span>
+            <span className="instruction-icon">💰</span>
+            <span className="instruction-text">Recoge monedas</span>
           </div>
         </div>
       </div>
