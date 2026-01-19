@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import './Minigames.css';
 import SlotMachine from './SlotMachine';
 
-const Minigames = ({ petName, onClose, onWin, onLose, onOpenSkateGame, coins }) => {
+const Minigames = ({ petName, onClose, onWin, onLose, onOpenSkateGame, coins, onWinGame, onLoseGame }) => {
   const [currentGame, setCurrentGame] = useState(null);
   const [gameState, setGameState] = useState('menu');
 
@@ -74,11 +74,14 @@ const Minigames = ({ petName, onClose, onWin, onLose, onOpenSkateGame, coins }) 
     setGameState('result');
     if (won) {
       onWin(customReward || currentGame.reward);
+      if (onWinGame) onWinGame();
     } else {
       if (customReward) {
         onWin(customReward);
+        if (onWinGame) onWinGame();
       } else {
         onLose();
+        if (onLoseGame) onLoseGame();
       }
     }
   };

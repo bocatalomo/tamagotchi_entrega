@@ -936,6 +936,8 @@ function App() {
           onOpenSkateGame={() => {
             setActiveGame('skate-game');
           }}
+          onWinGame={playHappy}
+          onLoseGame={() => {}}
         />
       )}
 
