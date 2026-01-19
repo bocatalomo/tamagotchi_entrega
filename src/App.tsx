@@ -14,6 +14,7 @@ import UserProfileScreen from './components/UserProfile';
 import { useAuth } from './contexts/AuthContext';
 import { useAudio } from './hooks/useAudio';
 import { pageVariants } from './utils/animationVariants';
+import { audioManager } from './utils/audioManager';
 import { PetState, Inventory, Poop } from './types';
 
 const initialPetState: PetState = {
@@ -103,6 +104,28 @@ function App() {
   } = useAudio({ muted: isAudioMuted });
 
   const { user } = useAuth();
+
+  useEffect(() => {
+    const initAudioOnInteraction = async () => {
+      if (audioInitialized) return;
+      
+      const handleInteraction = async () => {
+        await audioManager.resume();
+        document.removeEventListener('click', handleInteraction);
+        document.removeEventListener('keydown', handleInteraction);
+      };
+
+      document.addEventListener('click', handleInteraction);
+      document.addEventListener('keydown', handleInteraction);
+
+      return () => {
+        document.removeEventListener('click', handleInteraction);
+        document.removeEventListener('keydown', handleInteraction);
+      };
+    };
+
+    initAudioOnInteraction();
+  }, [audioInitialized]);
 
   const addNotification = useCallback((message: string, type: Notification['type'] = 'info') => {
     const id = Date.now().toString();
