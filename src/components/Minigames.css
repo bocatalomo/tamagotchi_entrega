@@ -1,32 +1,47 @@
-/* Overlay de mini-juegos - Pink Cozy Retro */
 .minigame-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(255, 201, 224, 0.98);
+  background: rgba(0, 0, 0, 0.85);
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   z-index: 1000;
-  animation: fadeIn 0.3s;
+  animation: fadeIn 0.3s ease-out;
   padding: 20px;
   overflow-y: auto;
 }
 
 .minigame-container {
-  background: var(--cream);
-  border: 4px solid var(--border-color);
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 4px solid #00d9ff;
   padding: 24px;
   max-width: 600px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow:
-    6px 6px 0 var(--shadow-color),
-    8px 8px 0 rgba(139, 79, 125, 0.15);
+  box-shadow: 0 0 40px rgba(0, 217, 255, 0.3), 0 0 80px rgba(0, 217, 255, 0.1);
+  border-radius: 16px;
   position: relative;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .minigame-header {
@@ -37,114 +52,114 @@
 }
 
 .minigame-title {
-  font-size: 1.2rem;
-  color: var(--text-primary);
-  text-shadow:
-    2px 2px 0 var(--pink-bg-light),
-    3px 3px 0 rgba(255, 179, 217, 0.4);
+  font-size: 1.4rem;
+  color: #00d9ff;
+  text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
   margin: 0;
+  font-family: 'Press Start 2P', cursive;
 }
 
 .minigame-close {
-  background: var(--danger);
-  border: 3px solid var(--text-primary);
+  background: #ff4757;
+  border: 3px solid #fff;
   color: white;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   font-size: 1.5rem;
   cursor: pointer;
   font-family: 'Press Start 2P', cursive;
-  box-shadow: 3px 3px 0 var(--text-primary);
-  transition: all 0.1s;
+  box-shadow: 0 0 15px rgba(255, 71, 87, 0.5);
+  transition: all 0.2s;
+  border-radius: 8px;
 }
 
 .minigame-close:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 5px 5px 0 var(--text-primary);
+  transform: scale(1.1) rotate(90deg);
+  box-shadow: 0 0 25px rgba(255, 71, 87, 0.8);
 }
 
 .minigame-close:active {
-  transform: translate(1px, 1px);
-  box-shadow: 2px 2px 0 var(--text-primary);
+  transform: scale(0.95);
 }
 
 .minigame-intro {
   text-align: center;
-  color: var(--text-secondary);
-  font-size: 0.7rem;
+  color: #a0a0a0;
+  font-size: 0.85rem;
+  margin-bottom: 24px;
   line-height: 1.6;
-  margin-bottom: 20px;
 }
 
-/* Grid de juegos */
 .games-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
+  gap: 16px;
 }
 
 .game-card {
-  background: var(--pink-bg-light);
-  border: 3px solid var(--border-color);
+  background: linear-gradient(135deg, #2d2d44 0%, #1f1f35 100%);
+  border: 3px solid #3d3d5c;
   padding: 20px 15px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  transition: all 0.1s;
-  box-shadow: 4px 4px 0 var(--shadow-color);
+  gap: 12px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
   font-family: 'Press Start 2P', cursive;
 }
 
 .game-card:hover {
-  background: var(--pink-accent);
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--shadow-color);
+  background: linear-gradient(135deg, #3d3d5c 0%, #2d2d44 100%);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 30px rgba(0, 217, 255, 0.2);
+  border-color: #00d9ff;
 }
 
 .game-card:active {
-  transform: translate(1px, 1px);
-  box-shadow: 3px 3px 0 var(--shadow-color);
+  transform: translateY(0) scale(0.98);
 }
 
 .game-icon {
   font-size: 3rem;
-  filter: drop-shadow(2px 2px 0 rgba(139, 79, 125, 0.2));
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
 }
 
 .game-name {
   font-size: 0.7rem;
-  color: var(--text-primary);
+  color: #fff;
   text-align: center;
   line-height: 1.4;
 }
 
 .game-description {
-  font-size: 0.5rem;
-  color: var(--text-secondary);
+  font-size: 0.55rem;
+  color: #888;
   text-align: center;
-  line-height: 1.3;
+  line-height: 1.4;
 }
 
 .game-difficulty {
-  font-size: 0.45rem;
-  color: var(--text-primary);
-  background: var(--success);
-  padding: 4px 8px;
-  border: 2px solid var(--pink-dark);
+  font-size: 0.5rem;
+  color: #00ff88;
+  padding: 6px 12px;
+  border: 2px solid #00ff88;
+  border-radius: 20px;
+  background: rgba(0, 255, 136, 0.1);
 }
 
 .game-reward {
-  font-size: 0.5rem;
-  color: var(--text-primary);
-  background: var(--warning);
-  padding: 6px 10px;
-  border: 2px solid var(--pink-darker);
+  font-size: 0.55rem;
+  color: #ffd700;
+  padding: 8px 14px;
+  background: rgba(255, 215, 0, 0.15);
+  border: 2px solid #ffd700;
+  border-radius: 8px;
   margin-top: 4px;
 }
 
-/* Pantalla de juego */
 .game-screen {
   display: flex;
   flex-direction: column;
@@ -158,196 +173,199 @@
 }
 
 .back-button {
-  background: var(--pink-bg-light);
-  border: 3px solid var(--border-color);
-  color: var(--text-primary);
-  padding: 10px 15px;
-  font-size: 0.6rem;
+  background: #2d2d44;
+  border: 3px solid #00d9ff;
+  color: #00d9ff;
+  padding: 12px 18px;
+  font-size: 0.65rem;
   cursor: pointer;
   font-family: 'Press Start 2P', cursive;
-  transition: all 0.1s;
-  box-shadow: 3px 3px 0 var(--shadow-color);
+  transition: all 0.2s;
+  border-radius: 8px;
 }
 
 .back-button:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 5px 5px 0 var(--shadow-color);
-  background: var(--pink-accent);
-}
-
-.back-button:active {
-  transform: translate(1px, 1px);
-  box-shadow: 2px 2px 0 var(--shadow-color);
+  background: #00d9ff;
+  color: #1a1a2e;
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
 }
 
 .game-title {
   font-size: 1rem;
-  color: var(--text-primary);
-  text-shadow: 2px 2px 0 var(--pink-bg-light);
+  color: #00d9ff;
   margin: 0;
+  font-family: 'Press Start 2P', cursive;
 }
 
 .game-info {
-  background: var(--pink-bg-light);
-  padding: 15px;
-  border: 3px solid var(--border-color);
+  background: rgba(45, 45, 68, 0.8);
+  padding: 16px;
+  border: 2px solid #3d3d5c;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  box-shadow: 3px 3px 0 var(--shadow-color);
+  gap: 12px;
+  border-radius: 12px;
 }
 
 .round-info, .turn-info, .guess-info {
-  font-size: 0.7rem;
-  color: var(--text-primary);
+  font-size: 0.8rem;
+  color: #fff;
   text-align: center;
+  font-family: 'Press Start 2P', cursive;
 }
 
 .score-info {
   display: flex;
   justify-content: space-around;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
 }
 
 .player-score {
-  color: var(--success);
+  color: #00ff88;
 }
 
 .pet-score {
-  color: var(--pink-dark);
+  color: #ff6b9d;
 }
-
-/* ===================================== */
-/* PIEDRA, PAPEL O TIJERA */
-/* ===================================== */
 
 .rps-battle {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  padding: 30px 0;
-  background: var(--pink-bg-light);
-  border: 3px solid var(--border-color);
-  box-shadow: 3px 3px 0 var(--shadow-color);
+  padding: 30px;
+  background: rgba(45, 45, 68, 0.8);
+  border: 3px solid #3d3d5c;
+  border-radius: 16px;
 }
 
 .rps-player, .rps-pet {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
+  gap: 16px;
 }
 
 .rps-label {
-  font-size: 0.7rem;
-  color: var(--text-primary);
+  font-size: 0.75rem;
+  color: #fff;
+  font-family: 'Press Start 2P', cursive;
 }
 
 .rps-choice {
-  font-size: 5rem;
-  width: 120px;
-  height: 120px;
+  font-size: 4.5rem;
+  width: 110px;
+  height: 110px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--cream);
-  border: 3px solid var(--pink-accent);
-  box-shadow: 3px 3px 0 rgba(255, 133, 192, 0.3);
+  background: linear-gradient(135deg, #2d2d44 0%, #1f1f35 100%);
+  border: 3px solid #00d9ff;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
 }
 
 .rps-choice.thinking {
   animation: pulse 1s ease-in-out infinite;
 }
 
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
 .rps-vs {
   font-size: 1.5rem;
-  color: var(--pink-dark);
+  color: #ffd700;
   font-weight: bold;
-  text-shadow: 2px 2px 0 var(--cream);
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  font-family: 'Press Start 2P', cursive;
 }
 
 .rps-result {
   text-align: center;
-  font-size: 0.9rem;
-  padding: 15px;
-  border: 3px solid var(--border-color);
+  font-size: 0.95rem;
+  padding: 16px;
+  border: 3px solid #3d3d5c;
   animation: popIn 0.3s;
-  box-shadow: 3px 3px 0 var(--shadow-color);
+  border-radius: 12px;
 }
 
 .rps-result.win {
-  background: var(--success);
-  color: var(--text-primary);
+  background: rgba(0, 255, 136, 0.2);
+  color: #00ff88;
+  border-color: #00ff88;
 }
 
 .rps-result.lose {
-  background: var(--danger);
-  color: white;
+  background: rgba(255, 107, 107, 0.2);
+  color: #ff6b6b;
+  border-color: #ff6b6b;
 }
 
 .rps-result.tie {
-  background: var(--warning);
-  color: var(--text-primary);
+  background: rgba(255, 215, 0, 0.2);
+  color: #ffd700;
+  border-color: #ffd700;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .rps-choices {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
+  gap: 12px;
 }
 
 .choice-button {
-  background: var(--pink-bg-light);
-  border: 3px solid var(--border-color);
-  padding: 20px 10px;
+  background: linear-gradient(135deg, #2d2d44 0%, #1f1f35 100%);
+  border: 3px solid #3d3d5c;
+  padding: 20px 12px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  transition: all 0.1s;
-  box-shadow: 4px 4px 0 var(--shadow-color);
+  transition: all 0.2s;
+  border-radius: 12px;
   font-family: 'Press Start 2P', cursive;
 }
 
 .choice-button:hover {
-  background: var(--pink-accent);
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--shadow-color);
+  border-color: #00d9ff;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 217, 255, 0.3);
 }
 
 .choice-button:active {
-  transform: translate(1px, 1px);
-  box-shadow: 3px 3px 0 var(--shadow-color);
+  transform: translateY(0);
 }
 
 .choice-emoji {
-  font-size: 3rem;
+  font-size: 2.8rem;
 }
 
 .choice-label {
-  font-size: 0.6rem;
-  color: var(--text-primary);
+  font-size: 0.55rem;
+  color: #fff;
 }
-
-/* ===================================== */
-/* MEMORIA */
-/* ===================================== */
 
 .memory-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
-  background: var(--pink-bg-light);
+  background: rgba(45, 45, 68, 0.8);
   padding: 20px;
-  border: 3px solid var(--border-color);
-  box-shadow: 3px 3px 0 var(--shadow-color);
+  border: 3px solid #3d3d5c;
+  border-radius: 16px;
 }
 
 .memory-card {
   aspect-ratio: 1;
-  background: var(--cream);
-  border: 3px solid var(--pink-accent);
+  background: linear-gradient(135deg, #2d2d44 0%, #1f1f35 100%);
+  border: 3px solid #3d3d5c;
   cursor: pointer;
   font-size: 2rem;
   display: flex;
@@ -355,28 +373,33 @@
   justify-content: center;
   transition: all 0.3s;
   position: relative;
-  box-shadow: 3px 3px 0 rgba(255, 133, 192, 0.3);
+  border-radius: 10px;
 }
 
 .memory-card.disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 .memory-card:not(.disabled):hover {
   transform: scale(1.05);
-  box-shadow: 4px 4px 0 rgba(255, 133, 192, 0.4);
+  border-color: #00d9ff;
 }
 
 .memory-card .card-front,
 .memory-card .card-back {
   position: absolute;
   backface-visibility: hidden;
-  transition: transform 0.3s;
+  transition: transform 0.4s;
+}
+
+.memory-card .card-front {
+  font-size: 1.8rem;
 }
 
 .memory-card .card-back {
   transform: rotateY(180deg);
+  font-size: 2rem;
 }
 
 .memory-card.flipped .card-front {
@@ -387,10 +410,6 @@
   transform: rotateY(0deg);
 }
 
-/* ===================================== */
-/* TIEMPO DE REACCIÓN */
-/* ===================================== */
-
 .reaction-game {
   display: flex;
   flex-direction: column;
@@ -399,206 +418,188 @@
 
 .reaction-area {
   width: 100%;
-  height: 300px;
-  background: var(--cream);
-  border: 4px solid var(--border-color);
+  height: 280px;
+  background: linear-gradient(135deg, #2d2d44 0%, #1f1f35 100%);
+  border: 4px solid #3d3d5c;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: 'Press Start 2P', cursive;
-  transition: all 0.1s;
-  box-shadow: 4px 4px 0 var(--shadow-color);
+  transition: all 0.2s;
+  border-radius: 16px;
 }
 
 .reaction-area.ready {
-  background: var(--warning);
+  background: linear-gradient(135deg, #ffd700 0%, #ff9500 100%);
 }
 
 .reaction-area.waiting {
-  background: var(--danger);
+  background: linear-gradient(135deg, #ff4757 0%, #c0392b 100%);
 }
 
 .reaction-area.show {
-  background: var(--success);
-  animation: pulse 0.5s ease-in-out infinite;
+  background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
+  animation: pulse 0.4s ease-in-out infinite;
 }
 
-.reaction-area:not(:disabled):hover {
+.reaction-area:hover:not(:disabled) {
   transform: scale(1.02);
-  box-shadow: 5px 5px 0 var(--shadow-color);
 }
 
 .reaction-text {
   font-size: 1.2rem;
-  color: var(--text-primary);
-  text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.5);
+  color: #fff;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
 }
 
 .reaction-emoji {
-  font-size: 6rem;
-  animation: pulse 0.5s ease-in-out infinite;
+  font-size: 5rem;
+  animation: bounce 0.4s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
 .reaction-result {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  font-size: 0.8rem;
-  color: var(--text-primary);
+  gap: 12px;
+  font-size: 0.85rem;
+  color: #fff;
   text-align: center;
 }
 
 .reaction-result .winner {
-  font-size: 1rem;
-  color: var(--success);
-  margin-top: 10px;
+  font-size: 1.1rem;
+  color: #00ff88;
+  margin-top: 8px;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
 }
 
 .early-click {
   font-size: 1.2rem;
-  color: var(--danger);
+  color: #ff4757;
 }
 
 .reaction-instructions {
   text-align: center;
-  font-size: 0.7rem;
-  color: var(--text-primary);
-  background: var(--pink-bg-light);
-  padding: 12px;
-  border: 3px solid var(--border-color);
-  box-shadow: 3px 3px 0 var(--shadow-color);
+  font-size: 0.75rem;
+  color: #888;
+  background: rgba(45, 45, 68, 0.8);
+  padding: 14px;
+  border-radius: 10px;
+  border: 2px solid #3d3d5c;
 }
 
-/* ===================================== */
-/* ADIVINA EL NÚMERO */
-/* ===================================== */
-
 .guess-game {
-  background: var(--pink-bg-light);
+  background: rgba(45, 45, 68, 0.8);
   padding: 30px;
-  border: 3px solid var(--border-color);
+  border: 3px solid #3d3d5c;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  min-height: 300px;
+  min-height: 280px;
   justify-content: center;
-  box-shadow: 3px 3px 0 var(--shadow-color);
+  border-radius: 16px;
 }
 
 .guess-input-group {
   display: flex;
-  gap: 10px;
+  gap: 12px;
 }
 
 .guess-input {
   flex: 1;
-  padding: 15px;
-  font-size: 1.2rem;
-  border: 3px solid var(--border-color);
-  background: var(--cream);
-  color: var(--text-primary);
+  padding: 16px;
+  font-size: 1.1rem;
+  border: 3px solid #3d3d5c;
+  background: linear-gradient(135deg, #2d2d44 0%, #1f1f35 100%);
+  color: #fff;
   font-family: 'Press Start 2P', cursive;
   text-align: center;
-  box-shadow: 3px 3px 0 var(--shadow-color);
+  border-radius: 10px;
 }
 
 .guess-input:focus {
   outline: none;
-  border-color: var(--pink-dark);
+  border-color: #00d9ff;
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
 }
 
 .guess-button {
-  padding: 15px 20px;
-  background: var(--success);
-  border: 3px solid var(--pink-dark);
-  color: var(--text-primary);
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #00d9ff 0%, #0099cc 100%);
+  border: 3px solid #00d9ff;
+  color: #1a1a2e;
   font-size: 0.7rem;
   cursor: pointer;
   font-family: 'Press Start 2P', cursive;
-  transition: all 0.1s;
-  box-shadow: 3px 3px 0 var(--shadow-color);
+  transition: all 0.2s;
+  border-radius: 10px;
 }
 
 .guess-button:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 5px 5px 0 var(--shadow-color);
-  background: var(--pink-accent);
-}
-
-.guess-button:active {
-  transform: translate(1px, 1px);
-  box-shadow: 2px 2px 0 var(--shadow-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 217, 255, 0.4);
 }
 
 .guess-hint {
-  font-size: 0.8rem;
-  color: var(--text-primary);
+  font-size: 0.85rem;
+  color: #ffd700;
   text-align: center;
-  padding: 12px;
-  background: var(--warning);
-  border: 3px solid var(--border-color);
+  padding: 14px;
+  background: rgba(255, 215, 0, 0.1);
+  border: 2px solid #ffd700;
+  border-radius: 10px;
   animation: popIn 0.3s;
-  box-shadow: 3px 3px 0 var(--shadow-color);
 }
 
 .guess-pet-thinking {
-  font-size: 0.7rem;
-  color: var(--text-primary);
+  font-size: 0.75rem;
+  color: #a0a0a0;
   text-align: center;
-  padding: 15px;
-  background: var(--cream);
-  border: 3px solid var(--border-color);
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 2px solid #3d3d5c;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  box-shadow: 3px 3px 0 var(--shadow-color);
+  gap: 10px;
+  border-radius: 10px;
 }
 
 .pet-range {
-  font-size: 0.6rem;
-  color: var(--text-secondary);
+  font-size: 0.7rem;
+  color: #00d9ff;
+  font-family: 'Press Start 2P', cursive;
 }
 
 .guess-won {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
+  gap: 16px;
 }
 
 .won-emoji {
-  font-size: 5rem;
-  animation: bounce 0.5s ease-in-out infinite;
+  font-size: 4rem;
+  animation: bounce 0.6s ease-in-out infinite;
 }
 
 .won-text {
   font-size: 1rem;
-  color: var(--success);
+  color: #00ff88;
   text-align: center;
+  font-family: 'Press Start 2P', cursive;
 }
 
 .won-attempts {
-  font-size: 0.7rem;
-  color: var(--text-primary);
+  font-size: 0.75rem;
+  color: #888;
 }
 
-/* ===================================== */
-/* ANIMATIONS */
-/* ===================================== */
-
-@keyframes popIn {
-  0% {
-    transform: scale(0.5);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-/* Responsive */
 @media (max-width: 600px) {
   .games-grid {
     grid-template-columns: 1fr;
@@ -613,20 +614,28 @@
   }
   
   .rps-choice {
-    width: 80px;
-    height: 80px;
+    width: 90px;
+    height: 90px;
     font-size: 3rem;
   }
   
   .minigame-title {
-    font-size: 0.9rem;
+    font-size: 1rem;
   }
   
   .game-card {
-    padding: 15px 10px;
+    padding: 16px 12px;
   }
   
   .game-icon {
-    font-size: 2rem;
+    font-size: 2.5rem;
+  }
+  
+  .guess-input-group {
+    flex-direction: column;
+  }
+  
+  .reaction-area {
+    height: 220px;
   }
 }
