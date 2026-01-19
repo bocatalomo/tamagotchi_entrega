@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import './App.css';
+import './components/LoadingScreen.css';
 import Navigation from './components/Navigation';
 import HomeScreen from './components/HomeScreen';
 import ShopScreen from './components/ShopScreen';
@@ -8,14 +9,20 @@ import NameInput from './components/NameInput';
 import Minigames from './components/Minigames';
 import SkateGame from './components/SkateGame';
 import EggScreen from './components/EggScreen';
+import AuthScreen from './components/AuthScreen';
+import UserProfile from './components/UserProfile';
 import { PetState, Inventory, Poop, GameReward } from './types';
+import { useAuth } from './contexts/AuthContext';
 
 function App() {
+  const { user, loading } = useAuth();
+
   // ==================== ESTADOS ====================
   const [currentScreen, setCurrentScreen] = useState<'home' | 'shop' | 'stats' | 'play'>('home');
   const [showNameInput, setShowNameInput] = useState(true);
   const [showMinigames, setShowMinigames] = useState(false);
   const [showSkateGame, setShowSkateGame] = useState(false);
+  const [showUserProfile, setShowUserProfile] = useState(false);
   const [message, setMessage] = useState('');
   const [animation, setAnimation] = useState('');
   const [isSleeping, setIsSleeping] = useState(false);
@@ -33,8 +40,8 @@ function App() {
   // Estado inicial de la mascota (usando useMemo para evitar llamadas a Date.now en render)
   const initialPetState = useMemo(() => ({
     name: '',
-    type: 'cat',
-    color: 'white', // brown, white, black
+    type: 'cat' as const,
+    color: 'white' as const, // brown, white, black
     // Estadísticas principales
     hunger: 100,
     happiness: 100,
@@ -42,14 +49,14 @@ function App() {
     cleanliness: 100,
     health: 100,
     // Progresión
-    stage: 'egg', // egg, baby, teen, adult
+    stage: 'egg' as const, // egg, baby, teen, adult
     level: 1,
     exp: 0,
     // Estado
     isAlive: true,
     isSick: false,
-    mood: 'contento',
-    dangerLevel: 'normal', // normal, alerta, critico, agonizante
+    mood: 'contento' as const,
+    dangerLevel: 'normal' as const, // normal, alerta, critico, agonizante
     // Recursos
     coins: 50,
     age: 0,
@@ -78,6 +85,12 @@ function App() {
 
   // ==================== CARGAR/GUARDAR DATOS ====================
   useEffect(() => {
+    // Mostrar pantalla de carga mientras se verifica la autenticación
+    if (loading) return;
+
+    // Si no hay usuario autenticado, mostrar pantalla de login
+    if (!user) return;
+
     const savedPet = localStorage.getItem('tamagotchiPet');
     const savedInventory = localStorage.getItem('tamagotchiInventory');
 
@@ -279,7 +292,7 @@ function App() {
       localStorage.setItem('tamagotchiPet', JSON.stringify(pet));
       localStorage.setItem('tamagotchiInventory', JSON.stringify(inventory));
     }
-  }, [pet, inventory, showNameInput]);
+  }, [pet, inventory, showNameInput, user]);
 
   // ==================== FUNCIONES DE UTILIDAD ====================
   const showMessage = useCallback((msg: string) => {
@@ -413,7 +426,7 @@ function App() {
         }
 
         // ===== DETERMINAR NIVEL DE PELIGRO =====
-        let dangerLevel = 'normal';
+        let dangerLevel: 'normal' | 'alerta' | 'critico' | 'agonizante' = 'normal';
         if (newHunger === 0 || newHealth === 0) {
           dangerLevel = 'agonizante';
         } else if (newHunger < 10 || newHealth < 10) {
@@ -423,7 +436,7 @@ function App() {
         }
 
         // ===== DETERMINAR MOOD =====
-        let mood = 'contento';
+        let mood: 'contento' | 'juguetón' | 'hambriento' | 'cansado' | 'triste' | 'enfermo' | 'agonizando' = 'contento';
         let isSick = false;
 
         if (dangerLevel === 'agonizante') {
@@ -439,9 +452,9 @@ function App() {
           mood = 'juguetón';
         } else {
           const stats = [
-            { value: newHunger, mood: 'hambriento', threshold: 30 },
-            { value: newEnergy, mood: 'cansado', threshold: 30 },
-            { value: newHappiness, mood: 'triste', threshold: 40 }
+            { value: newHunger, mood: 'hambriento' as const, threshold: 30 },
+            { value: newEnergy, mood: 'cansado' as const, threshold: 30 },
+            { value: newHappiness, mood: 'triste' as const, threshold: 40 }
           ];
 
           const lowStats = stats.filter(stat => stat.value < stat.threshold);
@@ -782,6 +795,10 @@ function App() {
     setShowMinigames(false);
   }, []);
 
+  const closeUserProfile = useCallback(() => {
+    setShowUserProfile(false);
+  }, []);
+
   const handleMinigameWin = useCallback((reward) => {
     setPet(prev => ({
       ...prev,
@@ -846,6 +863,21 @@ function App() {
   }, [pet.name, showMessage]);
 
   // ==================== RENDERIZADO CONDICIONAL ====================
+  
+  // Mostrar pantalla de carga mientras se verifica autenticación
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-text">CARGANDO...</div>
+      </div>
+    );
+  }
+
+  // Si no hay usuario autenticado, mostrar pantalla de login
+  if (!user) {
+    return <AuthScreen />;
+  }
+
   if (showNameInput) {
     return <NameInput onSubmit={handleNameSubmit} />;
   }
@@ -922,7 +954,23 @@ function App() {
         );
 
       default:
-        return <HomeScreen {...commonProps} getPetState={getPetState} />;
+        return (
+          <HomeScreen
+            {...commonProps}
+            getPetState={getPetState}
+            getStatColor={getStatColor}
+            onFeed={feed}
+            onSleep={sleep}
+            onWakeUp={clearSleepState}
+            onClean={clean}
+            onMedicine={giveMedicine}
+            onTreat={giveTreat}
+            onPlay={play}
+            isSleeping={isSleeping}
+            poops={poops}
+            onCleanPoop={cleanPoop}
+          />
+        );
     }
   };
 
@@ -930,7 +978,11 @@ function App() {
   return (
     <div className="app-container">
       {renderScreen()}
-      <Navigation currentScreen={currentScreen} onNavigate={setCurrentScreen} />
+      <Navigation 
+        currentScreen={currentScreen} 
+        onNavigate={setCurrentScreen} 
+        onShowProfile={() => setShowUserProfile(true)}
+      />
 
       {showMinigames && (
         <Minigames
@@ -947,6 +999,12 @@ function App() {
       {showSkateGame && (
         <SkateGame
           onGameEnd={handleSkateGameEnd}
+        />
+      )}
+
+      {showUserProfile && (
+        <UserProfile
+          onClose={closeUserProfile}
         />
       )}
     </div>

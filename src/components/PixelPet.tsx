@@ -141,7 +141,16 @@ const getAnimationFromMood = (mood) => {
   }
 };
 
-const PixelPet = ({ color = 'brown', animation: forcedAnimation, mood = 'contento' }) => {
+interface PixelPetProps {
+  stage?: string;
+  state?: string;
+  animation?: any;
+  type?: string;
+  color?: string;
+  mood?: string;
+}
+
+const PixelPet = ({ color = 'brown', animation: forcedAnimation, mood = 'contento', stage, state, type }: PixelPetProps) => {
   const [currentFrame, setCurrentFrame] = useState(0);
 
   // Determinar la animación base según el estado de la mascota
@@ -334,7 +343,7 @@ const PixelPet = ({ color = 'brown', animation: forcedAnimation, mood = 'content
   const animConfig = ANIMATIONS_CONFIG[forcedAnimation || currentAnimation];
   const animationName = forcedAnimation || currentAnimation;
   // Usar ruta relativa que funciona mejor en móvil
-  const assetPath = `${import.meta.env.BASE_URL || '/'}assets/pets/${color}/${animationName}.png`;
+  const assetPath = `/assets/pets/${color}/${animationName}.png`;
   const totalFrames = animConfig.frames;
   const frameHeight = animConfig.frameHeight;
   const frameWidth = animConfig.frameWidth || 32; // Default 32px si no está especificado
@@ -357,8 +366,7 @@ const PixelPet = ({ color = 'brown', animation: forcedAnimation, mood = 'content
           backgroundRepeat: 'no-repeat',
           transform: `scale(${scale})`,
           transformOrigin: 'center center',
-          imageRendering: 'pixelated',
-          msInterpolationMode: 'nearest-neighbor'
+          imageRendering: 'pixelated' as any
         }}
       />
       {isSleeping && (

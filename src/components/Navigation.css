@@ -98,6 +98,14 @@
   color: var(--text-primary);
 }
 
+.profile-btn {
+  min-width: 80px;
+}
+
+.profile-btn .nav-icon {
+  font-size: 14px;
+}
+
 /* Responsive */
 @media (max-width: 500px) {
   .nav-container {

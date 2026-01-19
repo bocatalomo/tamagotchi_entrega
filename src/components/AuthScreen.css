@@ -1,0 +1,316 @@
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #ff6b9d 0%, #feca57 100%);
+  padding: 20px;
+  font-family: '"Press Start 2P"', monospace;
+  position: relative;
+}
+
+/* Fondo estilo tamagotchi LCD */
+.auth-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(0, 0, 0, 0.03) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(0, 0, 0, 0.03) 4px
+    );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.auth-box {
+  background: #e8f5e8;
+  border: 4px solid #000;
+  border-radius: 20px;
+  padding: 40px 30px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 
+    0 0 0 4px #000,
+    8px 8px 0px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efecto LCD de tamagotchi */
+.auth-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(45deg, transparent 48%, rgba(255,255,255,0.05) 50%, transparent 52%),
+    linear-gradient(-45deg, transparent 48%, rgba(255,255,255,0.05) 50%, transparent 52%),
+    linear-gradient(45deg, transparent 48%, rgba(255,255,255,0.05) 50%, transparent 52%),
+    linear-gradient(-45deg, transparent 48%, rgba(255,255,255,0.05) 50%, transparent 52%);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.auth-title {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #2d3436;
+  font-size: 18px;
+  line-height: 1.4;
+  background: #74b9ff;
+  padding: 12px 20px;
+  border: 2px solid #000;
+  border-radius: 8px;
+  box-shadow: 
+    inset 2px 2px 0px rgba(0, 0, 0, 0.2),
+    2px 2px 0px rgba(0, 0, 0, 0.3);
+  text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.8);
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 10px;
+  color: #555;
+  font-weight: bold;
+}
+
+.auth-input {
+  padding: 12px;
+  border: 3px solid #000;
+  border-radius: 0px;
+  font-size: 12px;
+  font-family: '"Press Start 2P"', monospace;
+  background: #fff;
+  transition: all 0.2s;
+  background: #f5f3f0;
+  box-shadow: 
+    inset 2px 2px 0px rgba(0, 0, 0, 0.1),
+    0 0 0 3px #000;
+  outline: none;
+}
+
+.auth-input:focus {
+  background: #ffeaa7;
+  box-shadow: 
+    inset 2px 2px 0px rgba(0, 0, 0, 0.1),
+    0 0 0 3px #000,
+    0 0 10px #ffeaa7;
+  outline: none;
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: #667eea;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+}
+
+.error-message {
+  background: #ff6b6b;
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 10px;
+  text-align: center;
+  border: 2px solid #000;
+}
+
+.auth-button {
+  padding: 16px 20px;
+  border: 4px solid #000;
+  border-radius: 0px;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: '"Press Start 2P"', monospace;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #74b9ff;
+  color: white;
+  box-shadow: 
+    inset 3px 3px 0px rgba(0, 0, 0, 0.3),
+    4px 4px 0px rgba(0, 0, 0, 0.4);
+  text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 48%, rgba(255,255,255,0.1) 50%, transparent 52%);
+  background-size: 10px 10px;
+  pointer-events: none;
+}
+
+.auth-button:hover:not(:disabled) {
+  background: #0984e3;
+  transform: translateY(-2px);
+  box-shadow: 
+    inset 3px 3px 0px rgba(0, 0, 0, 0.3),
+    6px 6px 0px rgba(0, 0, 0, 0.4);
+}
+
+.auth-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.2);
+}
+
+.auth-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-button.primary {
+  background: #4ecca3;
+  color: white;
+}
+
+.auth-button.google {
+  background: #fff;
+  color: #333;
+  box-shadow: 
+    inset 3px 3px 0px rgba(0, 0, 0, 0.3),
+    4px 4px 0px rgba(0, 0, 0, 0.4);
+}
+
+.auth-button.google::before {
+  background: linear-gradient(45deg, transparent 48%, rgba(66,133,244,0.1) 50%, transparent 52%);
+  background-size: 10px 10px;
+}
+
+.auth-button.google:hover:not(:disabled) {
+  background: #f8f9fa;
+  transform: translateY(-2px);
+}
+
+.google-icon {
+  font-size: 16px;
+  font-weight: bold;
+  color: #4285f4;
+}
+
+.divider {
+  text-align: center;
+  margin: 25px 0;
+  position: relative;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: repeating-linear-gradient(
+    90deg,
+    #74b9ff,
+    #74b9ff 10px,
+    transparent 10px,
+    transparent 20px
+  );
+}
+
+.divider span {
+  background: #e8f5e8;
+  padding: 8px 15px;
+  border: 2px solid #000;
+  border-radius: 4px;
+  font-size: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.divider span {
+  background: white;
+  padding: 0 15px;
+  position: relative;
+  font-size: 12px;
+  color: #666;
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.switch-button {
+  background: none;
+  border: none;
+  color: #667eea;
+  cursor: pointer;
+  font-size: 9px;
+  text-decoration: underline;
+  font-family: '"Press Start 2P"', monospace;
+  padding: 10px;
+  transition: color 0.2s;
+}
+
+.switch-button:hover {
+  color: #5a67d8;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 10px;
+  }
+
+  .auth-box {
+    padding: 30px 20px;
+  }
+
+  .auth-title {
+    font-size: 16px;
+  }
+
+  .auth-input {
+    font-size: 11px;
+    padding: 10px;
+  }
+
+  .auth-button {
+    font-size: 10px;
+    padding: 12px 16px;
+  }
+}

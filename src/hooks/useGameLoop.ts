@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { PetState, Inventory } from '../types';
 
-export const useGameLoop = (pet: PetState, setPet: (pet: PetState) => void) => {
+export const useGameLoop = (pet: PetState, setPet: React.Dispatch<React.SetStateAction<PetState>>) => {
   // Sistema de deterioro
   useEffect(() => {
     if (!pet.isAlive || pet.stage === 'egg' || pet.isSleeping) return;
@@ -67,24 +67,20 @@ export const useGameLoop = (pet: PetState, setPet: (pet: PetState) => void) => {
         }
 
         // Determinar mood y danger level
-        let dangerLevel = 'normal';
-        if (newHunger === 0 || newHealth === 0) {
-          dangerLevel = 'agonizante';
-        } else if (newHunger < 10 || newHealth < 10) {
-          dangerLevel = 'critico';
-        } else if (newHunger < 30 || newHealth < 30) {
-          dangerLevel = 'alerta';
-        }
-
-        let mood = 'contento';
+        let mood: 'contento' | 'juguetón' | 'hambriento' | 'cansado' | 'triste' | 'enfermo' | 'agonizando' = 'contento';
+        let dangerLevel: 'normal' | 'alerta' | 'critico' | 'agonizante' = 'normal';
         let isSick = false;
 
-        if (dangerLevel === 'agonizante') {
+        if (newHunger === 0 || newHealth === 0) {
+          dangerLevel = 'agonizante';
           mood = 'agonizando';
           isSick = true;
-        } else if (dangerLevel === 'critico') {
+        } else if (newHunger < 10 || newHealth < 10) {
+          dangerLevel = 'critico';
           mood = 'enfermo';
           isSick = true;
+        } else if (newHunger < 30 || newHealth < 30) {
+          dangerLevel = 'alerta';
         } else if (newHealth < 30 || newCleanliness < 20) {
           mood = 'enfermo';
           isSick = true;
@@ -92,9 +88,9 @@ export const useGameLoop = (pet: PetState, setPet: (pet: PetState) => void) => {
           mood = 'juguetón';
         } else {
           const stats = [
-            { value: newHunger, mood: 'hambriento', threshold: 30 },
-            { value: newEnergy, mood: 'cansado', threshold: 30 },
-            { value: newHappiness, mood: 'triste', threshold: 40 }
+            { value: newHunger, mood: 'hambriento' as const, threshold: 30 },
+            { value: newEnergy, mood: 'cansado' as const, threshold: 30 },
+            { value: newHappiness, mood: 'triste' as const, threshold: 40 }
           ];
 
           const lowStats = stats.filter(stat => stat.value < stat.threshold);
@@ -105,6 +101,8 @@ export const useGameLoop = (pet: PetState, setPet: (pet: PetState) => void) => {
             mood = lowestStat.mood;
           }
         }
+
+
 
         return {
           ...prev,

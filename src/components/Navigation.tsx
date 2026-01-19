@@ -1,6 +1,7 @@
 import './Navigation.css';
+import LogoutButton from './LogoutButton';
 
-const Navigation = ({ currentScreen, onNavigate, notifications = {} }) => {
+const Navigation = ({ currentScreen, onNavigate, notifications = {} as any, onShowProfile }) => {
   const navItems = [
     {
       id: 'home',
@@ -40,6 +41,17 @@ const Navigation = ({ currentScreen, onNavigate, notifications = {} }) => {
             <span className="nav-label">{item.label}</span>
           </button>
         ))}
+        <button 
+          className="nav-item profile-btn"
+          onClick={onShowProfile}
+          title="Mi Cuenta"
+        >
+          <div className="nav-icon-wrapper">
+            <span className="nav-icon">👤</span>
+          </div>
+          <span className="nav-label">CUENTA</span>
+        </button>
+        <LogoutButton />
       </div>
     </nav>
   );

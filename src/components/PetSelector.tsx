@@ -22,7 +22,7 @@ const PetSelector = ({ petName, onSelect }) => {
                   key={id}
                   className="color-button"
                   onClick={() => onSelect('cat', id)}
-                  style={{ '--color-preview': bgColor }}
+                  style={{ ['--color-preview' as any]: bgColor }}
                 >
                   <div className="color-preview" style={{ backgroundColor: bgColor }}>
                     <span style={{ fontSize: '32px' }}>🐱</span>

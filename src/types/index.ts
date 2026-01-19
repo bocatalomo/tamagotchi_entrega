@@ -1,6 +1,17 @@
 export * from './pet';
 export * from './components';
 
+// Types para autenticación
+export interface UserProfile {
+  uid: string;
+  email: string;
+  displayName?: string;
+  photoURL?: string;
+  createdAt: number;
+  lastLogin: number;
+  provider: 'email' | 'google';
+}
+
 // Types para juegos
 export interface GameResult {
   won: boolean;
