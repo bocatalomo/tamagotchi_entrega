@@ -5,6 +5,7 @@ import HomeScreen from './components/HomeScreen';
 import ShopScreen from './components/ShopScreen';
 import StatsScreen from './components/StatsScreen';
 import NameInput from './components/NameInput';
+import PetSelector from './components/PetSelector';
 import Minigames from './components/Minigames';
 import SkateGame from './components/SkateGame';
 import EggScreen from './components/EggScreen';
@@ -13,21 +14,18 @@ function App() {
   // ==================== ESTADOS ====================
   const [currentScreen, setCurrentScreen] = useState('home');
   const [showNameInput, setShowNameInput] = useState(true);
+  const [showPetSelector, setShowPetSelector] = useState(false);
   const [showMinigames, setShowMinigames] = useState(false);
   const [showSkateGame, setShowSkateGame] = useState(false);
   const [message, setMessage] = useState('');
   const [animation, setAnimation] = useState('');
   const [isSleeping, setIsSleeping] = useState(false);
-  const [poops, setPoops] = useState([]);
 
   // Ref para almacenar el timeout del sueño
   const sleepTimeoutRef = useRef(null);
   const sleepIntervalRef = useRef(null);
   const sleepStartEnergyRef = useRef(0);
   const sleepStartTimeRef = useRef(0);
-
-  // Ref para rastrear limpieza anterior (para generar cacas)
-  const previousCleanlinessRef = useRef(100);
 
   // Estado inicial de la mascota
   const initialPetState = {
@@ -57,10 +55,9 @@ function App() {
     lastPlayed: Date.now(),
     lastCleaned: Date.now(),
     birthDate: Date.now(),
-    lastUpdate: Date.now(), // Para deterioro offline
-    criticalHungerStart: null, // Cuando hunger llegó a 0
-    criticalHealthStart: null, // Cuando health llegó a 0
-    criticalComboStart: null, // Cuando ambos están críticos
+    lastUpdate: Date.now(), // Timestamp de la última actualización
+    criticalHungerStart: null, // Cuando el hambre llegó a 0
+    criticalHealthStart: null, // Cuando la salud llegó a 0
     // Estado de sueño
     isSleeping: false,
     sleepStartTime: null,
@@ -83,35 +80,24 @@ function App() {
     if (savedPet) {
       const loadedPet = JSON.parse(savedPet);
 
-      // Migrar datos antiguos: asegurar que todos los nuevos campos existan
-      loadedPet.dangerLevel = loadedPet.dangerLevel || 'normal';
-      loadedPet.lastUpdate = loadedPet.lastUpdate || Date.now();
-      loadedPet.criticalHungerStart = loadedPet.criticalHungerStart || null;
-      loadedPet.criticalHealthStart = loadedPet.criticalHealthStart || null;
-      loadedPet.criticalComboStart = loadedPet.criticalComboStart || null;
-      loadedPet.isSleeping = loadedPet.isSleeping || false;
-      loadedPet.sleepStartTime = loadedPet.sleepStartTime || null;
-      loadedPet.sleepStartEnergy = loadedPet.sleepStartEnergy || null;
-      loadedPet.birthDate = loadedPet.birthDate || Date.now(); // Si no existe, usar fecha actual
-
       // Calcular tiempo transcurrido desde la última actualización
       const timeElapsed = Date.now() - (loadedPet.lastUpdate || Date.now());
-      const minutesElapsed = timeElapsed / (1000 * 60);
+      const minutesElapsed = timeElapsed / (1000 * 60); // Minutos transcurridos
 
-      // Calcular edad en días reales (24 horas = 1 día)
-      loadedPet.age = Math.floor((Date.now() - loadedPet.birthDate) / (1000 * 60 * 60 * 24));
+      // Calcular edad inmediatamente al cargar
+      loadedPet.age = Math.floor((Date.now() - loadedPet.birthDate) / (1000 * 60 * 60));
 
       // Aplicar deterioro offline SOLO si NO está durmiendo y NO está en etapa egg
       if (!loadedPet.isSleeping && loadedPet.stage !== 'egg' && loadedPet.isAlive) {
-        // Deterioro por minuto (basado en el intervalo de 30 segundos = 0.5 min)
-        const decayRate = minutesElapsed / 0.5; // Cuántos intervalos de 30 seg pasaron
+        // Deterioro por minuto (basado en el intervalo de 30 segundos)
+        const decayRate = minutesElapsed / 0.5; // Cuántos intervalos de 30 segundos pasaron
 
         loadedPet.hunger = Math.max(0, loadedPet.hunger - (2 * decayRate));
         loadedPet.happiness = Math.max(0, loadedPet.happiness - (1.5 * decayRate));
         loadedPet.energy = Math.max(0, loadedPet.energy - (1 * decayRate));
         loadedPet.cleanliness = Math.max(0, loadedPet.cleanliness - (0.8 * decayRate));
 
-        // Sistema de salud basado en limpieza
+        // Aplicar nuevo sistema de salud
         if (loadedPet.cleanliness < 20) {
           const healthDecay = loadedPet.hunger < 30 ? (3 * decayRate) : (1.5 * decayRate);
           loadedPet.health = Math.max(0, loadedPet.health - healthDecay);
@@ -119,7 +105,7 @@ function App() {
           loadedPet.health = Math.min(100, loadedPet.health + (0.5 * decayRate));
         }
 
-        // Deterioro de salud por hambre = 0
+        // Aplicar deterioro de salud por hambre = 0
         if (loadedPet.hunger === 0) {
           loadedPet.health = Math.max(0, loadedPet.health - (2 * decayRate));
           if (!loadedPet.criticalHungerStart) {
@@ -129,7 +115,6 @@ function App() {
           loadedPet.criticalHungerStart = null;
         }
 
-        // Marcar inicio de salud crítica
         if (loadedPet.health === 0 && !loadedPet.criticalHealthStart) {
           loadedPet.criticalHealthStart = loadedPet.lastUpdate || Date.now();
         } else if (loadedPet.health > 0) {
@@ -139,25 +124,23 @@ function App() {
         // Verificar condiciones de muerte
         const now = Date.now();
 
-        // Muerte por hambre prolongada (2 horas = 7200000 ms)
+        // Muerte por hambre prolongada (2 horas)
         if (loadedPet.criticalHungerStart && (now - loadedPet.criticalHungerStart) >= 7200000) {
           loadedPet.isAlive = false;
         }
 
-        // Muerte por salud = 0 prolongada (30 minutos = 1800000 ms)
+        // Muerte por salud = 0 prolongada (30 minutos)
         if (loadedPet.criticalHealthStart && (now - loadedPet.criticalHealthStart) >= 1800000) {
           loadedPet.isAlive = false;
         }
 
-        // Muerte por combo crítico (hambre y salud < 10 por 30 min)
+        // Muerte por combo crítico
         if (loadedPet.hunger < 10 && loadedPet.health < 10) {
-          if (!loadedPet.criticalComboStart) {
-            loadedPet.criticalComboStart = loadedPet.lastUpdate || Date.now();
-          } else if ((now - loadedPet.criticalComboStart) >= 1800000) {
+          if (loadedPet.criticalComboStart && (now - loadedPet.criticalComboStart) >= 1800000) {
             loadedPet.isAlive = false;
+          } else if (!loadedPet.criticalComboStart) {
+            loadedPet.criticalComboStart = loadedPet.lastUpdate || Date.now();
           }
-        } else {
-          loadedPet.criticalComboStart = null;
         }
 
         // Determinar nivel de peligro
@@ -169,9 +152,8 @@ function App() {
         } else if (loadedPet.hunger < 30 || loadedPet.health < 30) {
           dangerLevel = 'alerta';
         }
-        loadedPet.dangerLevel = dangerLevel;
 
-        // Determinar mood basado en stats
+        // Determinar mood
         let mood = 'contento';
         let isSick = false;
 
@@ -204,35 +186,37 @@ function App() {
 
         loadedPet.mood = mood;
         loadedPet.isSick = isSick;
+        loadedPet.dangerLevel = dangerLevel;
       }
+
+      // Actualizar timestamp
+      loadedPet.lastUpdate = Date.now();
 
       // Restaurar estado de sueño si estaba durmiendo
       if (loadedPet.isSleeping && loadedPet.sleepStartTime && loadedPet.sleepStartEnergy !== null) {
         setIsSleeping(true);
         setAnimation('blink');
-        sleepStartEnergyRef.current = loadedPet.sleepStartEnergy;
         sleepStartTimeRef.current = loadedPet.sleepStartTime;
+        sleepStartEnergyRef.current = loadedPet.sleepStartEnergy;
 
-        // Calcular cuánto tiempo ha dormido
-        const timeSlept = Date.now() - loadedPet.sleepStartTime;
+        // Calcular energía actual basada en el tiempo transcurrido
         const totalSleepTime = 300000; // 5 minutos
+        const timeSlept = Date.now() - loadedPet.sleepStartTime;
+        const sleepProgress = Math.min(timeSlept / totalSleepTime, 1);
+        const energyToRecover = 100 - loadedPet.sleepStartEnergy;
+        const currentEnergy = Math.min(100, loadedPet.sleepStartEnergy + (energyToRecover * sleepProgress));
 
-        // Si ya completó el ciclo de sueño, actualizar energía al 100%
-        if (timeSlept >= totalSleepTime) {
-          loadedPet.energy = 100;
-        } else {
-          // Calcular energía basándose en tiempo dormido offline
-          const sleepProgress = Math.min(timeSlept / totalSleepTime, 1);
-          const energyToRecover = 100 - loadedPet.sleepStartEnergy;
-          loadedPet.energy = Math.min(100, loadedPet.sleepStartEnergy + (energyToRecover * sleepProgress));
+        loadedPet.energy = currentEnergy;
 
-          // Continuar el intervalo de sueño desde donde se quedó
+        // Si aún no ha completado los 5 minutos, continuar el intervalo
+        if (timeSlept < totalSleepTime) {
           const updateInterval = 1000;
           sleepIntervalRef.current = setInterval(() => {
             setPet(prev => {
-              const currentTimeSlept = Date.now() - sleepStartTimeRef.current;
-              const currentProgress = Math.min(currentTimeSlept / totalSleepTime, 1);
-              const newEnergy = Math.min(100, sleepStartEnergyRef.current + (energyToRecover * currentProgress));
+              const timeSlept = Date.now() - sleepStartTimeRef.current;
+              const sleepProgress = Math.min(timeSlept / totalSleepTime, 1);
+              const energyToRecover = 100 - sleepStartEnergyRef.current;
+              const newEnergy = Math.min(100, sleepStartEnergyRef.current + (energyToRecover * sleepProgress));
 
               return {
                 ...prev,
@@ -241,29 +225,27 @@ function App() {
             });
           }, updateInterval);
 
-          // Timeout para el tiempo restante
+          // Timeout para detener el intervalo cuando complete los 5 minutos
           const remainingTime = totalSleepTime - timeSlept;
-          if (remainingTime > 0) {
-            sleepTimeoutRef.current = setTimeout(() => {
-              if (sleepIntervalRef.current) {
-                clearInterval(sleepIntervalRef.current);
-                sleepIntervalRef.current = null;
-              }
+          sleepTimeoutRef.current = setTimeout(() => {
+            if (sleepIntervalRef.current) {
+              clearInterval(sleepIntervalRef.current);
+              sleepIntervalRef.current = null;
+            }
 
-              setPet(prev => ({
-                ...prev,
-                energy: 100,
-                happiness: Math.min(100, prev.happiness + 10)
-              }));
+            setPet(prev => ({
+              ...prev,
+              energy: 100,
+              happiness: Math.min(100, prev.happiness + 10)
+            }));
 
-              sleepTimeoutRef.current = null;
-            }, remainingTime);
-          }
+            sleepTimeoutRef.current = null;
+          }, remainingTime);
+        } else {
+          // Ya completó los 5 minutos, energía al 100%
+          loadedPet.energy = 100;
         }
       }
-
-      // Actualizar lastUpdate al tiempo actual
-      loadedPet.lastUpdate = Date.now();
 
       setPet(loadedPet);
       setShowNameInput(false);
@@ -274,11 +256,11 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!showNameInput && pet.name) {
+    if (!showNameInput && !showPetSelector && pet.name) {
       localStorage.setItem('tamagotchiPet', JSON.stringify(pet));
       localStorage.setItem('tamagotchiInventory', JSON.stringify(inventory));
     }
-  }, [pet, inventory, showNameInput]);
+  }, [pet, inventory, showNameInput, showPetSelector]);
 
   // ==================== SISTEMA DE EVOLUCIÓN ====================
   useEffect(() => {
@@ -304,14 +286,15 @@ function App() {
         exp: prev.exp - expNeeded,
         coins: prev.coins + 10
       }));
+
       showMessage(`Nivel ${pet.level + 1}! +10 monedas`);
     }
-  }, [pet.exp, pet.level]);
+  }, [pet.exp, pet.level, showMessage]);
 
   // ==================== SISTEMA DE DETERIORO ====================
   useEffect(() => {
-    // No deteriorar si está en etapa de huevo, en selección, muerto, o durmiendo
-    if (showNameInput || !pet.isAlive || pet.stage === 'egg') return;
+    // No deteriorar si está en etapa de huevo, en selección, o muerto
+    if (showNameInput || showPetSelector || !pet.isAlive || pet.stage === 'egg') return;
 
     const decayInterval = setInterval(() => {
       setPet(prev => {
@@ -320,79 +303,80 @@ function App() {
           return { ...prev, lastUpdate: Date.now() };
         }
 
-        // Deterioro de estadísticas
+        // Deterioro de estadísticas básicas
         const newHunger = Math.max(0, prev.hunger - 2);
         const newHappiness = Math.max(0, prev.happiness - 1.5);
         const newEnergy = Math.max(0, prev.energy - 1);
         const newCleanliness = Math.max(0, prev.cleanliness - 0.8);
 
-        // Sistema de salud mejorado
+        // ===== NUEVO SISTEMA DE SALUD =====
         let newHealth = prev.health;
+        let newCriticalHealthStart = prev.criticalHealthStart;
 
-        // Salud baja si está sucio
+        // La salud baja SOLO cuando está enfermo (limpieza < 20)
         if (newCleanliness < 20) {
+          // Baja más rápido si también tiene hambre baja
           const healthDecay = newHunger < 30 ? 3 : 1.5;
           newHealth = Math.max(0, newHealth - healthDecay);
-        }
-        // Salud sube si está limpio
-        else if (newCleanliness > 50 && newHealth < 100) {
+        } else if (newCleanliness > 50 && prev.health < 100) {
+          // Recupera salud lentamente si está limpio
           newHealth = Math.min(100, newHealth + 0.5);
         }
 
-        // Deterioro de salud por hambre = 0
-        if (newHunger === 0) {
-          newHealth = Math.max(0, newHealth - 2);
-        }
-
-        // Rastrear cuándo empieza el estado crítico
-        const now = Date.now();
+        // ===== SISTEMA DE MUERTE POR HAMBRE =====
         let newCriticalHungerStart = prev.criticalHungerStart;
-        let newCriticalHealthStart = prev.criticalHealthStart;
-        let newCriticalComboStart = prev.criticalComboStart;
 
-        // Marcar inicio de hambre crítica
-        if (newHunger === 0 && !newCriticalHungerStart) {
-          newCriticalHungerStart = now;
-        } else if (newHunger > 0) {
+        if (newHunger === 0) {
+          // Marcar cuando el hambre llegó a 0
+          if (!newCriticalHungerStart) {
+            newCriticalHungerStart = Date.now();
+          }
+          // Bajar salud más rápido cuando no come
+          newHealth = Math.max(0, newHealth - 2);
+        } else {
+          // Resetear si vuelve a comer
           newCriticalHungerStart = null;
         }
 
-        // Marcar inicio de salud crítica
         if (newHealth === 0 && !newCriticalHealthStart) {
-          newCriticalHealthStart = now;
+          newCriticalHealthStart = Date.now();
         } else if (newHealth > 0) {
           newCriticalHealthStart = null;
         }
 
-        // Marcar inicio de combo crítico
-        if (newHunger < 10 && newHealth < 10) {
-          if (!newCriticalComboStart) {
-            newCriticalComboStart = now;
-          }
-        } else {
-          newCriticalComboStart = null;
-        }
-
         // ===== VERIFICAR CONDICIONES DE MUERTE =====
         let isAlive = true;
+        const now = Date.now();
 
-        // Muerte por hambre prolongada (2 horas)
+        // Muerte por hambre prolongada (2 horas = 7200000 ms)
         if (newCriticalHungerStart && (now - newCriticalHungerStart) >= 7200000) {
           isAlive = false;
         }
 
-        // Muerte por salud = 0 prolongada (30 minutos)
+        // Muerte por salud = 0 prolongada (30 minutos = 1800000 ms)
         if (newCriticalHealthStart && (now - newCriticalHealthStart) >= 1800000) {
           isAlive = false;
         }
 
-        // Muerte por combo crítico (30 minutos)
-        if (newCriticalComboStart && (now - newCriticalComboStart) >= 1800000) {
-          isAlive = false;
+        // Muerte inmediata si hambre < 10 Y salud < 10 por 30 minutos
+        if (newHunger < 10 && newHealth < 10) {
+          if (!prev.criticalComboStart) {
+            // Primera vez en estado crítico combo
+            return {
+              ...prev,
+              hunger: newHunger,
+              health: newHealth,
+              criticalComboStart: Date.now(),
+              lastUpdate: Date.now()
+            };
+          } else if ((now - prev.criticalComboStart) >= 1800000) {
+            isAlive = false;
+          }
         }
 
         // ===== DETERMINAR NIVEL DE PELIGRO =====
         let dangerLevel = 'normal';
+
         if (newHunger === 0 || newHealth === 0) {
           dangerLevel = 'agonizante';
         } else if (newHunger < 10 || newHealth < 10) {
@@ -445,30 +429,27 @@ function App() {
           dangerLevel,
           criticalHungerStart: newCriticalHungerStart,
           criticalHealthStart: newCriticalHealthStart,
-          criticalComboStart: newCriticalComboStart,
           lastUpdate: Date.now()
         };
       });
     }, 30000); // Cada 30 segundos
 
     return () => clearInterval(decayInterval);
-  }, [showNameInput, pet.isAlive]);
+  }, [showNameInput, showPetSelector, pet.isAlive]);
 
   // ==================== SISTEMA DE EDAD ====================
-  // Edad en días reales (24 horas = 1 día)
-  // El intervalo se ejecuta cada hora para mantener la edad actualizada
   useEffect(() => {
-    if (showNameInput || !pet.isAlive) return;
+    if (showNameInput || showPetSelector || !pet.isAlive) return;
 
     const ageInterval = setInterval(() => {
       setPet(prev => ({
         ...prev,
-        age: Math.floor((Date.now() - prev.birthDate) / (1000 * 60 * 60 * 24)) // 24 horas = 1 día
+        age: Math.floor((Date.now() - prev.birthDate) / (1000 * 60 * 60)) // 1 hora real = 1 día
       }));
-    }, 3600000); // Actualizar cada hora (3600000 ms)
+    }, 60000); // Cada minuto
 
     return () => clearInterval(ageInterval);
-  }, [showNameInput, pet.isAlive]);
+  }, [showNameInput, showPetSelector, pet.isAlive]);
 
   // ==================== FUNCIONES DE UTILIDAD ====================
   const showMessage = useCallback((msg) => {
@@ -513,66 +494,6 @@ function App() {
     }
   }, [isSleeping]);
 
-  // Funciones para manejar cacas
-  const generatePoop = useCallback(() => {
-    // Generar posición alrededor del gato, evitando el centro
-    // El gato está aproximadamente en el centro (40-60% horizontal, 30-50% vertical)
-
-    // Decidir si va a la izquierda, derecha, arriba o abajo del gato
-    const position = Math.random();
-    let x, y;
-
-    if (position < 0.33) {
-      // Izquierda del gato
-      x = Math.random() * 20 + 8; // 8% - 28%
-      y = Math.random() * 30 + 35; // 35% - 65%
-    } else if (position < 0.66) {
-      // Derecha del gato
-      x = Math.random() * 20 + 65; // 65% - 85%
-      y = Math.random() * 30 + 35; // 35% - 65%
-    } else {
-      // Abajo del gato
-      x = Math.random() * 50 + 25; // 25% - 75%
-      y = Math.random() * 15 + 60; // 60% - 75%
-    }
-
-    const newPoop = {
-      id: Date.now() + Math.random(),
-      x,
-      y
-    };
-    setPoops(prev => [...prev, newPoop]);
-  }, []);
-
-  const cleanPoop = useCallback((poopId) => {
-    setPoops(prev => prev.filter(p => p.id !== poopId));
-    setPet(prev => ({ ...prev, coins: prev.coins + 1 }));
-    showMessage('+1 moneda!');
-  }, [showMessage]);
-
-  // ==================== SISTEMA DE CACAS - GENERACIÓN ====================
-  useEffect(() => {
-    if (showNameInput || !pet.isAlive || pet.stage === 'egg') return;
-
-    // Generar caca cuando la limpieza ha bajado cierta cantidad
-    const cleanlinessDropThreshold = 15; // Genera caca cada vez que baja 15 puntos
-    const previousCleanliness = previousCleanlinessRef.current;
-    const currentCleanliness = pet.cleanliness;
-
-    // Si la limpieza bajó más del threshold, generar caca
-    if (previousCleanliness - currentCleanliness >= cleanlinessDropThreshold) {
-      generatePoop();
-      previousCleanlinessRef.current = currentCleanliness;
-    }
-
-    // Si limpiaron (la limpieza subió), actualizar la referencia
-    if (currentCleanliness > previousCleanliness) {
-      previousCleanlinessRef.current = currentCleanliness;
-      // Limpiar todas las cacas cuando limpian
-      setPoops([]);
-    }
-  }, [pet.cleanliness, pet.isAlive, pet.stage, showNameInput, generatePoop]);
-
   // ==================== ACCIONES DE CUIDADO ====================
   const feed = useCallback(() => {
     if (!pet.isAlive) return showMessage('Tu mascota ha fallecido...');
@@ -581,28 +502,17 @@ function App() {
     // Despertar a la mascota si está durmiendo
     clearSleepState();
 
-    // 50% de probabilidad de ensuciarse al comer
-    const makesMess = Math.random() < 0.5;
-    const cleanlinessReduction = makesMess ? 10 : 0;
-
     setInventory(prev => ({ ...prev, food: prev.food - 1 }));
     setPet(prev => ({
       ...prev,
       hunger: Math.min(100, prev.hunger + 35),
       happiness: Math.min(100, prev.happiness + 10),
-      cleanliness: Math.max(0, prev.cleanliness - cleanlinessReduction),
       exp: prev.exp + 10,
       lastFed: Date.now()
     }));
+
     setAnimation('jump');
-
-    // Mensaje diferente si se ensució
-    if (makesMess) {
-      showMessage('Nam nam! *Se ensucia*');
-    } else {
-      showMessage('Nam nam!');
-    }
-
+    showMessage('Nam nam!');
     setTimeout(() => setAnimation(''), 8000);
   }, [pet.isAlive, inventory.food, showMessage, clearSleepState]);
 
@@ -694,35 +604,29 @@ function App() {
       exp: prev.exp + 8,
       lastCleaned: Date.now()
     }));
+
     showMessage('¡Qué limpio!');
   }, [pet.isAlive, inventory.soap, showMessage, clearSleepState]);
 
   const giveMedicine = useCallback(() => {
     if (!pet.isAlive) return showMessage('Tu mascota ha fallecido...');
+    if (pet.mood !== 'enfermo') return showMessage('La medicina solo se puede usar cuando está enfermo');
     if (inventory.medicine <= 0) return showMessage('Sin medicina! Ve a la tienda');
 
     // Despertar a la mascota si está durmiendo
     clearSleepState();
 
     setInventory(prev => ({ ...prev, medicine: prev.medicine - 1 }));
-    setPet(prev => {
-      const newHealth = Math.min(100, prev.health + 40);
-      const newCleanliness = Math.min(100, prev.cleanliness + 30);
+    setPet(prev => ({
+      ...prev,
+      health: Math.min(100, prev.health + 40),
+      cleanliness: Math.min(100, prev.cleanliness + 30),
+      exp: prev.exp + 20
+    }));
 
-      // Determinar si sigue enfermo después de la medicina
-      const stillSick = newHealth < 50 || newCleanliness < 30;
+    // Feedback visual
 
-      return {
-        ...prev,
-        health: newHealth,
-        cleanliness: newCleanliness,
-        isSick: stillSick,
-        mood: stillSick ? 'enfermo' : 'contento',
-        exp: prev.exp + 20
-      };
-    });
-    showMessage('Medicina administrada! Tu mascota se siente mejor');
-  }, [pet.isAlive, inventory.medicine, showMessage, clearSleepState]);
+    showMessage('Medicina administrada');
 
   const giveTreat = useCallback(() => {
     if (!pet.isAlive) return showMessage('Tu mascota ha fallecido...');
@@ -738,8 +642,10 @@ function App() {
       hunger: Math.min(100, prev.hunger + 10),
       exp: prev.exp + 15
     }));
+
+    // Feedback visual
+
     showMessage('¡Qué rico!');
-  }, [pet.isAlive, inventory.treats, showMessage, clearSleepState]);
 
   const play = useCallback(() => {
     if (!pet.isAlive) return showMessage('Tu mascota ha fallecido...');
@@ -754,11 +660,13 @@ function App() {
       happiness: Math.min(100, prev.happiness + 15),
       exp: prev.exp + 5
     }));
+
+    // Feedback visual
+
     setAnimation('jump');
     showMessage('A jugar!');
     setTimeout(() => setAnimation(''), 8000);
     setShowMinigames(true);
-  }, [pet.isAlive, pet.energy, showMessage, clearSleepState]);
 
   // ==================== SISTEMA DE TIENDA ====================
   const buyItem = useCallback((item, price) => {
@@ -771,8 +679,14 @@ function App() {
 
   // ==================== MANEJO DE INPUTS ====================
   const handleNameSubmit = useCallback((name) => {
-    setPet(prev => ({ ...prev, name, birthDate: Date.now(), type: 'cat', color: 'white' }));
+    setPet(prev => ({ ...prev, name, birthDate: Date.now() }));
     setShowNameInput(false);
+    setShowPetSelector(true);
+  }, []);
+
+  const handlePetSelect = useCallback((type, color) => {
+    setPet(prev => ({ ...prev, type, color }));
+    setShowPetSelector(false);
   }, []);
 
   // ==================== SISTEMA DE MINI-JUEGOS ====================
@@ -792,16 +706,18 @@ function App() {
       coins: prev.coins + reward.coins,
       exp: prev.exp + reward.exp,
       happiness: Math.min(100, prev.happiness + reward.happiness),
-      energy: Math.max(0, prev.energy - 10) // Reducido de 20 a 10
+      energy: Math.max(0, prev.energy - 20)
     }));
+
+    // Feedback visual
+
     showMessage(`Victoria! +${reward.coins} monedas +${reward.exp} XP`);
     setShowMinigames(false);
-  }, [showMessage]);
 
   const handleMinigameLose = useCallback(() => {
     setPet(prev => ({
       ...prev,
-      energy: Math.max(0, prev.energy - 8), // Reducido de 15 a 8
+      energy: Math.max(0, prev.energy - 15),
       happiness: Math.max(0, prev.happiness - 5)
     }));
     showMessage('Mejor suerte la proxima vez');
@@ -826,9 +742,10 @@ function App() {
       coins: prev.coins + coinsEarned,
       exp: prev.exp + expEarned,
       happiness: Math.min(100, prev.happiness + happinessGained),
-      energy: Math.max(0, prev.energy - 8) // Reducido de 15 a 8
+      energy: Math.max(0, prev.energy - 15)
     }));
 
+    // Feedback visual
     if (score > 0) {
       showMessage(`Score: ${score}! +${coinsEarned} monedas +${expEarned} XP`);
     } else {
@@ -836,15 +753,13 @@ function App() {
     }
 
     setShowSkateGame(false);
-  }, [showMessage]);
 
   // Handler para cuando el huevo eclosiona
   const handleHatch = useCallback(() => {
     setPet(prev => ({
       ...prev,
       stage: 'baby',
-      birthDate: Date.now(),
-      age: 0 // Resetear edad al nacer
+      birthDate: Date.now()
     }));
     showMessage(`¡${pet.name} ha nacido! Bienvenido al mundo!`);
   }, [pet.name, showMessage]);
@@ -852,6 +767,10 @@ function App() {
   // ==================== RENDERIZADO CONDICIONAL ====================
   if (showNameInput) {
     return <NameInput onSubmit={handleNameSubmit} />;
+  }
+
+  if (showPetSelector) {
+    return <PetSelector petName={pet.name} onSelect={handlePetSelect} />;
   }
 
   // Mostrar pantalla de huevo si está en etapa egg
@@ -883,8 +802,6 @@ function App() {
             onTreat={giveTreat}
             onPlay={play}
             isSleeping={isSleeping}
-            poops={poops}
-            onCleanPoop={cleanPoop}
           />
         );
 
@@ -953,6 +870,27 @@ function App() {
           onGameEnd={handleSkateGameEnd}
         />
       )}
+
+      {/* Feedback visual: Números flotantes */}
+      {floatingNumbers.map((num, index) => (
+        <FloatingNumber
+          key={num.id}
+          value={num.value}
+          type={num.type}
+          index={index}
+          onComplete={() => removeFloatingNumber(num.id)}
+        />
+      ))}
+
+      {/* Feedback visual: Partículas */}
+      {particles.map(p => (
+        <Particles
+          key={p.id}
+          type={p.type}
+          count={p.count}
+          onComplete={() => removeParticles(p.id)}
+        />
+      ))}
     </div>
   );
 }

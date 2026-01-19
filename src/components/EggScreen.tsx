@@ -20,7 +20,9 @@ const EggScreen = ({ pet, onHatch }) => {
       setAnimation('egg-idle');
       setIsShaking(false);
     }
+  }, [clicks, clicksNeeded]);
 
+  useEffect(() => {
     // Iniciar eclosión cuando se alcanza el número de clics
     if (clicks >= clicksNeeded && !isCracking) {
       setIsCracking(true);

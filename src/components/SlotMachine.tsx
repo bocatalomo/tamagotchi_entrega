@@ -1,29 +1,23 @@
 import { useState } from 'react';
 import './SlotMachine.css';
 
-const SlotMachine = ({ petName, coins, onGameEnd, onBack }) => {
+const SlotMachine = ({ coins, onGameEnd, onBack }) => {
   const [bet, setBet] = useState(10);
   const [slots, setSlots] = useState(['❓', '❓', '❓']);
   const [isSpinning, setIsSpinning] = useState(false);
   const [result, setResult] = useState(null);
-  const [lastWin, setLastWin] = useState(0);
 
   const symbols = ['🍒', '🍋', '🍊', '🍇', '💎', '7️⃣', '⭐'];
 
-  const spin = () => {
+const spin = () => {
     if (isSpinning) return;
     if (bet <= 0) {
-      setResult({ type: 'error', message: 'La apuesta debe ser mayor a 0' });
-      return;
-    }
-    if (bet > coins) {
-      setResult({ type: 'error', message: 'No tienes suficientes monedas' });
+      setResult({ type: 'error', message: 'Debes apostar algo', amount: 0 });
       return;
     }
 
     setIsSpinning(true);
     setResult(null);
-    setLastWin(0);
 
     // Animación de giro
     let spinCount = 0;
@@ -37,12 +31,31 @@ const SlotMachine = ({ petName, coins, onGameEnd, onBack }) => {
 
       if (spinCount >= 20) {
         clearInterval(spinInterval);
-        // Resultado final
-        const finalSlots = [
-          symbols[Math.floor(Math.random() * symbols.length)],
-          symbols[Math.floor(Math.random() * symbols.length)],
-          symbols[Math.floor(Math.random() * symbols.length)]
-        ];
+        
+        // Resultado final con probabilidades ajustadas (más realista)
+        const random = Math.random();
+        let finalSlots;
+
+        if (random < 0.05) {
+          // 5% - Jackpot (más raro y valioso)
+          const jackpotSymbol = symbols[5]; // ⭐
+          finalSlots = [jackpotSymbol, jackpotSymbol, jackpotSymbol];
+        } else if (random < 0.20) {
+          // 15% - Dos iguales
+          const twoOfSymbol = symbols[Math.floor(Math.random() * 4)]; // Solo los primeros 4 símbolos
+          const otherSymbol = symbols[Math.floor(Math.random() * symbols.length)];
+          finalSlots = [
+            twoOfSymbol, twoOfSymbol, otherSymbol
+          ].sort(() => Math.random() - 0.5);
+        } else {
+          // 80% - Nada igual
+          finalSlots = [
+            symbols[Math.floor(Math.random() * symbols.length)],
+            symbols[Math.floor(Math.random() * symbols.length)],
+            symbols[Math.floor(Math.random() * symbols.length)]
+          ];
+        }
+
         setSlots(finalSlots);
         setIsSpinning(false);
         evaluateResult(finalSlots);
@@ -56,7 +69,6 @@ const SlotMachine = ({ petName, coins, onGameEnd, onBack }) => {
     // 3 iguales - Gana x5
     if (slot1 === slot2 && slot2 === slot3) {
       const winAmount = bet * 5;
-      setLastWin(winAmount);
       setResult({
         type: 'jackpot',
         message: `JACKPOT! Ganaste ${winAmount} monedas`,
@@ -69,7 +81,6 @@ const SlotMachine = ({ petName, coins, onGameEnd, onBack }) => {
     // 2 iguales - Gana x0.8
     if (slot1 === slot2 || slot2 === slot3 || slot1 === slot3) {
       const winAmount = Math.floor(bet * 0.8);
-      setLastWin(winAmount);
       setResult({
         type: 'win',
         message: `Bien! Recuperaste ${winAmount} monedas`,

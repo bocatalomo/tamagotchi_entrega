@@ -171,18 +171,22 @@ const PixelPet = ({ color = 'brown', animation: forcedAnimation, mood = 'content
   useEffect(() => {
     if (forcedAnimation) {
       // Resetear estados cuando hay una animación forzada
-      setCurrentFrame(0);
-      setIsWaitingOnFirstFrame(true);
-      setIsWaitingBeforeJump(false);
-      setCycleCount(0);
-    } else {
-      const newBaseAnimation = getAnimationFromMood(mood);
-      if (newBaseAnimation !== currentAnimation) {
-        setCurrentAnimation(newBaseAnimation);
+      requestAnimationFrame(() => {
         setCurrentFrame(0);
         setIsWaitingOnFirstFrame(true);
         setIsWaitingBeforeJump(false);
         setCycleCount(0);
+      });
+    } else {
+      const newBaseAnimation = getAnimationFromMood(mood);
+      if (newBaseAnimation !== currentAnimation) {
+        requestAnimationFrame(() => {
+          setCurrentAnimation(newBaseAnimation);
+          setCurrentFrame(0);
+          setIsWaitingOnFirstFrame(true);
+          setIsWaitingBeforeJump(false);
+          setCycleCount(0);
+        });
       }
     }
   }, [mood, forcedAnimation, currentAnimation]);
@@ -205,8 +209,8 @@ const PixelPet = ({ color = 'brown', animation: forcedAnimation, mood = 'content
       if (forcedAnimation === 'blink') {
         // Pausa de 3 segundos en el primer frame antes de cada ciclo
         if (isWaitingOnFirstFrame) {
-          setCurrentFrame(0);
           firstFrameTimeoutRef.current = setTimeout(() => {
+            setCurrentFrame(0);
             setIsWaitingOnFirstFrame(false);
           }, 3000); // Pausa de 3 segundos
 
@@ -262,7 +266,9 @@ const PixelPet = ({ color = 'brown', animation: forcedAnimation, mood = 'content
 
     // Para blink: pausa en el primer frame (estado inicial)
     if (currentAnimation === 'blink' && isWaitingOnFirstFrame) {
-      setCurrentFrame(0);
+      requestAnimationFrame(() => {
+        setCurrentFrame(0);
+      });
 
       firstFrameTimeoutRef.current = setTimeout(() => {
         setIsWaitingOnFirstFrame(false);
@@ -270,7 +276,9 @@ const PixelPet = ({ color = 'brown', animation: forcedAnimation, mood = 'content
     }
     // Pausa de 4 segundos después de blink, antes de jump
     else if (currentAnimation === 'blink' && isWaitingBeforeJump) {
-      setCurrentFrame(0);
+      requestAnimationFrame(() => {
+        setCurrentFrame(0);
+      });
 
       firstFrameTimeoutRef.current = setTimeout(() => {
         setIsWaitingBeforeJump(false);
@@ -350,8 +358,7 @@ const PixelPet = ({ color = 'brown', animation: forcedAnimation, mood = 'content
           transform: `scale(${scale})`,
           transformOrigin: 'center center',
           imageRendering: 'pixelated',
-          imageRendering: '-moz-crisp-edges',
-          imageRendering: 'crisp-edges'
+          msInterpolationMode: 'nearest-neighbor'
         }}
       />
       {isSleeping && (

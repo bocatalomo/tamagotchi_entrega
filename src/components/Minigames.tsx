@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import './Minigames.css';
 import SlotMachine from './SlotMachine';
 
-const Minigames = ({ petName, petType, onClose, onWin, onLose, onOpenSkateGame, coins }) => {
+const Minigames = ({ petName, onClose, onWin, onLose, onOpenSkateGame, coins }) => {
   const [currentGame, setCurrentGame] = useState(null);
   const [gameState, setGameState] = useState('menu'); // menu, playing, result
 
@@ -136,7 +136,7 @@ const Minigames = ({ petName, petType, onClose, onWin, onLose, onOpenSkateGame, 
           <GameComponent
             game={currentGame}
             petName={petName}
-            petType={petType}
+            
             coins={coins}
             onGameEnd={handleGameEnd}
             onBack={resetGame}
@@ -185,19 +185,23 @@ const RockPaperScissors = ({ petName, onGameEnd, onBack }) => {
     scissors: '✌️'
   };
 
-  // IA de la mascota - Aprende del jugador
+  // IA de la mascota - Equilibrada y divertida
   const getPetChoice = (playerHistory = []) => {
     // Si es la primera ronda, elección random
     if (playerHistory.length === 0) {
       return choices[Math.floor(Math.random() * 3)];
     }
 
-    // IA inteligente: analiza patrones del jugador
-    const lastMove = playerHistory[playerHistory.length - 1];
     const random = Math.random();
 
-    // 40% - Predice que el jugador repetirá
-    if (random < 0.4) {
+    // 60% - Elección completamente random (justa)
+    if (random < 0.6) {
+      return choices[Math.floor(Math.random() * 3)];
+    }
+
+    // 25% - Counter simple del último movimiento
+    if (random < 0.85) {
+      const lastMove = playerHistory[playerHistory.length - 1];
       const counter = {
         rock: 'paper',
         paper: 'scissors',
@@ -206,17 +210,22 @@ const RockPaperScissors = ({ petName, onGameEnd, onBack }) => {
       return counter[lastMove];
     }
 
-    // 30% - Elección random
-    if (random < 0.7) {
-      return choices[Math.floor(Math.random() * 3)];
-    }
-
-    // 30% - Busca patrón (si el jugador alterna)
+    // 15% - Patrón simple (alternancia)
     if (playerHistory.length >= 2) {
       const lastTwo = playerHistory.slice(-2);
-      if (lastTwo[0] === 'rock' && lastTwo[1] === 'paper') {
-        return 'rock'; // Predice scissors
-      }
+      const patterns = {
+        'rock,rock': 'scissors',
+        'rock,paper': 'rock',
+        'rock,scissors': 'paper',
+        'paper,rock': 'scissors',
+        'paper,paper': 'rock',
+        'paper,scissors': 'paper',
+        'scissors,rock': 'paper',
+        'scissors,paper': 'scissors',
+        'scissors,scissors': 'rock'
+      };
+      const patternKey = `${lastTwo[0]},${lastTwo[1]}`;
+      return patterns[patternKey] || choices[Math.floor(Math.random() * 3)];
     }
 
     return choices[Math.floor(Math.random() * 3)];
@@ -357,6 +366,50 @@ const MemoryMatch = ({ petName, onGameEnd, onBack }) => {
     setCards(cardPairs);
   }, []);
 
+  const petMove = useCallback(() => {
+    const unmatched = cards.filter(c => !matched.includes(c.id));
+    
+    if (unmatched.length === 0) return; // No quedan cartas
+    
+    // IA simple y justa: elige UN par al azar si sabe alguno
+    const random = Math.random();
+    
+    if (random < 0.25 && unmatched.length >= 2) {
+      // 25% - Intenta encontrar UN par que ya ha visto
+      const recentlySeen = unmatched.filter(card => flipped.includes(card.id));
+      
+      if (recentlySeen.length >= 1) {
+        // Buscar si alguna de las cartas vistas tiene su par disponible
+        for (const seenCard of recentlySeen) {
+          const matchingCard = unmatched.find(c => 
+            c.emoji === seenCard.emoji && c.id !== seenCard.id
+          );
+          
+          if (matchingCard) {
+            setFlipped(prev => [...prev, seenCard.id, matchingCard.id]);
+            setTimeout(() => {
+              setFlipped(prev => prev.filter(id => id !== seenCard.id && id !== matchingCard.id));
+              // Solo añade UN par a matched
+              setMatched(prev => [...prev, seenCard.id, matchingCard.id]);
+              setScore(prev => ({ ...prev, pet: prev.pet + 1 }));
+              setPlayerTurn(false); // Devuelve turno al jugador
+            }, 1500);
+            return;
+          }
+        }
+      }
+    }
+
+    // 75% - Elige dos cartas completamente random
+    const randomCards = unmatched.sort(() => Math.random() - 0.5).slice(0, 2);
+    setFlipped(prev => [...prev, ...randomCards.map(c => c.id)]);
+    
+    setTimeout(() => {
+      setFlipped(prev => prev.filter(id => !randomCards.some(c => c.id === id)));
+      setPlayerTurn(false); // Devuelve turno al jugador
+    }, 1500);
+  }, [cards, matched, flipped]);
+
   useEffect(() => {
     if (!playerTurn && matched.length < 12) {
       // Turno de la mascota (IA)
@@ -366,49 +419,16 @@ const MemoryMatch = ({ petName, onGameEnd, onBack }) => {
         setPetThinking(false);
       }, 1500);
     }
+  }, [playerTurn, matched.length]); // Dependencias simplificadas
 
+  useEffect(() => {
     if (matched.length === 12) {
-      // Juego terminado
+      // Juego terminado - todas las cartas encontradas
       setTimeout(() => {
         onGameEnd(score.player > score.pet);
       }, 1000);
     }
-  }, [playerTurn, matched]);
-
-  const petMove = () => {
-    // IA de la mascota: 50% de probabilidad de acertar
-    const unmatched = cards.filter(c => !matched.includes(c.id));
-    
-    if (Math.random() < 0.5) {
-      // Encuentra un par correcto
-      const emojiCounts = {};
-      unmatched.forEach(c => {
-        emojiCounts[c.emoji] = emojiCounts[c.emoji] || [];
-        emojiCounts[c.emoji].push(c.id);
-      });
-
-      const pairs = Object.values(emojiCounts).filter(arr => arr.length === 2);
-      if (pairs.length > 0) {
-        const pair = pairs[Math.floor(Math.random() * pairs.length)];
-        setMatched([...matched, ...pair]);
-        setScore(prev => ({ ...prev, pet: prev.pet + 1 }));
-        return;
-      }
-    }
-
-    // Si no, elige dos cartas random
-    const randomCards = unmatched.sort(() => Math.random() - 0.5).slice(0, 2);
-    setFlipped(randomCards.map(c => c.id));
-
-    setTimeout(() => {
-      if (randomCards[0].emoji === randomCards[1].emoji) {
-        setMatched([...matched, ...randomCards.map(c => c.id)]);
-        setScore(prev => ({ ...prev, pet: prev.pet + 1 }));
-      }
-      setFlipped([]);
-      setPlayerTurn(true);
-    }, 1000);
-  };
+  }, [matched.length, score.player, score.pet, onGameEnd]);
 
   const handleCardClick = (cardId) => {
     if (!playerTurn || flipped.length >= 2 || matched.includes(cardId) || flipped.includes(cardId)) {
@@ -422,14 +442,17 @@ const MemoryMatch = ({ petName, onGameEnd, onBack }) => {
       const card1 = cards.find(c => c.id === newFlipped[0]);
       const card2 = cards.find(c => c.id === newFlipped[1]);
 
-      if (card1.emoji === card2.emoji) {
-        setMatched([...matched, ...newFlipped]);
+      if (card1 && card2 && card1.emoji === card2.emoji) {
+        // Jugador encontró un par
+        setMatched(prev => [...prev, ...newFlipped]);
         setScore(prev => ({ ...prev, player: prev.player + 1 }));
         setFlipped([]);
+        setPlayerTurn(true); // Sigue siendo turno del jugador si acierta
       } else {
+        // Jugador falló, pasa turno a la mascota
         setTimeout(() => {
           setFlipped([]);
-          setPlayerTurn(false);
+          setPlayerTurn(false); // Turno de la mascota
         }, 1000);
       }
     }
@@ -478,9 +501,9 @@ const ReactionTime = ({ petName, onGameEnd, onBack }) => {
   const [petTime, setPetTime] = useState(null);
   const [round, setRound] = useState(1);
   const [score, setScore] = useState({ player: 0, pet: 0 });
-  const [startTime, setStartTime] = useState(null);
+  const startTime = useRef(null);
 
-  const startRound = () => {
+const startRound = useCallback(() => {
     setGameState('waiting');
     setPlayerTime(null);
     setPetTime(null);
@@ -489,17 +512,9 @@ const ReactionTime = ({ petName, onGameEnd, onBack }) => {
     const waitTime = 1000 + Math.random() * 3000;
     setTimeout(() => {
       setGameState('show');
-      setStartTime(Date.now());
-
-      // La mascota reacciona con tiempo random (100-800ms)
-      const petReactionTime = 100 + Math.random() * 700;
-      setTimeout(() => {
-        if (gameState === 'show') {
-          setPetTime(petReactionTime);
-        }
-      }, petReactionTime);
+      startTime.current = Date.now();
     }, waitTime);
-  };
+  }, []);
 
   const handleClick = () => {
     if (gameState === 'waiting') {
@@ -508,7 +523,7 @@ const ReactionTime = ({ petName, onGameEnd, onBack }) => {
       setTimeout(() => evaluateRound(9999), 500);
     } else if (gameState === 'show') {
       // Click correcto
-      const reactionTime = Date.now() - startTime;
+      const reactionTime = Date.now() - startTime.current;
       setPlayerTime(reactionTime);
       setGameState('clicked');
       setTimeout(() => evaluateRound(reactionTime), 1000);
@@ -516,9 +531,15 @@ const ReactionTime = ({ petName, onGameEnd, onBack }) => {
   };
 
   const evaluateRound = (playerReaction) => {
-    const petReaction = petTime || (100 + Math.random() * 700);
+    // IA más realista: la mascota tiene reacción humana (no perfecta)
+    const baseReactionTime = 250 + Math.random() * 400; // 250-650ms (humano real)
+    const petReaction = petTime || baseReactionTime;
 
-    if (playerReaction < petReaction) {
+    // Añadir pequeño error aleatorio a veces (para hacerlo más humano)
+    const petHasError = Math.random() < 0.15; // 15% de veces la mascota falla
+    const effectivePetTime = petHasError ? petReaction + 200 : petReaction;
+
+    if (playerReaction < effectivePetTime) {
       setScore(prev => ({ ...prev, player: prev.player + 1 }));
     } else {
       setScore(prev => ({ ...prev, pet: prev.pet + 1 }));
@@ -596,30 +617,52 @@ const ReactionTime = ({ petName, onGameEnd, onBack }) => {
 // JUEGO 4: ADIVINA EL NÚMERO
 // ============================================
 const GuessNumber = ({ petName, onGameEnd, onBack }) => {
-  const [secretNumber, setSecretNumber] = useState(null);
-  const [guess, setGuess] = useState('');
-  const [attempts, setAttempts] = useState(0);
-  const [petAttempts, setPetAttempts] = useState(0);
-  const [hint, setHint] = useState('');
-  const [won, setWon] = useState(false);
-  const [petRange, setPetRange] = useState([1, 50]);
+  const [secretNumber, setSecretNumber] = useState<number | null>(null);
+  const [petRange, setPetRange] = useState<[number, number]>([1, 50]);
+
+  
 
   useEffect(() => {
+    // Iniciar nuevo juego
     setSecretNumber(Math.floor(Math.random() * 50) + 1);
+    setPetRange([1, 50]);
+    setHint('');
+    setAttempts(0);
+    setPetAttempts(0);
+    setWon(false);
   }, []);
 
   useEffect(() => {
+    // Turno automático de la mascota
     if (petAttempts < 7 && !won && secretNumber) {
       const timer = setTimeout(() => {
         makePetGuess();
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [petAttempts, won]);
+  }, [petAttempts, won, makePetGuess, secretNumber]);
 
-  const makePetGuess = () => {
+  const makePetGuess = useCallback(() => {
     const [min, max] = petRange;
-    const petGuess = Math.floor((min + max) / 2);
+    
+    // IA más humana: no siempre usa binary search perfecto
+    const random = Math.random();
+    let petGuess: number;
+
+    if (random < 0.4) {
+      // 40% - Binary search (inteligente)
+      petGuess = Math.floor((min + max) / 2);
+    } else if (random < 0.7) {
+      // 30% - Random en el rango
+      petGuess = Math.floor(Math.random() * (max - min + 1)) + min;
+    } else {
+      // 30% -倾向 hacia los extremos (más humano)
+      const tendency = Math.random() < 0.5 ? min : max;
+      petGuess = Math.floor(tendency + (Math.random() * 5 - 2.5));
+    }
+
+    // Asegurarse de que esté en el rango válido
+    petGuess = Math.max(min, Math.min(max, petGuess));
 
     if (petGuess === secretNumber) {
       onGameEnd(false);
@@ -632,8 +675,8 @@ const GuessNumber = ({ petName, onGameEnd, onBack }) => {
       setPetRange([min, petGuess - 1]);
     }
 
-    setPetAttempts(petAttempts + 1);
-  };
+    setPetAttempts(prev => prev + 1);
+  }, [petRange, secretNumber, onGameEnd]);
 
   const handleGuess = () => {
     const numGuess = parseInt(guess);

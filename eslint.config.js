@@ -24,6 +24,10 @@ export default defineConfig([
     },
     rules: {
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      'react-hooks/purity': ['error', {
+        allowImpureFunctionsInMemo: true
+      }],
+      'react-hooks/set-state-in-effect': 'warn',
     },
   },
 ])

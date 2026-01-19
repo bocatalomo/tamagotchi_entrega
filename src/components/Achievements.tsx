@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import './Achievements.css';
 
-const Achievements = ({ onClose, unlockedAchievements, totalCoins, totalGames, petAge, petLevel }) => {
+const Achievements = ({ onClose, unlockedAchievements }) => {
   const [selectedTab, setSelectedTab] = useState('all');
 
   const achievements = [

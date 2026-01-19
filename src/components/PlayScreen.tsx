@@ -2,7 +2,6 @@ import './PlayScreen.css';
 
 const PlayScreen = ({
   pet,
-  onPlay,
   onOpenMinigames,
   onOpenAchievements,
   onOpenSkateGame,
