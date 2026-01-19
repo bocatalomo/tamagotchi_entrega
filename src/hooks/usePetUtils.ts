@@ -107,4 +107,3 @@ export const usePetUtils = (pet: PetState) => {
     loadOfflineProgress
   };
 };
-};
