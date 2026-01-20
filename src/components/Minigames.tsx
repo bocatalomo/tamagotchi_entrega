@@ -206,35 +206,6 @@ const RockPaperScissors = ({ petName, onGameEnd, onBack }) => {
     return choices[Math.floor(Math.random() * 3)];
   };
 
-  const play = (choice) => {
-    setPlayerChoice(choice);
-    setPetThinking(true);
-    setTimeout(() => {
-      const petSelection = getPetChoice([playerChoice]);
-      setPetChoice(petSelection);
-      setPetThinking(false);
-      const outcome = determineWinner(choice, petSelection);
-      setResult(outcome);
-
-      const newScore = { ...score };
-      if (outcome === 'win') newScore.player += 1;
-      if (outcome === 'lose') newScore.pet += 1;
-
-      if (newScore.player === 2) {
-        setTimeout(() => onGameEnd(true), 1500);
-      } else if (newScore.pet === 2) {
-        setTimeout(() => onGameEnd(false), 1500);
-      } else if (round < 3) {
-        setTimeout(() => {
-          setRound(round + 1);
-          setPlayerChoice(null);
-          setPetChoice(null);
-          setResult(null);
-        }, 1500);
-      }
-    }, 1000);
-  };
-
   const determineWinner = (player, pet) => {
     if (player === pet) return 'tie';
     if ((player === 'rock' && pet === 'scissors') ||
@@ -243,6 +214,41 @@ const RockPaperScissors = ({ petName, onGameEnd, onBack }) => {
       return 'win';
     }
     return 'lose';
+  };
+
+  const play = (choice) => {
+    setPlayerChoice(choice);
+    setPetThinking(true);
+
+    setTimeout(() => {
+      const petSelection = getPetChoice([choice]);
+      setPetChoice(petSelection);
+      setPetThinking(false);
+
+      const outcome = determineWinner(choice, petSelection);
+      setResult(outcome);
+
+      setScore(prevScore => {
+        const newScore = { ...prevScore };
+        if (outcome === 'win') newScore.player += 1;
+        if (outcome === 'lose') newScore.pet += 1;
+
+        if (newScore.player === 2) {
+          setTimeout(() => onGameEnd(true), 1500);
+        } else if (newScore.pet === 2) {
+          setTimeout(() => onGameEnd(false), 1500);
+        } else if (round < 3) {
+          setTimeout(() => {
+            setRound(r => r + 1);
+            setPlayerChoice(null);
+            setPetChoice(null);
+            setResult(null);
+          }, 1500);
+        }
+
+        return newScore;
+      });
+      }, 1000);
   };
 
   return (
@@ -304,6 +310,7 @@ const MemoryMatch = ({ petName, onGameEnd, onBack }) => {
   const [matched, setMatched] = useState([]);
   const [playerTurn, setPlayerTurn] = useState(true);
   const [score, setScore] = useState({ player: 0, pet: 0 });
+  const [petThinking, setPetThinking] = useState(false);
 
   const emojis = ['🐕', '🐱', '🐰', '🦊', '🐼', '🐸'];
 
@@ -313,6 +320,24 @@ const MemoryMatch = ({ petName, onGameEnd, onBack }) => {
       .map((emoji, index) => ({ id: index, emoji, matched: false }));
     setCards(cardPairs);
   }, []);
+
+  const handleCardClick = (cardId) => {
+    if (!playerTurn || flipped.length >= 2 || matched.includes(cardId) || flipped.includes(cardId)) return;
+    const newFlipped = [...flipped, cardId];
+    setFlipped(newFlipped);
+    if (newFlipped.length === 2) {
+      const card1 = cards.find(c => c.id === newFlipped[0]);
+      const card2 = cards.find(c => c.id === newFlipped[1]);
+      if (card1 && card2 && card1.emoji === card2.emoji) {
+        setMatched(prev => [...prev, ...newFlipped]);
+        setScore(prev => ({ ...prev, player: prev.player + 1 }));
+        setFlipped([]);
+        setPlayerTurn(true);
+      } else {
+        setTimeout(() => { setFlipped([]); setPlayerTurn(false); }, 1000);
+      }
+    }
+  };
 
   const petMove = useCallback(() => {
     const unmatched = cards.filter(c => !matched.includes(c.id));
@@ -346,35 +371,17 @@ const MemoryMatch = ({ petName, onGameEnd, onBack }) => {
   useEffect(() => {
     if (!playerTurn && matched.length < 12) {
       setPetThinking(true);
-      setTimeout(() => { petMove(); setPetThinking(false); }, 1500);
+      const timer = setTimeout(() => { petMove(); setPetThinking(false); }, 1500);
+      return () => clearTimeout(timer);
     }
   }, [playerTurn, matched.length, petMove]);
 
-  const [petThinking, setPetThinking] = useState(false);
-
   useEffect(() => {
     if (matched.length === 12) {
-      setTimeout(() => onGameEnd(score.player > score.pet), 1000);
+      const timer = setTimeout(() => onGameEnd(score.player > score.pet), 1000);
+      return () => clearTimeout(timer);
     }
   }, [matched.length, score.player, score.pet, onGameEnd]);
-
-  const handleCardClick = (cardId) => {
-    if (!playerTurn || flipped.length >= 2 || matched.includes(cardId) || flipped.includes(cardId)) return;
-    const newFlipped = [...flipped, cardId];
-    setFlipped(newFlipped);
-    if (newFlipped.length === 2) {
-      const card1 = cards.find(c => c.id === newFlipped[0]);
-      const card2 = cards.find(c => c.id === newFlipped[1]);
-      if (card1 && card2 && card1.emoji === card2.emoji) {
-        setMatched(prev => [...prev, ...newFlipped]);
-        setScore(prev => ({ ...prev, player: prev.player + 1 }));
-        setFlipped([]);
-        setPlayerTurn(true);
-      } else {
-        setTimeout(() => { setFlipped([]); setPlayerTurn(false); }, 1000);
-      }
-    }
-  };
 
   return (
     <div className="game-screen">
@@ -437,25 +444,36 @@ const ReactionTime = ({ petName, onGameEnd, onBack }) => {
     }
   };
 
-  const evaluateRound = (playerReaction) => {
+  const evaluateRound = useCallback((playerReaction) => {
     const baseReactionTime = 250 + Math.random() * 400;
     const effectivePetTime = Math.random() < 0.15 ? baseReactionTime + 200 : baseReactionTime;
-    setPetTime(Math.floor(effectivePetTime));
+    const roundedPetTime = Math.floor(effectivePetTime);
+    setPetTime(roundedPetTime);
 
-    if (playerReaction < effectivePetTime) {
-      setScore(prev => ({ ...prev, player: prev.player + 1 }));
-    } else {
-      setScore(prev => ({ ...prev, pet: prev.pet + 1 }));
-    }
+    const playerWins = playerReaction < effectivePetTime;
 
-    if (round >= 3) {
-      setTimeout(() => {
-        onGameEnd(score.player + (playerReaction < effectivePetTime ? 1 : 0) >= 2);
-      }, 1500);
-    } else {
-      setTimeout(() => { setRound(round + 1); setGameState('ready'); }, 1500);
-    }
-  };
+    setScore(prevScore => {
+      const newScore = { ...prevScore };
+      if (playerWins) {
+        newScore.player += 1;
+      } else {
+        newScore.pet += 1;
+      }
+
+      if (round >= 3) {
+        setTimeout(() => {
+          onGameEnd(newScore.player >= 2);
+        }, 1500);
+      } else {
+        setTimeout(() => {
+          setRound(r => r + 1);
+          setGameState('ready');
+        }, 1500);
+      }
+
+      return newScore;
+    });
+  }, [round, onGameEnd]);
 
   useEffect(() => {
     if (gameState === 'ready') {
