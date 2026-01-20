@@ -674,12 +674,6 @@ function App() {
 
     clearSleepState();
 
-    setPet(prev => ({
-      ...prev,
-      happiness: Math.min(100, prev.happiness + 5),
-      exp: prev.exp + 2,
-    }));
-
     addNotification('Elige un juego!', 'info');
     setShowGameModal(true);
   }, [pet.isAlive, pet.energy, clearSleepState, addNotification]);
@@ -961,6 +955,8 @@ function App() {
             setPet(prev => ({
               ...prev,
               energy: Math.max(0, prev.energy - 2),
+              happiness: Math.min(100, prev.happiness + 5),
+              exp: prev.exp + 2,
             }));
           }}
         />
