@@ -11,10 +11,12 @@ import { BottomNav } from './components/BottomNav';
 import Minigames from './components/Minigames';
 import SkateGame from './components/SkateGame';
 import UserProfileScreen from './components/UserProfile';
+import LoginScreen from './components/LoginScreen';
 import { useAuth } from './contexts/AuthContext';
 import { useAudio } from './hooks/useAudio';
 import { pageVariants } from './utils/animationVariants';
 import { audioManager } from './utils/audioManager';
+import { loadTamagotchi, saveTamagotchi, createTamagotchi, hasTamagotchi } from './services/tamagotchiService';
 import { PetState, Inventory, Poop } from './types';
 
 const initialPetState: PetState = {
@@ -65,7 +67,8 @@ function App() {
   const [pet, setPet] = useState<PetState>(initialPetState);
   const [inventory, setInventory] = useState<Inventory>(initialInventory);
   const [currentScreen, setCurrentScreen] = useState<'home' | 'shop' | 'stats' | 'play'>('home');
-  const [showNameInput, setShowNameInput] = useState(true);
+  const [showNameInput, setShowNameInput] = useState(false);
+  const [needsName, setNeedsName] = useState(false);
   const [message, setMessage] = useState('');
   const [animation, setAnimation] = useState('');
   const [isSleeping, setIsSleeping] = useState(false);
@@ -75,6 +78,7 @@ function App() {
   const [showUserProfile, setShowUserProfile] = useState(false);
   const [showGameModal, setShowGameModal] = useState(false);
   const [activeGame, setActiveGame] = useState<'skate-game' | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const sleepTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const sleepIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -140,23 +144,13 @@ function App() {
     setTimeout(() => setMessage(''), 4000);
   }, []);
 
-  useEffect(() => {
-    const savedPet = localStorage.getItem('tamagotchiPet');
-    const savedInventory = localStorage.getItem('tamagotchiInventory');
-
-    if (savedPet) {
-      try {
-        const loadedPet = JSON.parse(savedPet);
-        loadedPet.dangerLevel = loadedPet.dangerLevel || 'normal';
-        loadedPet.lastUpdate = loadedPet.lastUpdate || Date.now();
-        loadedPet.criticalHungerStart = loadedPet.criticalHungerStart || null;
-        loadedPet.criticalHealthStart = loadedPet.criticalHealthStart || null;
-        loadedPet.criticalComboStart = loadedPet.criticalComboStart || null;
-        loadedPet.isSleeping = loadedPet.isSleeping || false;
-        loadedPet.sleepStartTime = loadedPet.sleepStartTime || null;
-        loadedPet.sleepStartEnergy = loadedPet.sleepStartEnergy || null;
-        loadedPet.birthDate = loadedPet.birthDate || Date.now();
-
+  const loadPetFromFirestore = useCallback(async () => {
+    try {
+      const data = await loadTamagotchi();
+      
+      if (data) {
+        const loadedPet = { ...data.pet };
+        
         const timeElapsed = Date.now() - (loadedPet.lastUpdate || Date.now());
         const minutesElapsed = timeElapsed / (1000 * 60);
         loadedPet.age = Math.floor((Date.now() - loadedPet.birthDate) / (1000 * 60 * 60 * 24));
@@ -193,7 +187,7 @@ function App() {
             loadedPet.isAlive = false;
           }
 
-          let dangerLevel = 'normal';
+          let dangerLevel: 'normal' | 'alerta' | 'critico' | 'agonizante' = 'normal';
           if (loadedPet.hunger === 0 || loadedPet.health === 0) {
             dangerLevel = 'agonizante';
           } else if (loadedPet.hunger < 10 || loadedPet.health < 10) {
@@ -203,7 +197,7 @@ function App() {
           }
           loadedPet.dangerLevel = dangerLevel;
 
-          let mood = 'contento';
+          let mood: PetState['mood'] = 'contento';
           let isSick = false;
           if (dangerLevel === 'agonizante') {
             mood = 'agonizando';
@@ -223,28 +217,51 @@ function App() {
 
         loadedPet.lastUpdate = Date.now();
         setPet(loadedPet);
+        setInventory(data.inventory);
         setShowNameInput(false);
         setIsSleeping(loadedPet.isSleeping || false);
-      } catch (error) {
-        console.error('Error loading pet data:', error);
+        
+        localStorage.setItem('tamagotchiPet', JSON.stringify(loadedPet));
+        localStorage.setItem('tamagotchiInventory', JSON.stringify(data.inventory));
+      } else {
+        const hasExisting = await hasTamagotchi();
+        if (!hasExisting) {
+          setNeedsName(true);
+          setShowNameInput(true);
+        }
       }
-    }
-
-    if (savedInventory) {
-      try {
-        setInventory(JSON.parse(savedInventory));
-      } catch (error) {
-        console.error('Error loading inventory data:', error);
+    } catch (error) {
+      console.error('Error loading pet from Firestore:', error);
+      const savedPet = localStorage.getItem('tamagotchiPet');
+      const savedInventory = localStorage.getItem('tamagotchiInventory');
+      if (savedPet) {
+        try {
+          setPet(JSON.parse(savedPet));
+          setInventory(JSON.parse(savedInventory || '{}'));
+          setShowNameInput(false);
+        } catch (e) {
+          console.error('Error loading from localStorage backup:', e);
+        }
       }
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    if (pet.name) {
+    if (user) {
+      loadPetFromFirestore();
+    } else {
+      setIsLoading(false);
+    }
+  }, [user, loadPetFromFirestore]);
+
+  useEffect(() => {
+    if (pet.name && user) {
       localStorage.setItem('tamagotchiPet', JSON.stringify(pet));
       localStorage.setItem('tamagotchiInventory', JSON.stringify(inventory));
     }
-  }, [pet, inventory]);
+  }, [pet, inventory, user]);
 
   useEffect(() => {
     if (showNameInput || !pet.isAlive || pet.stage === 'egg') return;
@@ -512,6 +529,7 @@ function App() {
       lastFed: Date.now(),
     }));
     setAnimation('jump');
+    saveToFirestore();
 
     if (makesMess) {
       addNotification('Nam nam! *Se ensucia*', 'info');
@@ -522,6 +540,14 @@ function App() {
 
     setTimeout(() => setAnimation(''), 2000);
   }, [pet.isAlive, inventory.food, clearSleepState, addNotification, playFeed]);
+
+  const saveToFirestore = useCallback(() => {
+    if (user) {
+      saveTamagotchi(pet, inventory).catch(err => {
+        console.error('Error saving to Firestore:', err);
+      });
+    }
+  }, [pet, inventory, user]);
 
   const sleep = useCallback(() => {
     if (!pet.isAlive) {
@@ -549,6 +575,7 @@ function App() {
 
     addNotification('Dulces sueños... (5 min)', 'info');
     playSleep();
+    saveToFirestore();
 
     const totalSleepTime = 300000;
     const updateInterval = 1000;
@@ -604,7 +631,8 @@ function App() {
 
     addNotification('Qué limpio!', 'success');
     playClean();
-  }, [pet.isAlive, inventory.soap, clearSleepState, addNotification, playClean]);
+    saveToFirestore();
+  }, [pet.isAlive, inventory.soap, clearSleepState, addNotification, playClean, saveToFirestore]);
 
   const giveMedicine = useCallback(() => {
     if (!pet.isAlive) {
@@ -636,7 +664,8 @@ function App() {
 
     addNotification('Medicina administrada!', 'success');
     playMedicine();
-  }, [pet.isAlive, inventory.medicine, clearSleepState, addNotification, playMedicine]);
+    saveToFirestore();
+  }, [pet.isAlive, inventory.medicine, clearSleepState, addNotification, playMedicine, saveToFirestore]);
 
   const giveTreat = useCallback(() => {
     if (!pet.isAlive) {
@@ -660,7 +689,8 @@ function App() {
 
     addNotification('Qué rico!', 'success');
     playTreat();
-  }, [pet.isAlive, inventory.treats, clearSleepState, addNotification, playTreat]);
+    saveToFirestore();
+  }, [pet.isAlive, inventory.treats, clearSleepState, addNotification, playTreat, saveToFirestore]);
 
   const play = useCallback(() => {
     if (!pet.isAlive) {
@@ -682,7 +712,8 @@ function App() {
     clearSleepState();
     playWake();
     addNotification('Buenos días! ☀️', 'success');
-  }, [clearSleepState, playWake, addNotification]);
+    saveToFirestore();
+  }, [clearSleepState, playWake, addNotification, saveToFirestore]);
 
   const handleHatch = useCallback(() => {
     setPet(prev => ({
@@ -693,11 +724,23 @@ function App() {
     }));
     addNotification(`${pet.name} ha nacido! Bienvenido!`, 'success');
     playEggHatch();
-  }, [pet.name, addNotification, playEggHatch]);
+    saveToFirestore();
+  }, [pet.name, addNotification, playEggHatch, saveToFirestore]);
 
-  const handleNameSubmit = useCallback((name: string) => {
-    setPet(prev => ({ ...prev, name, birthDate: Date.now(), type: 'cat', color: 'white' }));
-    setShowNameInput(false);
+  const handleNameSubmit = useCallback(async (name: string) => {
+    try {
+      const data = await createTamagotchi({ name: name.trim() });
+      setPet(data.pet);
+      setInventory(data.inventory);
+      setShowNameInput(false);
+      setNeedsName(false);
+      localStorage.setItem('tamagotchiPet', JSON.stringify(data.pet));
+      localStorage.setItem('tamagotchiInventory', JSON.stringify(data.inventory));
+    } catch (error) {
+      console.error('Error creating tamagotchi:', error);
+      setPet(prev => ({ ...prev, name: name.trim(), birthDate: Date.now(), type: 'cat', color: 'white' }));
+      setShowNameInput(false);
+    }
   }, []);
 
   const resetGame = useCallback(() => {
@@ -714,6 +757,25 @@ function App() {
   const handleHover = useCallback((action: string) => {
     playHover();
   }, [playHover]);
+
+  if (isLoading) {
+    return (
+      <div className="app-container" style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          style={{ fontSize: '3rem' }}
+        >
+          🥚
+        </motion.div>
+        <p style={{ marginTop: '20px', color: '#888' }}>Cargando tu tamagotchi...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <LoginScreen onLoginSuccess={() => {}} />;
+  }
 
   if (showNameInput) {
     return (
@@ -1004,7 +1066,7 @@ function App() {
       )}
 
       {showUserProfile && (
-        <UserProfileScreen onClose={() => setShowUserProfile(false)} />
+        <UserProfileScreen onClose={() => setShowUserProfile(false)} pet={pet} inventory={inventory} />
       )}
 
       {pet.coins < 100 && (
