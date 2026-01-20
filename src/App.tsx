@@ -676,7 +676,6 @@ function App() {
 
     setPet(prev => ({
       ...prev,
-      energy: Math.max(0, prev.energy - 2),
       happiness: Math.min(100, prev.happiness + 5),
       exp: prev.exp + 2,
     }));
@@ -943,7 +942,6 @@ function App() {
               coins: prev.coins + reward.coins,
               exp: prev.exp + reward.exp,
               happiness: Math.min(100, prev.happiness + reward.happiness),
-              energy: Math.max(0, prev.energy - 10),
             }));
             addNotification(`Victoria! +${reward.coins} monedas`, 'success');
             playCoin();
@@ -951,7 +949,6 @@ function App() {
           onLose={() => {
             setPet(prev => ({
               ...prev,
-              energy: Math.max(0, prev.energy - 8),
               happiness: Math.max(0, prev.happiness - 5),
             }));
             addNotification('Mejor suerte la próxima vez', 'info');
@@ -960,7 +957,12 @@ function App() {
             setActiveGame('skate-game');
           }}
           onWinGame={playHappy}
-          onLoseGame={() => {}}
+          onStartGame={() => {
+            setPet(prev => ({
+              ...prev,
+              energy: Math.max(0, prev.energy - 2),
+            }));
+          }}
         />
       )}
 
