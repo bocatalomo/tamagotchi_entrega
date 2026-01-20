@@ -676,7 +676,7 @@ function App() {
 
     setPet(prev => ({
       ...prev,
-      energy: Math.max(0, prev.energy - 5),
+      energy: Math.max(0, prev.energy - 2),
       happiness: Math.min(100, prev.happiness + 5),
       exp: prev.exp + 2,
     }));
