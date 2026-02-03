@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Diseños - Tamagotchi 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0f;
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #00ffff;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #888;
+            font-size: 1.1rem;
+        }
+
+        .designs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .design-card {
+            background: rgba(20, 20, 30, 0.95);
+            border: 2px solid #333;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .design-card:hover {
+            border-color: #00ffff;
+            box-shadow: 0 6px 25px rgba(0, 255, 255, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .design-header {
+            padding: 20px;
+            background: rgba(0, 255, 255, 0.1);
+            border-bottom: 1px solid #333;
+        }
+
+        .design-title {
+            font-size: 1.4rem;
+            color: #00ffff;
+            margin-bottom: 5px;
+        }
+
+        .design-subtitle {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .design-preview {
+            height: 300px;
+            background: #000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .design-preview iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            transform: scale(0.6);
+            transform-origin: top left;
+            width: 166.67%;
+            height: 166.67%;
+        }
+
+        .design-actions {
+            padding: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #00ffff, #0088cc);
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #ff00ff, #8800cc);
+        }
+
+        .features {
+            background: rgba(20, 20, 30, 0.95);
+            border: 2px solid #333;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .features h2 {
+            color: #00ffff;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-item {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border-left: 3px solid #00ffff;
+        }
+
+        .feature-item h3 {
+            color: #00ffff;
+            margin-bottom: 10px;
+        }
+
+        .feature-item p {
+            color: #ccc;
+            line-height: 1.6;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .feature-list li {
+            color: #aaa;
+            margin: 5px 0;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #00ff88;
+        }
+
+        .instructions {
+            background: rgba(20, 20, 30, 0.95);
+            border: 2px solid #333;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .instructions h2 {
+            color: #00ffff;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .step-list {
+            counter-reset: step-counter;
+        }
+
+        .step-item {
+            counter-increment: step-counter;
+            margin-bottom: 20px;
+            padding-left: 50px;
+            position: relative;
+        }
+
+        .step-item:before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #00ffff, #0088cc);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .step-title {
+            color: #00ffff;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .step-desc {
+            color: #ccc;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 Tamagotchi - Interfaz Innovadora 2025</h1>
+            <p>Explora el nuevo diseño con MCP 21st.dev Magic</p>
+        </div>
+
+        <div class="designs-grid">
+            <div class="design-card">
+                <div class="design-header">
+                    <div class="design-title">🌟 Interfaz Principal</div>
+                    <div class="design-subtitle">Diseño completo con glassmorphism</div>
+                </div>
+                <div class="design-preview">
+                    <iframe src="tamagotchi-interfaz-2025.html" title="Interfaz Principal"></iframe>
+                </div>
+                <div class="design-actions">
+                    <a href="tamagotchi-interfaz-2025.html" target="_blank" class="btn">Ver Completo</a>
+                    <a href="#" class="btn btn-secondary" onclick="showDetails('main')">Detalles</a>
+                </div>
+            </div>
+
+            <div class="design-card">
+                <div class="design-header">
+                    <div class="design-title">🎨 Componentes UI</div>
+                    <div class="design-subtitle">Biblioteca de componentes reutilizables</div>
+                </div>
+                <div class="design-preview">
+                    <div style="padding: 20px; text-align: center; color: #888; height: 100%; display: flex; align-items: center; justify-content: center;">
+                        <div>
+                            <div style="font-size: 3rem; margin-bottom: 10px;">🧩</div>
+                            <div>Componentes modulares</div>
+                            <div style="margin-top: 10px; font-size: 0.9rem;">GlassStatsCard • NeuroButton • AchievementCard</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="design-actions">
+                    <a href="#" class="btn" disabled>Próximamente</a>
+                    <a href="#" class="btn btn-secondary" onclick="showDetails('components')">Detalles</a>
+                </div>
+            </div>
+
+            <div class="design-card">
+                <div class="design-header">
+                    <div class="design-title">📱 Versión Móvil</div>
+                    <div class="design-subtitle">Optimizado para dispositivos táctiles</div>
+                </div>
+                <div class="design-preview">
+                    <div style="padding: 20px; text-align: center; color: #888; height: 100%; display: flex; align-items: center; justify-content: center;">
+                        <div>
+                            <div style="font-size: 3rem; margin-bottom: 10px;">📱</div>
+                            <div>Mobile-First Design</div>
+                            <div style="margin-top: 10px; font-size: 0.9rem;">Touch gestures • Swipe navigation</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="design-actions">
+                    <a href="#" class="btn" disabled>Próximamente</a>
+                    <a href="#" class="btn btn-secondary" onclick="showDetails('mobile')">Detalles</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="features">
+            <h2>🚀 Características del Nuevo Diseño</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <h3>🎨 Glassmorphism & Neumorphism</h3>
+                    <p>Efectos de cristal translúcido con blur y botones 3D con sombras suaves.</p>
+                    <ul class="feature-list">
+                        <li>Backdrop filters avanzados</li>
+                        <li>Gradientes neon vibrantes</li>
+                        <li>Animaciones 60fps fluidas</li>
+                    </ul>
+                </div>
+                <div class="feature-item">
+                    <h3>🎮 Preservación Total</h3>
+                    <p>Mantiene intacto el tamagotchi, sprites y lógica original.</p>
+                    <ul class="feature-list">
+                        <li>Tamagotchi pixel art sin cambios</li>
+                        <li>Animaciones de movimiento conservadas</li>
+                        <li>Lógica de juego intacta</li>
+                    </ul>
+                </div>
+                <div class="feature-item">
+                    <h3>♿ Accesibilidad WCAG 2.1 AA</h3>
+                    <p>Diseño inclusivo con alto contraste y navegación optimizada.</p>
+                    <ul class="feature-list">
+                        <li>Contraste 4.5:1 mínimo</li>
+                        <li>Botones 44x44px+ táctiles</li>
+                        <li>Focus states visibles</li>
+                    </ul>
+                </div>
+                <div class="feature-item">
+                    <h3>📱 Responsive Perfecto</h3>
+                    <p>Adaptación fluida a móvil, tablet y desktop.</p>
+                    <ul class="feature-list">
+                        <li>Mobile-first approach</li>
+                        <li>Touch gestures optimizados</li>
+                        <li>Breakpoints inteligentes</li>
+                    </ul>
+                </div>
+                <div class="feature-item">
+                    <h3>⚡ Performance Optimizado</h3>
+                    <p>Animaciones GPU-acceleradas y re-renders eficientes.</p>
+                    <ul class="feature-list">
+                        <li>Transforms 3D para 60fps</li>
+                        <li>Lazy loading de componentes</li>
+                        <li>Optimized asset loading</li>
+                    </ul>
+                </div>
+                <div class="feature-item">
+                    <h3>🧩 Componentes Modulares</h3>
+                    <p>Sistema de diseño reutilizable y mantenible.</p>
+                    <ul class="feature-list">
+                        <li>Componentes TypeScript</li>
+                        <li>Props interfaces claras</li>
+                        <li>Theme system CSS variables</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h2>📖 Cómo Ver el Nuevo Diseño</h2>
+            <div class="step-list">
+                <div class="step-item">
+                    <div class="step-title">Abrir Visualizador</div>
+                    <div class="step-desc">Abre este archivo en tu navegador para ver el panel de control de diseños.</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-title">Explorar Interfaz Principal</div>
+                    <div class="step-desc">Haz clic en "Ver Completo" para abrir la interfaz innovadora con todos los efectos.</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-title">Interactuar con Componentes</div>
+                    <div class="step-desc">Prueba los botones, navega por las secciones y observa las animaciones fluidas.</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-title">Responsive Testing</div>
+                    <div class="step-desc">Redimensiona el navegador para ver cómo se adapta a diferentes dispositivos.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showDetails(type) {
+            const details = {
+                main: "Interfaz Principal: Diseño completo con glassmorphism, neumorphism y efectos neon. Preserva el tamagotchi original mientras añade belleza moderna.",
+                components: "Componentes UI: Biblioteca modular con GlassStatsCard, NeuroButton, AchievementCard, GlassModal y más. Todos reutilizables y accesibles.",
+                mobile: "Versión Móvil: Optimización touch-first con swipe gestures, bottom navigation y layouts adaptativos para la mejor experiencia móvil."
+            };
+            alert(details[type] || "Detalles próximamente disponibles.");
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tamagotchi - Visualizador de Diseños</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0f;
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #00ffff;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #888;
+            font-size: 1.1rem;
+        }
+
+        .versions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .version-card {
+            background: rgba(20, 20, 30, 0.95);
+            border: 2px solid #333;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .version-card:hover {
+            border-color: #00ffff;
+            box-shadow: 0 6px 25px rgba(0, 255, 255, 0.3);
+        }
+
+        .version-header {
+            padding: 20px;
+            background: rgba(0, 255, 255, 0.1);
+            border-bottom: 1px solid #333;
+        }
+
+        .version-title {
+            font-size: 1.4rem;
+            color: #00ffff;
+            margin-bottom: 5px;
+        }
+
+        .version-subtitle {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .version-preview {
+            height: 300px;
+            background: #000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .version-preview iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            transform: scale(0.6);
+            transform-origin: top left;
+            width: 166.67%;
+            height: 166.67%;
+        }
+
+        .version-actions {
+            padding: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #00ffff, #0088cc);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #ff00ff, #8800cc);
+        }
+
+        .instructions {
+            background: rgba(20, 20, 30, 0.95);
+            border: 2px solid #333;
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .instructions h2 {
+            color: #00ffff;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .instructions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .instruction-item {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid #00ffff;
+        }
+
+        .instruction-item h3 {
+            color: #00ffff;
+            margin-bottom: 10px;
+        }
+
+        .instruction-item p {
+            color: #ccc;
+            line-height: 1.6;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .feature-list li {
+            color: #aaa;
+            margin: 5px 0;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #00ff88;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 Tamagotchi - Visualizador de Diseños</h1>
+            <p>Explora todas las versiones del diseño mejorado con MCP Pencil</p>
+        </div>
+
+        <div class="versions-grid">
+            <div class="version-card">
+                <div class="version-header">
+                    <div class="version-title">🌟 Neon Enhanced</div>
+                    <div class="version-subtitle">WCAG AA+ Compatible</div>
+                </div>
+                <div class="version-preview">
+                    <iframe src="tamagotchi-canvas.html" title="Neon Enhanced Version"></iframe>
+                </div>
+                <div class="version-actions">
+                    <a href="tamagotchi-canvas.html" target="_blank" class="btn">Ver Completo</a>
+                    <a href="#" class="btn btn-secondary" onclick="showDetails('neon')">Detalles</a>
+                </div>
+            </div>
+
+            <div class="version-card">
+                <div class="version-header">
+                    <div class="version-title">🌿 Soft Minimalist</div>
+                    <div class="version-subtitle">Accesibilidad Primero</div>
+                </div>
+                <div class="version-preview">
+                    <div style="padding: 20px; text-align: center; color: #888; height: 100%; display: flex; align-items: center; justify-content: center;">
+                        <div>
+                            <div style="font-size: 3rem; margin-bottom: 10px;">🎨</div>
+                            <div>Disponible próximamente</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="version-actions">
+                    <button class="btn" disabled>En Construcción</button>
+                    <a href="#" class="btn btn-secondary" onclick="showDetails('soft')">Detalles</a>
+                </div>
+            </div>
+
+            <div class="version-card">
+                <div class="version-header">
+                    <div class="version-title">🤖 Cyberpunk Pro</div>
+                    <div class="version-subtitle">Dark Mode Avanzado</div>
+                </div>
+                <div class="version-preview">
+                    <div style="padding: 20px; text-align: center; color: #888; height: 100%; display: flex; align-items: center; justify-content: center;">
+                        <div>
+                            <div style="font-size: 3rem; margin-bottom: 10px;">⚡</div>
+                            <div>Disponible próximamente</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="version-actions">
+                    <button class="btn" disabled>En Construcción</button>
+                    <a href="#" class="btn btn-secondary" onclick="showDetails('cyber')">Detalles</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h2>📖 Cómo Ver los Diseños</h2>
+            <div class="instructions-grid">
+                <div class="instruction-item">
+                    <h3>🔍 Vista Previa</h3>
+                    <p>Pasa el cursor sobre cada tarjeta para ver una vista previa en miniatura del diseño.</p>
+                </div>
+                <div class="instruction-item">
+                    <h3>🖥️ Vista Completa</h3>
+                    <p>Haz clic en "Ver Completo" para abrir el diseño en una nueva pestaña con tamaño completo.</p>
+                </div>
+                <div class="instruction-item">
+                    <h3>📱 Responsividad</h3>
+                    <p>En la vista completa, puedes redimensionar el navegador para ver cómo se adapta a diferentes dispositivos.</p>
+                </div>
+                <div class="instruction-item">
+                    <h3>✨ Interactividad</h3>
+                    <p>Los diseños incluyen animaciones, efectos hover y transiciones funcionales.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h2>🚀 Características del Diseño Neon Enhanced</h2>
+            <div class="instructions-grid">
+                <div class="instruction-item">
+                    <h3>🎨 Accesibilidad WCAG AA+</h3>
+                    <ul class="feature-list">
+                        <li>Contraste mínimo 4.5:1 en todo texto</li>
+                        <li>Botones de 44x44px mínimo</li>
+                        <li>Estados focus visibles con neón</li>
+                        <li>Fuente mínima 16px</li>
+                    </ul>
+                </div>
+                <div class="instruction-item">
+                    <h3>🌈 Paleta Neón Mejorada</h3>
+                    <ul class="feature-list">
+                        <li>Cyan (#00ffff) para elementos principales</li>
+                        <li>Magenta (#ff00ff) para acentos</li>
+                        <li>Verde lima (#00ff88) para éxito</li>
+                        <li>Ámbar (#ffaa00) para advertencias</li>
+                    </ul>
+                </div>
+                <div class="instruction-item">
+                    <h3>🎮 Interacciones Avanzadas</h3>
+                    <ul class="feature-list">
+                        <li>Hover effects con glow neón</li>
+                        <li>Animaciones suaves (60fps)</li>
+                        <li>Feedback táctil inmediato</li>
+                        <li>Micro-interacciones en stats</li>
+                    </ul>
+                </div>
+                <div class="instruction-item">
+                    <h3>📐 Diseño Responsive</h3>
+                    <ul class="feature-list">
+                        <li>Móvil (320px) optimizado</li>
+                        <li>Tablet (768px) adaptable</li>
+                        <li>Desktop (1280px+) perfecto</li>
+                        <li>Breakpoints claros</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showDetails(version) {
+            alert('Detalles de la versión ' + version + ':\n\nCaracterísticas específicas de este diseño estarán disponibles próximamente con documentación completa.');
+        }
+    </script>
+</body>
+</html>

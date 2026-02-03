@@ -1,0 +1,113 @@
+.reset-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.reset-modal-container {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 3px solid #ff6b6b;
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow:
+    0 0 40px rgba(255, 107, 107, 0.3),
+    0 0 80px rgba(255, 107, 107, 0.1);
+}
+
+.reset-modal-icon {
+  font-size: 4rem;
+  margin-bottom: 15px;
+}
+
+.reset-modal-title {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 1rem;
+  color: #ff6b6b;
+  margin: 0 0 20px 0;
+  line-height: 1.5;
+}
+
+.reset-modal-message {
+  font-size: 0.95rem;
+  color: #fff;
+  margin: 0 0 15px 0;
+  line-height: 1.6;
+}
+
+.reset-modal-warning {
+  font-size: 0.85rem;
+  color: #ffd700;
+  margin: 0 0 25px 0;
+  padding: 12px;
+  background: rgba(255, 215, 0, 0.1);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.reset-modal-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.reset-modal-btn {
+  padding: 14px 24px;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.reset-modal-btn.cancel {
+  background: #2d2d44;
+  color: #fff;
+  border: 2px solid #3d3d5c;
+}
+
+.reset-modal-btn.cancel:hover {
+  background: #3d3d5c;
+}
+
+.reset-modal-btn.confirm {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
+  color: #fff;
+  border: 2px solid #ff6b6b;
+  box-shadow: 0 0 20px rgba(255, 107, 107, 0.4);
+}
+
+.reset-modal-btn.confirm:hover {
+  box-shadow: 0 0 30px rgba(255, 107, 107, 0.6);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 480px) {
+  .reset-modal-container {
+    padding: 20px;
+  }
+
+  .reset-modal-title {
+    font-size: 0.85rem;
+  }
+
+  .reset-modal-message {
+    font-size: 0.9rem;
+  }
+
+  .reset-modal-buttons {
+    flex-direction: column;
+  }
+
+  .reset-modal-btn {
+    width: 100%;
+  }
+}

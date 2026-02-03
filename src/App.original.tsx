@@ -12,12 +12,12 @@ import Minigames from './components/Minigames';
 import SkateGame from './components/SkateGame';
 import UserProfileScreen from './components/UserProfile';
 import LoginScreen from './components/LoginScreen';
-import HatchScreen from './components/HatchScreen';
+import ResetConfirmationModal from './components/ResetConfirmationModal';
 import { useAuth } from './contexts/AuthContext';
 import { useAudio } from './hooks/useAudio';
 import { pageVariants } from './utils/animationVariants';
 import { audioManager } from './utils/audioManager';
-import { loadTamagotchi, saveTamagotchi, createTamagotchi, hasTamagotchi } from './services/tamagotchiService';
+import { loadTamagotchi, saveTamagotchi, createTamagotchi, hasTamagotchi, deleteTamagotchi } from './services/tamagotchiService';
 import { PetState, Inventory, Poop } from './types';
 
 const initialPetState: PetState = {
@@ -80,13 +80,15 @@ function App() {
   const [showGameModal, setShowGameModal] = useState(false);
   const [activeGame, setActiveGame] = useState<'skate-game' | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
+  const [isResettingFlow, setIsResettingFlow] = useState(false);
 
   const sleepTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const sleepIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const sleepStartEnergyRef = useRef(0);
   const sleepStartTimeRef = useRef(0);
   const previousCleanlinessRef = useRef(100);
-  const notificationTimeoutsRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
   const {
     isInitialized: audioInitialized,
@@ -135,18 +137,18 @@ function App() {
 
   const addNotification = useCallback((message: string, type: Notification['type'] = 'info') => {
     const id = Date.now().toString();
-    setNotifications(prev => [...prev, { id, message, type }]);
+    const newNotification = { id, message, type };
+    
+    setNotifications(prev => {
+      // Limitar a máximo 4 notificaciones, agregar la nueva al principio
+      const updated = [newNotification, ...prev];
+      return updated.slice(0, 4);
+    });
 
-    if (notificationTimeoutsRef.current.has(id)) {
-      clearTimeout(notificationTimeoutsRef.current.get(id)!);
-    }
-
-    const timeout = setTimeout(() => {
+    // Auto-remover después de 4 segundos
+    setTimeout(() => {
       setNotifications(prev => prev.filter(n => n.id !== id));
-      notificationTimeoutsRef.current.delete(id);
     }, 4000);
-
-    notificationTimeoutsRef.current.set(id, timeout);
   }, []);
 
   const showMessage = useCallback((msg: string) => {
@@ -739,26 +741,78 @@ function App() {
 
   const handleNameSubmit = useCallback(async (name: string) => {
     try {
-      const data = await createTamagotchi({ name: name.trim() });
+      // Si estamos en flujo de reinicio, eliminar el tamagotchi anterior de Firestore
+      if (isResettingFlow && user) {
+        try {
+          await deleteTamagotchi();
+        } catch (error) {
+          console.error('Error deleting previous tamagotchi:', error);
+        }
+      }
+
+      const data = await createTamagotchi({ 
+        name: name.trim(),
+        type: 'cat',
+        color: 'white'
+      });
       setPet(data.pet);
       setInventory(data.inventory);
       setShowNameInput(false);
       setNeedsName(false);
+      setIsResettingFlow(false);
+      
       localStorage.setItem('tamagotchiPet', JSON.stringify(data.pet));
       localStorage.setItem('tamagotchiInventory', JSON.stringify(data.inventory));
+      
+      addNotification(`¡${name.trim()} ha nacido! 🥚✨`, 'success');
     } catch (error) {
       console.error('Error creating tamagotchi:', error);
-      setPet(prev => ({ ...prev, name: name.trim(), birthDate: Date.now(), type: 'cat', color: 'white' }));
+      setPet(prev => ({ 
+        ...prev, 
+        name: name.trim(), 
+        birthDate: Date.now(), 
+        type: 'cat', 
+        color: 'white' 
+      }));
       setShowNameInput(false);
+      setNeedsName(false);
+      setIsResettingFlow(false);
     }
-  }, []);
+  }, [isResettingFlow, user, addNotification]);
 
   const resetGame = useCallback(() => {
-    if (window.confirm('Estás seguro de que quieres reiniciar?')) {
-      localStorage.clear();
-      window.location.reload();
-    }
+    setShowResetModal(true);
   }, []);
+
+  const handleResetConfirm = useCallback(async () => {
+    if (isResetting) return;
+    setIsResetting(true);
+
+    try {
+      setShowResetModal(false);
+      
+      // Limpiar datos existentes
+      localStorage.removeItem('tamagotchiPet');
+      localStorage.removeItem('tamagotchiInventory');
+      
+      // Resetear estados
+      setPet(initialPetState);
+      setInventory(initialInventory);
+      setCurrentScreen('home');
+      
+      // Iniciar flujo de creación como al inicio
+      setIsResettingFlow(true);
+      setShowNameInput(true);
+      setNeedsName(true);
+
+      addNotification('¡Vamos a crear un nuevo tamagotchi! 🥚✨', 'info');
+    } catch (error) {
+      console.error('Error al reiniciar tamagotchi:', error);
+      addNotification('Error al reiniciar. Intenta de nuevo.', 'danger');
+    } finally {
+      setIsResetting(false);
+    }
+  }, [isResetting, addNotification]);
 
   const toggleMute = useCallback(() => {
     setIsAudioMuted(prev => !prev);
@@ -805,7 +859,7 @@ function App() {
           }}>
             🥚 Mi Tamagotchi
           </h1>
-          <NameInput onSubmit={handleNameSubmit} />
+          <NameInput onSubmit={handleNameSubmit} isResettingFlow={isResettingFlow} />
         </motion.div>
       </div>
     );
@@ -814,29 +868,13 @@ function App() {
   return (
     <div className="app-container">
       <AudioControls isMuted={isAudioMuted} onToggleMute={toggleMute} />
-      <NotificationContainer notifications={notifications} onRemove={() => {}} />
+      <NotificationContainer notifications={notifications} onRemove={(id: string) => {
+        setNotifications(prev => prev.filter(n => n.id !== id));
+      }} />
 
-      <main className="main-content">
+      <main className="main-content" style={{ paddingTop: '20px' }}>
         <AnimatePresence mode="wait">
-          {currentScreen === 'home' && pet.stage === 'egg' && !localStorage.getItem('tamagotchi_has_seen_hatch') && (
-            <HatchScreen
-              key="hatch"
-              petName={pet.name}
-              onHatch={(name) => {
-                setPet(prev => ({
-                  ...prev,
-                  stage: 'baby',
-                  birthDate: Date.now(),
-                  age: 0,
-                }));
-                addNotification(`${name} ha nacido! Bienvenido!`, 'success');
-                playEggHatch();
-                saveToFirestore();
-              }}
-            />
-          )}
-
-          {currentScreen === 'home' && !(pet.stage === 'egg' && !localStorage.getItem('tamagotchi_has_seen_hatch')) && (
+          {currentScreen === 'home' && (
             <motion.div
               key="home"
               className="screen-container"
@@ -852,6 +890,7 @@ function App() {
                 isSleeping={isSleeping}
                 isAlive={pet.isAlive}
                 animation={animation}
+                onHatch={pet.stage === 'egg' ? handleHatch : undefined}
               />
 
               <div style={{ textAlign: 'center' }}>
@@ -1014,6 +1053,13 @@ function App() {
         onShowProfile={() => setShowUserProfile(true)}
       />
 
+      <ResetConfirmationModal
+        isOpen={showResetModal}
+        onConfirm={handleResetConfirm}
+        onCancel={() => setShowResetModal(false)}
+        petName={pet.name}
+      />
+
       {showGameModal && (
         <Minigames
           petName={pet.name}
@@ -1025,6 +1071,7 @@ function App() {
               coins: prev.coins + reward.coins,
               exp: prev.exp + reward.exp,
               happiness: Math.min(100, prev.happiness + reward.happiness),
+              energy: reward.energy ? Math.min(100, prev.energy + reward.energy) : prev.energy,
             }));
             addNotification(`Victoria! +${reward.coins} monedas`, 'success');
             playCoin();
@@ -1095,11 +1142,39 @@ function App() {
       {showUserProfile && (
         <UserProfileScreen onClose={() => setShowUserProfile(false)} pet={pet} inventory={inventory} />
       )}
+
+      {pet.coins < 100 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{
+            position: 'fixed',
+            bottom: '80px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            padding: 'var(--spacing-sm) var(--spacing-md)',
+            background: 'var(--color-bg-medium)',
+            border: '2px solid var(--color-neon-amber)',
+            borderRadius: 'var(--radius-md)',
+            fontFamily: 'var(--font-pixel)',
+            fontSize: '0.6rem',
+            color: 'var(--color-neon-amber)',
+            cursor: 'pointer',
+            zIndex: 50,
+          }}
+          onClick={() => setCurrentScreen('shop')}
+        >
+          💰 Necesitas más monedas!
+        </motion.div>
+      )}
     </div>
   );
 }
 
-function NameInput({ onSubmit }: { onSubmit: (name: string) => void }) {
+function NameInput({ onSubmit, isResettingFlow }: { 
+  onSubmit: (name: string) => void;
+  isResettingFlow: boolean;
+}) {
   const [name, setName] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -1123,6 +1198,17 @@ function NameInput({ onSubmit }: { onSubmit: (name: string) => void }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
     >
+      <h1 style={{
+        fontFamily: 'var(--font-pixel)',
+        fontSize: '1.5rem',
+        color: 'var(--color-neon-cyan)',
+        textAlign: 'center',
+        marginBottom: 'var(--spacing-lg)',
+        textShadow: '0 0 20px var(--color-neon-cyan)',
+      }}>
+        {isResettingFlow ? '🔄 Nuevo Tamagotchi' : '🥚 Mi Tamagotchi'}
+      </h1>
+      
       <label
         style={{
           fontFamily: 'var(--font-pixel)',
@@ -1131,14 +1217,16 @@ function NameInput({ onSubmit }: { onSubmit: (name: string) => void }) {
           textAlign: 'center',
         }}
       >
-        Cómo quieres llamar a tu mascota?
+        {isResettingFlow ? 'Cómo quieres llamar a tu nueva mascota?' : 'Cómo quieres llamar a tu mascota?'}
       </label>
+      
       <input
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
         maxLength={12}
         placeholder="Nombre..."
+        autoFocus
         style={{
           padding: 'var(--spacing-md)',
           fontFamily: 'var(--font-retro)',
@@ -1151,6 +1239,7 @@ function NameInput({ onSubmit }: { onSubmit: (name: string) => void }) {
           outline: 'none',
         }}
       />
+      
       <motion.button
         type="submit"
         disabled={!name.trim()}
@@ -1167,7 +1256,7 @@ function NameInput({ onSubmit }: { onSubmit: (name: string) => void }) {
           cursor: name.trim() ? 'pointer' : 'not-allowed',
         }}
       >
-        Comenzar!
+        {isResettingFlow ? 'Crear Nuevo!' : 'Comenzar!'}
       </motion.button>
     </motion.form>
   );

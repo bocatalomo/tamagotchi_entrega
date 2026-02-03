@@ -1,0 +1,302 @@
+/* Arcade Cabinet Styles - Retro Arcade Esthetic with Pink/Pastel Colors */
+
+:root {
+  /* Retro Arcade Color Palette */
+  --arcade-pink: #FF6B9D;
+  --arcade-purple: #C44569;
+  --arcade-pink-dark: #E63946;
+  --arcade-purple-dark: #A8325C;
+  --pastel-blue: #A8DADC;
+  --pastel-mint: #88D8B0;
+  --pastel-yellow: #FFE66D;
+  --pastel-peach: #FFB5B5;
+  --arcade-dark: #2D2A32;
+  --arcade-cabinet: #45425A;
+  --arcade-cabinet-dark: #353147;
+  --arcade-screen: #0F0F1E;
+  --neon-glow: #FF1493;
+
+  /* Arcade Dimensions */
+  --cabinet-border-width: 8px;
+  --cabinet-border-radius: 12px;
+  --screen-border-width: 6px;
+  --screen-curve: 8px;
+}
+
+.arcade-cabinet {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+  font-family: 'Courier New', monospace;
+  background: linear-gradient(145deg, var(--arcade-cabinet), var(--arcade-cabinet-dark));
+  border-radius: var(--cabinet-border-radius);
+  box-shadow: 
+    0 0 0 var(--cabinet-border-width) var(--arcade-pink-dark),
+    0 0 0 calc(var(--cabinet-border-width) + 4px) var(--arcade-purple-dark),
+    0 20px 40px rgba(0, 0, 0, 0.5),
+    inset 0 0 20px rgba(0, 0, 0, 0.3);
+  padding: 20px;
+}
+
+/* Cabinet Frame */
+.cabinet-frame {
+  position: relative;
+  background: linear-gradient(135deg, var(--arcade-cabinet), var(--arcade-cabinet-dark));
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Top Marquee */
+.cabinet-marquee {
+  background: linear-gradient(90deg, var(--arcade-pink), var(--arcade-purple));
+  padding: 12px 20px;
+  text-align: center;
+  position: relative;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 
+    inset 0 2px 4px rgba(255, 255, 255, 0.3),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.marquee-text {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 
+    2px 2px 0 rgba(0, 0, 0, 0.5),
+    0 0 20px var(--neon-glow);
+  animation: marquee-glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes marquee-glow {
+  0% { text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5), 0 0 10px var(--neon-glow); }
+  100% { text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5), 0 0 20px var(--neon-glow), 0 0 30px var(--neon-glow); }
+}
+
+/* CRT Screen Container */
+.crt-screen-container {
+  padding: 20px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9));
+  position: relative;
+}
+
+.crt-frame {
+  background: var(--arcade-dark);
+  border: var(--screen-border-width) solid var(--arcade-pink);
+  border-radius: var(--screen-curve);
+  box-shadow: 
+    inset 0 0 20px rgba(255, 107, 157, 0.3),
+    0 0 15px rgba(255, 107, 157, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Screen Glass Effect */
+.screen-glass {
+  position: relative;
+  background: var(--arcade-screen);
+  min-height: 400px;
+  overflow: hidden;
+}
+
+.screen-glass::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  animation: screen-reflection 8s linear infinite;
+}
+
+@keyframes screen-reflection {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* Scanlines Effect */
+.scanlines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 107, 157, 0.03) 2px,
+    rgba(255, 107, 157, 0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Screen Content Area */
+.screen-content {
+  position: relative;
+  z-index: 5;
+  padding: 20px;
+  min-height: 360px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(168, 218, 220, 0.05) 0%,
+    transparent 50%
+  );
+}
+
+/* Cabinet Controls */
+.cabinet-controls {
+  background: linear-gradient(180deg, var(--arcade-cabinet-dark), var(--arcade-cabinet));
+  padding: 15px;
+  display: flex;
+  justify-content: center;
+}
+
+.control-panel {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Speaker Grille */
+.speaker-grille {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  padding: 10px;
+  background: var(--arcade-dark);
+  border-radius: 6px;
+}
+
+.speaker-hole {
+  width: 8px;
+  height: 8px;
+  background: radial-gradient(circle, #1a1a1a, #0a0a0a);
+  border-radius: 50%;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Cabinet Base */
+.cabinet-base {
+  background: linear-gradient(180deg, var(--arcade-cabinet), var(--arcade-cabinet-dark));
+  padding: 15px;
+  border-radius: 0 0 8px 8px;
+  display: flex;
+  justify-content: center;
+}
+
+.base-decoration {
+  display: flex;
+  gap: 10px;
+}
+
+.led-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #333;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+}
+
+.led-indicator.active {
+  background: var(--pastel-mint);
+  box-shadow: 
+    0 0 10px var(--pastel-mint),
+    inset 0 1px 2px rgba(0, 0, 0, 0.2);
+  animation: led-pulse 2s ease-in-out infinite;
+}
+
+@keyframes led-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(0.9); }
+}
+
+/* Ambient Glow Effects */
+.ambient-glow {
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 107, 157, 0.1) 0%,
+    transparent 70%
+  );
+  border-radius: var(--cabinet-border-radius);
+  pointer-events: none;
+  z-index: -1;
+  animation: ambient-pulse 4s ease-in-out infinite;
+}
+
+@keyframes ambient-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .arcade-cabinet {
+    max-width: 100%;
+    padding: 10px;
+    --cabinet-border-width: 6px;
+    --screen-border-width: 4px;
+  }
+  
+  .marquee-text {
+    font-size: 1rem;
+    letter-spacing: 2px;
+  }
+  
+  .screen-content {
+    padding: 15px;
+    min-height: 300px;
+  }
+  
+  .crt-screen-container {
+    padding: 15px;
+  }
+  
+  .speaker-grille {
+    gap: 6px;
+    padding: 8px;
+  }
+  
+  .speaker-hole {
+    width: 6px;
+    height: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .arcade-cabinet {
+    --cabinet-border-width: 4px;
+    --screen-border-width: 3px;
+    padding: 8px;
+  }
+  
+  .marquee-text {
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+  }
+  
+  .screen-content {
+    padding: 10px;
+    min-height: 250px;
+  }
+  
+  .crt-screen-container {
+    padding: 10px;
+  }
+}

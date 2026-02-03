@@ -1,0 +1,709 @@
+/* Arcade Theme - Tema Retro Arcade para Tamagotchi App */
+
+/* Import variables de componentes arcade */
+@import '../components/ArcadeCabinet.css';
+@import '../components/ArcadeButton.css';
+@import '../components/ArcadeStatsPanel.css';
+@import '../components/JoystickNavigation.css';
+
+/* Variables de colores retro arcade - MEJORADO para accesibilidad */
+:root {
+  /* Retro Arcade Color Palette - Colores más vibrantes y contrastados */
+  --arcade-pink: #FF6B9D;
+  --arcade-pink-light: #FF9DC4;
+  --arcade-purple: #C44569;
+  --arcade-purple-light: #E06B99;
+  --pastel-blue: #7DD3E1;
+  --pastel-mint: #6DD98C;
+  --pastel-yellow: #FFE066;
+  --pastel-peach: #FFB5B5;
+  --arcade-cyan: #5DDCF6;
+  --arcade-green: #00E676;
+
+  /* Fondos con mejor contraste */
+  --arcade-dark: #1E1E2E;
+  --arcade-cabinet: #2D2A42;
+  --arcade-cabinet-light: #3D3A5C;
+  --arcade-cabinet-dark: #1D1A32;
+  --arcade-screen: #0D0D1A;
+
+  /* Texto - MEJORADO contraste WCAG AA */
+  --text-primary: #FFFFFF;
+  --text-secondary: #C8C8D8;
+  --text-muted: #8888A8;
+
+  /* Colores de estado - Más visibles */
+  --color-success: #00E676;
+  --color-warning: #FFC107;
+  --color-danger: #FF5252;
+  --color-info: #40C4FF;
+
+  /* Sobrescribir variables del diseño original para unificar */
+  --color-bg-darkest: var(--arcade-dark);
+  --color-bg-dark: var(--arcade-cabinet);
+  --color-bg-medium: var(--arcade-cabinet-light);
+  --color-bg-light: var(--arcade-cabinet-dark);
+  --color-neon-green: var(--pastel-mint);
+  --color-neon-cyan: var(--pastel-blue);
+  --color-neon-magenta: var(--arcade-pink);
+  --color-neon-amber: var(--pastel-yellow);
+  --color-neon-pink: var(--arcade-pink);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-danger: var(--color-danger);
+  --color-warning: var(--color-warning);
+  --color-success: var(--color-success);
+  --color-info: var(--color-info);
+}
+
+/* Contenedor principal arcade */
+.arcade-app-container {
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(135deg, 
+    var(--arcade-dark) 0%,
+    var(--arcade-cabinet) 50%,
+    var(--arcade-dark) 100%
+  );
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Efecto de fondo animado */
+.arcade-app-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(255, 107, 157, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 50%, rgba(168, 218, 220, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 50% 100%, rgba(136, 216, 176, 0.1) 0%, transparent 50%);
+  animation: arcade-bg-pulse 8s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes arcade-bg-pulse {
+  0% { opacity: 0.3; }
+  100% { opacity: 0.8; }
+}
+
+/* Contenido principal arcade */
+.arcade-main-content {
+  position: relative;
+  z-index: 1;
+  padding: 20px 10px;
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Contenido de pantalla arcade - MEJORADO */
+.arcade-screen-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
+  min-height: 400px;
+  background: linear-gradient(180deg, 
+    rgba(69, 66, 90, 0.4) 0%, 
+    rgba(45, 42, 50, 0.6) 100%);
+  border-radius: 20px;
+  border: 2px solid rgba(255, 107, 157, 0.2);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Información de mascota estilo arcade - MEJORADO */
+.pet-info-display {
+  text-align: center;
+  padding: 20px;
+  background: linear-gradient(180deg, 
+    rgba(69, 66, 90, 0.8) 0%, 
+    rgba(45, 42, 50, 0.9) 100%);
+  border: 3px solid var(--arcade-pink);
+  border-radius: 16px;
+  box-shadow: 
+    0 0 20px rgba(255, 107, 157, 0.3),
+    inset 0 2px 10px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.pet-info-display::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  background: linear-gradient(45deg, 
+    var(--arcade-pink), 
+    var(--pastel-blue), 
+    var(--pastel-mint), 
+    var(--arcade-pink));
+  background-size: 400% 400%;
+  border-radius: 18px;
+  z-index: -1;
+  animation: border-glow 4s ease infinite;
+}
+
+@keyframes border-glow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.arcade-pet-name {
+  font-family: 'Courier New', monospace;
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: var(--pastel-yellow);
+  text-shadow: 
+    2px 2px 0 rgba(0, 0, 0, 0.5),
+    0 0 20px var(--arcade-pink);
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  position: relative;
+  display: inline-block;
+}
+
+.arcade-pet-name::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--arcade-pink), transparent);
+}
+
+.arcade-pet-stage {
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  color: var(--pastel-blue);
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5), 0 0 10px var(--pastel-blue);
+  margin: 8px 0 0 0;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-weight: bold;
+}
+
+/* Grid de acciones arcade - MEJORADO */
+.arcade-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  padding: 20px;
+  background: linear-gradient(180deg, rgba(69, 66, 90, 0.6) 0%, rgba(45, 42, 50, 0.8) 100%);
+  border-radius: 16px;
+  border: 2px solid rgba(255, 107, 157, 0.3);
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.arcade-actions-grid .arcade-button {
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 0.85rem;
+  min-height: 55px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.arcade-actions-grid .arcade-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+/* Contenedor de poops arcade */
+.arcade-poops-container {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  pointer-events: none;
+}
+
+.arcade-poop {
+  cursor: pointer;
+  pointer-events: auto;
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
+  transition: transform 0.2s ease;
+}
+
+.arcade-poop:hover {
+  transform: scale(1.2) rotate(10deg);
+  filter: drop-shadow(2px 2px 8px rgba(255, 107, 157, 0.5));
+}
+
+/* Formulario de nombre arcade - MEJORADO */
+.arcade-name-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 350px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 30px;
+  background: linear-gradient(180deg, 
+    rgba(69, 66, 90, 0.9) 0%, 
+    rgba(45, 42, 50, 0.95) 100%);
+  border: 3px solid var(--arcade-pink);
+  border-radius: 20px;
+  box-shadow: 
+    0 0 30px rgba(255, 107, 157, 0.4),
+    inset 0 2px 10px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.arcade-name-form::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: shine 3s ease-in-out infinite;
+}
+
+@keyframes shine {
+  0% { left: -100%; }
+  50%, 100% { left: 100%; }
+}
+
+.arcade-form-title {
+  font-family: 'Courier New', monospace;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--pastel-yellow);
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5), 0 0 20px var(--arcade-pink);
+  text-align: center;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  position: relative;
+}
+
+.arcade-form-label {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  color: var(--pastel-blue);
+  text-align: center;
+  margin: 0;
+}
+
+.arcade-text-input {
+  padding: 16px 20px;
+  font-family: 'Courier New', monospace;
+  font-size: 1.3rem;
+  background: linear-gradient(180deg, rgba(69, 66, 90, 0.9) 0%, rgba(45, 42, 50, 0.95) 100%);
+  border: 3px solid var(--arcade-pink);
+  border-radius: 12px;
+  color: var(--pastel-yellow);
+  text-align: center;
+  outline: none;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  box-shadow: 
+    0 4px 15px rgba(0, 0, 0, 0.2),
+    inset 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.arcade-text-input:focus {
+  border-color: var(--pastel-blue);
+  box-shadow: 
+    0 0 25px rgba(168, 218, 220, 0.4),
+    inset 0 2px 5px rgba(0, 0, 0, 0.2);
+  transform: scale(1.02);
+}
+
+.arcade-text-input::placeholder {
+  color: rgba(255, 230, 109, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Contenedor de tienda arcade */
+.arcade-shop-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  width: 100%;
+}
+
+.arcade-section-title {
+  font-family: 'Courier New', monospace;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--pastel-yellow);
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5), 0 0 10px var(--arcade-pink);
+  text-align: center;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+.arcade-coin-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 24px;
+  background: linear-gradient(180deg, 
+    rgba(255, 230, 109, 0.2) 0%, 
+    rgba(255, 230, 109, 0.1) 100%);
+  border: 3px solid var(--pastel-yellow);
+  border-radius: 12px;
+  font-size: 1.6rem;
+  box-shadow: 
+    0 0 20px rgba(255, 230, 109, 0.3),
+    inset 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.arcade-coin-count {
+  font-family: 'Courier New', monospace;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--pastel-yellow);
+  text-shadow: 
+    2px 2px 0 rgba(0, 0, 0, 0.5),
+    0 0 20px var(--pastel-yellow);
+  letter-spacing: 2px;
+}
+
+.arcade-shop-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 10px;
+}
+
+.arcade-shop-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 15px;
+  min-height: 130px;
+  background: linear-gradient(180deg, 
+    rgba(69, 66, 90, 0.6) 0%, 
+    rgba(45, 42, 50, 0.8) 100%);
+  border: 2px solid rgba(168, 218, 220, 0.3);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.arcade-shop-item:hover:not(:disabled) {
+  border-color: var(--pastel-blue);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(168, 218, 220, 0.2);
+}
+
+.shop-item-icon {
+  font-size: 3rem;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+.shop-item-name {
+  font-family: 'Courier New', monospace;
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: var(--pastel-blue);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.shop-item-price {
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  color: var(--pastel-yellow);
+  font-weight: bold;
+}
+
+.shop-item-count {
+  font-family: 'Courier New', monospace;
+  font-size: 0.7rem;
+  color: var(--pastel-peach);
+}
+
+/* Contenedor de estadísticas arcade */
+.arcade-stats-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  width: 100%;
+}
+
+.arcade-stats-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid var(--arcade-pink);
+  border-radius: 8px;
+}
+
+.arcade-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  border-bottom: 1px solid rgba(255, 107, 157, 0.3);
+}
+
+.arcade-stat-row .stat-label {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  color: var(--pastel-blue);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.arcade-stat-row .stat-value {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--pastel-yellow);
+  text-shadow: 0 0 5px var(--pastel-yellow);
+}
+
+.arcade-reset-button {
+  margin-top: 10px;
+  align-self: center;
+  min-width: 200px;
+}
+
+/* Contenedor de juego arcade */
+.arcade-play-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  width: 100%;
+}
+
+.arcade-play-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+
+.arcade-games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 15px;
+}
+
+.arcade-game-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 15px;
+  min-height: 150px;
+}
+
+.game-icon {
+  font-size: 3rem;
+}
+
+.game-name {
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--pastel-blue);
+  text-transform: uppercase;
+}
+
+.game-description {
+  font-family: 'Courier New', monospace;
+  font-size: 0.7rem;
+  color: var(--pastel-peach);
+  text-align: center;
+}
+
+/* Resultados de juego arcade */
+.arcade-game-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 25px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 3px solid var(--arcade-pink);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.result-icon {
+  font-size: 3rem;
+}
+
+.result-text {
+  font-family: 'Courier New', monospace;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--pastel-yellow);
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* Advertencia de monedas arcade */
+.arcade-coin-warning {
+  position: fixed;
+  bottom: 140px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 20px;
+  background: var(--arcade-cabinet);
+  border: 2px solid var(--pastel-yellow);
+  border-radius: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  color: var(--pastel-yellow);
+  cursor: pointer;
+  z-index: 50;
+  box-shadow: 0 4px 12px rgba(255, 230, 109, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  animation: coin-warning-pulse 2s ease-in-out infinite;
+}
+
+@keyframes coin-warning-pulse {
+  0%, 100% { transform: translateX(-50%) scale(1); }
+  50% { transform: translateX(-50%) scale(1.05); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .arcade-main-content {
+    padding: 15px 8px;
+    min-height: calc(100vh - 100px);
+  }
+  
+  .arcade-screen-content {
+    gap: 15px;
+    padding: 15px;
+    min-height: 350px;
+  }
+  
+  .arcade-actions-grid {
+    gap: 10px;
+    padding: 10px;
+  }
+  
+  .arcade-actions-grid .arcade-button {
+    font-size: 0.7rem;
+    min-height: 45px;
+    padding: 8px;
+  }
+  
+  .arcade-pet-name {
+    font-size: 1.3rem;
+  }
+  
+  .arcade-form-title {
+    font-size: 1.2rem;
+  }
+  
+  .arcade-section-title {
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+  }
+  
+  .arcade-games-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  
+  .arcade-game-button {
+    padding: 15px 10px;
+    min-height: 120px;
+  }
+  
+  .game-icon {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .arcade-main-content {
+    padding: 10px 5px;
+    min-height: calc(100vh - 80px);
+  }
+  
+  .arcade-screen-content {
+    gap: 12px;
+    padding: 12px;
+    min-height: 300px;
+  }
+  
+  .arcade-actions-grid {
+    gap: 8px;
+    padding: 8px;
+  }
+  
+  .arcade-actions-grid .arcade-button {
+    font-size: 0.6rem;
+    min-height: 40px;
+    padding: 6px;
+  }
+  
+  .arcade-pet-name {
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+  }
+  
+  .arcade-form-title {
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+  }
+  
+  .arcade-section-title {
+    font-size: 1rem;
+    letter-spacing: 1px;
+  }
+  
+  .arcade-games-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .arcade-game-button {
+    padding: 12px 8px;
+    min-height: 100px;
+  }
+  
+  .game-icon {
+    font-size: 2rem;
+  }
+  
+  .arcade-coin-warning {
+    bottom: 120px;
+    padding: 8px 15px;
+    font-size: 0.7rem;
+  }
+}

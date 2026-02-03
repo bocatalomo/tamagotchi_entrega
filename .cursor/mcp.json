@@ -1,0 +1,42 @@
+{
+  "mcpServers": {
+    "pencil": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@pencil-dev/mcp-server@latest"
+      ],
+      "env": {}
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem@latest",
+        "/Users/diego/Downloads/tamagotchi-app 11"
+      ]
+    },
+    "fetch": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-fetch@latest"
+      ]
+    },
+    "brave-search": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-brave-search@latest"
+      ]
+    },
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github@latest",
+        "--allow-empty-repo"
+      ]
+    }
+  }
+}

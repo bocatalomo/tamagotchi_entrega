@@ -1,0 +1,320 @@
+/* Quiz Game Styles - Tema Arcade Retro */
+.quiz-game-container {
+  background: var(--arcade-dark-purple);
+  border: 3px solid var(--arcade-pink);
+  border-radius: var(--arcade-border-radius);
+  padding: 2rem;
+  min-width: 400px;
+  max-width: 600px;
+  box-shadow: 0 0 30px var(--arcade-pink);
+  position: relative;
+  overflow: hidden;
+}
+
+.quiz-game-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      var(--arcade-pink)11 2px,
+      var(--arcade-pink)11 4px
+    );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.quiz-game-container > * {
+  position: relative;
+  z-index: 2;
+}
+
+.quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--arcade-purple);
+}
+
+.quiz-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1.2rem;
+  color: var(--arcade-cyan);
+  text-shadow: 2px 2px 0 var(--arcade-dark-purple);
+  margin: 0;
+}
+
+.quiz-close {
+  background: var(--arcade-pink);
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-family: 'Press Start 2P', monospace;
+  box-shadow: 0 0 15px var(--arcade-pink);
+  transition: all 0.3s ease;
+}
+
+.quiz-close:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 25px var(--arcade-pink);
+}
+
+.quiz-progress {
+  margin-bottom: 1.5rem;
+}
+
+.progress-bar {
+  background: var(--arcade-dark-purple);
+  border: 2px solid var(--arcade-purple);
+  border-radius: 10px;
+  height: 10px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+  background: linear-gradient(90deg, var(--arcade-pink), var(--arcade-cyan));
+  height: 100%;
+  border-radius: 8px;
+}
+
+.progress-text {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.7rem;
+  color: var(--arcade-purple);
+}
+
+.quiz-category {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem 1rem;
+  background: var(--arcade-dark-purple);
+  border: 2px solid currentColor;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+.quiz-question {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1rem;
+  color: var(--arcade-cyan);
+  margin-bottom: 2rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.quiz-answers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.quiz-answer {
+  background: var(--arcade-dark-purple);
+  border: 2px solid var(--arcade-purple);
+  border-radius: var(--arcade-border-radius);
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.quiz-answer:hover:not(:disabled) {
+  border-color: var(--arcade-cyan);
+  transform: translateX(5px);
+}
+
+.quiz-answer.selected {
+  border-color: var(--arcade-pink);
+  background: var(--arcade-pink)22;
+}
+
+.quiz-answer.correct {
+  border-color: var(--arcade-green);
+  background: var(--arcade-green)22;
+  animation: correct-pulse 0.5s ease;
+}
+
+.quiz-answer.incorrect {
+  border-color: var(--arcade-red);
+  background: var(--arcade-red)22;
+  animation: shake 0.5s ease;
+}
+
+.answer-letter {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1rem;
+  color: var(--arcade-cyan);
+  background: var(--arcade-dark-purple);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid currentColor;
+  flex-shrink: 0;
+}
+
+.answer-text {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.8rem;
+  color: white;
+  text-align: left;
+}
+
+.answer-feedback {
+  position: absolute;
+  right: 1rem;
+  font-size: 1.5rem;
+  font-family: 'Press Start 2P', monospace;
+}
+
+.correct-icon {
+  color: var(--arcade-green);
+}
+
+.incorrect-icon {
+  color: var(--arcade-red);
+}
+
+.quiz-score {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.9rem;
+  color: var(--arcade-cyan);
+  text-align: center;
+  margin-top: 1rem;
+}
+
+/* Result Screen */
+.quiz-result {
+  text-align: center;
+}
+
+.result-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.result-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1.5rem;
+  color: var(--arcade-cyan);
+  margin-bottom: 1rem;
+}
+
+.result-score {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.9rem;
+  color: var(--arcade-purple);
+  margin-bottom: 2rem;
+}
+
+.reward-display {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.reward-item {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.8rem;
+  color: var(--arcade-yellow);
+  text-shadow: 2px 2px 0 var(--arcade-dark-purple);
+}
+
+.result-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.quiz-button {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.8rem;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: var(--arcade-border-radius);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+.quiz-button.primary {
+  background: var(--arcade-green);
+  color: white;
+  box-shadow: 0 0 15px var(--arcade-green);
+}
+
+.quiz-button.primary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px var(--arcade-green);
+}
+
+.quiz-button.secondary {
+  background: var(--arcade-purple);
+  color: white;
+  box-shadow: 0 0 15px var(--arcade-purple);
+}
+
+.quiz-button.secondary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px var(--arcade-purple);
+}
+
+/* Animations */
+@keyframes correct-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .quiz-game-container {
+    min-width: 90vw;
+    padding: 1.5rem;
+  }
+  
+  .quiz-title {
+    font-size: 1rem;
+  }
+  
+  .quiz-question {
+    font-size: 0.8rem;
+  }
+  
+  .answer-text {
+    font-size: 0.7rem;
+  }
+  
+  .reward-display {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .result-buttons {
+    flex-direction: column;
+  }
+}

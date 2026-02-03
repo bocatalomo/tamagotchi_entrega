@@ -1,0 +1,551 @@
+/* Home Screen Variación 2: Soft Minimalist Accessibility */
+
+:root {
+  /* Paleta suave con alto contraste WCAG AA+ */
+  --primary-50: #f0f9ff;
+  --primary-100: #e0f2fe;
+  --primary-200: #bae6fd;
+  --primary-500: #0ea5e9;
+  --primary-600: #0284c7;
+  --primary-700: #0369a1;
+  
+  --secondary-50: #fdf4ff;
+  --secondary-100: #fae8ff;
+  --secondary-200: #f5d0fe;
+  --secondary-500: #d946ef;
+  --secondary-600: #c026d3;
+  --secondary-700: #a21caf;
+  
+  --success-50: #f0fdf4;
+  --success-100: #dcfce7;
+  --success-500: #22c55e;
+  --success-600: #16a34a;
+  
+  --warning-50: #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-500: #f59e0b;
+  --warning-600: #d97706;
+  
+  --danger-50: #fef2f2;
+  --danger-100: #fee2e2;
+  --danger-500: #ef4444;
+  --danger-600: #dc2626;
+  
+  /* Neutrales con alto contraste */
+  --gray-50: #fafafa;
+  --gray-100: #f5f5f5;
+  --gray-200: #e5e5e5;
+  --gray-300: #d4d4d4;
+  --gray-500: #737373;
+  --gray-700: #404040;
+  --gray-900: #171717;
+  
+  /* Superficies */
+  --surface-0: #ffffff;
+  --surface-100: #fafafa;
+  --surface-200: #f5f5f5;
+  --surface-300: #e5e5e5;
+  
+  /* Textos con contraste garantizado */
+  --text-primary: #171717;
+  --text-secondary: #404040;
+  --text-muted: #737373;
+  --text-on-primary: #ffffff;
+  
+  /* Bordes sombreados suaves */
+  --border-light: #e5e5e5;
+  --border-medium: #d4d4d4;
+  --border-focus: #0ea5e9;
+  --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-strong: 0 10px 15px rgba(0, 0, 0, 0.1);
+  
+  /* Accesibilidad */
+  --focus-ring: 2px solid #0ea5e9;
+  --focus-offset: 2px;
+  --touch-target: 44px;
+  --border-radius: 8px;
+  --border-radius-lg: 12px;
+  --font-size-base: 16px;
+}
+
+.home-screen-minimalist {
+  min-height: 100vh;
+  padding: 24px 20px 100px;
+  position: relative;
+  max-width: 640px;
+  margin: 0 auto;
+  background: linear-gradient(180deg, var(--surface-0) 0%, var(--surface-100) 100%);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+}
+
+/* Header limpio y accesible */
+.time-header-minimalist {
+  background: var(--primary-50);
+  border: 1px solid var(--primary-200);
+  border-radius: var(--border-radius-lg);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-light);
+  transition: all 0.2s ease;
+}
+
+.time-header-minimalist:hover {
+  box-shadow: var(--shadow-medium);
+}
+
+.time-text-minimalist {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--primary-700);
+  text-align: center;
+}
+
+/* Pet header simple */
+.pet-header-minimalist {
+  background: var(--surface-100);
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius-lg);
+  padding: 20px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-light);
+}
+
+.pet-title-minimalist {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.level-badge-minimalist {
+  background: var(--primary-500);
+  color: var(--text-on-primary);
+  padding: 8px 16px;
+  border-radius: var(--border-radius);
+  font-size: 0.875rem;
+  font-weight: 600;
+  min-width: var(--touch-target);
+  min-height: var(--touch-target);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-light);
+  transition: all 0.2s ease;
+}
+
+.level-badge-minimalist:hover {
+  background: var(--primary-600);
+  transform: translateY(-1px);
+}
+
+/* Info cards claros */
+.quick-info-minimalist {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.info-card-minimalist {
+  background: var(--surface-100);
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  text-align: center;
+  box-shadow: var(--shadow-light);
+  transition: all 0.2s ease;
+}
+
+.info-card-minimalist:hover {
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-2px);
+}
+
+.info-label-minimalist {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.info-value-minimalist {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Pet display minimalista */
+.pet-container-minimalist {
+  margin-bottom: 24px;
+}
+
+.pet-display-minimalist {
+  background: var(--surface-100);
+  border: 2px solid var(--primary-200);
+  border-radius: var(--border-radius-lg);
+  padding: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  box-shadow: var(--shadow-medium);
+  position: relative;
+  overflow: hidden;
+}
+
+.pet-display-minimalist::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, var(--primary-50) 0%, transparent 70%);
+  opacity: 0.5;
+}
+
+.death-overlay-minimalist {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(250, 250, 250, 0.95);
+  border-radius: var(--border-radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 10;
+}
+
+.death-icon-minimalist {
+  font-size: 3rem;
+  opacity: 0.7;
+}
+
+.death-text-minimalist {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Mensaje suave */
+.message-bubble-minimalist {
+  background: var(--secondary-50);
+  border: 1px solid var(--secondary-200);
+  border-radius: var(--border-radius);
+  padding: 16px 20px;
+  margin-top: 16px;
+  box-shadow: var(--shadow-light);
+}
+
+.message-content-minimalist {
+  font-size: 1rem;
+  color: var(--secondary-700);
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Estado mood */
+.mood-display-minimalist {
+  background: var(--success-50);
+  border: 1px solid var(--success-200);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  margin-bottom: 24px;
+  text-align: center;
+  box-shadow: var(--shadow-light);
+}
+
+.mood-text-minimalist {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--success-700);
+  text-transform: capitalize;
+}
+
+/* Acciones accesibles */
+.actions-section-minimalist {
+  background: var(--surface-100);
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-light);
+}
+
+.section-header-minimalist {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.section-title-minimalist {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.actions-grid-minimalist {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+/* Botones accesibles WCAG AA+ */
+.action-button-minimalist {
+  background: var(--primary-500);
+  color: var(--text-on-primary);
+  border: 2px solid transparent;
+  border-radius: var(--border-radius);
+  padding: 16px 12px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: var(--touch-target);
+  min-height: var(--touch-target);
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-light);
+}
+
+.action-button-minimalist:hover:not(:disabled) {
+  background: var(--primary-600);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+}
+
+.action-button-minimalist:active:not(:disabled) {
+  background: var(--primary-700);
+  transform: translateY(0);
+}
+
+.action-button-minimalist:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+  border-color: var(--border-focus);
+}
+
+.action-button-minimalist:disabled {
+  background: var(--gray-300);
+  color: var(--gray-500);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.action-emoji-minimalist {
+  font-size: 1.5rem;
+}
+
+.action-label-minimalist {
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/* Estadísticas claras */
+.stats-section-minimalist {
+  background: var(--surface-100);
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-light);
+}
+
+.stats-grid-minimalist {
+  display: grid;
+  gap: 16px;
+}
+
+.stat-card-minimalist {
+  background: var(--surface-0);
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  box-shadow: var(--shadow-light);
+}
+
+.stat-header-minimalist {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.stat-name-minimalist {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.stat-value-minimalist {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.stat-bar-container-minimalist {
+  background: var(--gray-200);
+  border-radius: 4px;
+  height: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.stat-bar-fill-minimalist {
+  height: 100%;
+  background: var(--success-500);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.stat-bar-fill-minimalist.low {
+  background: var(--danger-500);
+}
+
+.stat-bar-fill-minimalist.medium {
+  background: var(--warning-500);
+}
+
+.stat-bar-fill-minimalist.high {
+  background: var(--success-500);
+}
+
+/* Tips accesibles */
+.tips-section-minimalist {
+  margin-top: 24px;
+}
+
+.tip-card-minimalist {
+  background: var(--warning-50);
+  border: 1px solid var(--warning-200);
+  border-radius: var(--border-radius);
+  padding: 20px;
+  box-shadow: var(--shadow-light);
+}
+
+.tip-header-minimalist {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.tip-icon-minimalist {
+  font-size: 1.25rem;
+}
+
+.tip-title-minimalist {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--warning-700);
+  margin: 0;
+}
+
+.tip-content-minimalist {
+  font-size: 0.875rem;
+  color: var(--warning-600);
+  line-height: 1.6;
+}
+
+/* Responsive accesible */
+@media (max-width: 768px) {
+  .home-screen-minimalist {
+    padding: 20px 16px 100px;
+  }
+  
+  .actions-grid-minimalist {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .quick-info-minimalist {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .home-screen-minimalist {
+    padding: 16px 12px 100px;
+  }
+  
+  .actions-grid-minimalist {
+    grid-template-columns: 1fr;
+  }
+  
+  .pet-display-minimalist {
+    padding: 32px 20px;
+    min-height: 240px;
+  }
+  
+  .pet-title-minimalist {
+    font-size: 1.25rem;
+  }
+  
+  .time-text-minimalist {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .action-button-minimalist {
+    padding: 14px 10px;
+  }
+  
+  .action-emoji-minimalist {
+    font-size: 1.25rem;
+  }
+}
+
+/* Focus visible mejorado */
+@media (prefers-reduced-motion: no-preference) {
+  .action-button-minimalist {
+    animation: none;
+  }
+}
+
+/* Animaciones sutiles */
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.stat-bar-container-minimalist.updating {
+  animation: pulse-subtle 0.3s ease;
+}
+
+/* Skip link para accesibilidad */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--primary-500);
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 1000;
+}
+
+.skip-link:focus {
+  top: 6px;
+}

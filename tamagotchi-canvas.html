@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tamagotchi - Canvas Principal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #00ff88;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .canvas-container {
+            width: 320px;
+            height: 568px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+            border: 4px solid #00ff88;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 0 40px rgba(0, 255, 136, 0.3),
+                inset 0 0 20px rgba(0, 255, 136, 0.1);
+        }
+
+        /* Patrón retro sutil */
+        .canvas-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 136, 0.03) 2px,
+                    rgba(0, 255, 136, 0.03) 4px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 136, 0.03) 2px,
+                    rgba(0, 255, 136, 0.03) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Sistema de notificaciones */
+        .notifications {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            z-index: 10;
+            text-align: center;
+            font-size: 12px;
+            color: #ffff00;
+            text-shadow: 0 0 5px #ffff00;
+            height: 20px;
+        }
+
+        /* Tamagotchi pixel art */
+        .tamagotchi-container {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+        }
+
+        .tamagotchi {
+            width: 120px;
+            height: 120px;
+            background: #2a2a3e;
+            border: 3px solid #00ff88;
+            border-radius: 15px;
+            position: relative;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 136, 0.5),
+                inset 0 0 10px rgba(0, 255, 136, 0.2);
+        }
+
+        .tamagotchi-screen {
+            width: 90px;
+            height: 70px;
+            background: #0a0a0a;
+            border: 2px solid #00ff88;
+            border-radius: 5px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+        }
+
+        .tamagotchi-pet {
+            font-size: 40px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Barras de stats */
+        .stats-container {
+            position: absolute;
+            top: 200px;
+            left: 20px;
+            right: 20px;
+            z-index: 5;
+        }
+
+        .stat-bar {
+            margin-bottom: 12px;
+            background: #1a1a2e;
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            font-weight: bold;
+            min-width: 60px;
+        }
+
+        .stat-progress {
+            flex: 1;
+            height: 12px;
+            background: #0a0a0a;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .stat-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #00cc6a);
+            border-radius: 6px;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 5px rgba(0, 255, 136, 0.5);
+        }
+
+        .stat-value {
+            font-size: 10px;
+            min-width: 25px;
+            text-align: right;
+        }
+
+        /* Botones de acción */
+        .action-buttons {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 5;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .action-btn {
+            background: #1a1a2e;
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            color: #00ff88;
+            font-size: 20px;
+            padding: 12px 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .action-btn:hover {
+            background: #00ff88;
+            color: #0a0a0a;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.8);
+            transform: scale(1.05);
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-emoji {
+            font-size: 24px;
+        }
+
+        .btn-label {
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        /* Responsive */
+        @media (min-width: 480px) {
+            .canvas-container {
+                width: 400px;
+                height: 700px;
+            }
+            
+            .tamagotchi {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .tamagotchi-screen {
+                width: 110px;
+                height: 85px;
+            }
+            
+            .action-buttons {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+
+        @media (min-width: 768px) {
+            .canvas-container {
+                width: 480px;
+                height: 800px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="canvas-container">
+        <!-- Patrón de fondo -->
+        
+        <!-- Sistema de notificaciones -->
+        <div class="notifications" id="notifications">
+            ¡Tu mascota está feliz! 😊
+        </div>
+
+        <!-- Tamagotchi pixel art -->
+        <div class="tamagotchi-container">
+            <div class="tamagotchi">
+                <div class="tamagotchi-screen">
+                    <div class="tamagotchi-pet">🐣</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barras de stats -->
+        <div class="stats-container">
+            <div class="stat-bar">
+                <span class="stat-label">🍔 Hambre</span>
+                <div class="stat-progress">
+                    <div class="stat-fill" style="width: 80%"></div>
+                </div>
+                <span class="stat-value">80/100</span>
+            </div>
+            
+            <div class="stat-bar">
+                <span class="stat-label">😊 Felicidad</span>
+                <div class="stat-progress">
+                    <div class="stat-fill" style="width: 65%"></div>
+                </div>
+                <span class="stat-value">65/100</span>
+            </div>
+            
+            <div class="stat-bar">
+                <span class="stat-label">⚡ Energía</span>
+                <div class="stat-progress">
+                    <div class="stat-fill" style="width: 90%"></div>
+                </div>
+                <span class="stat-value">90/100</span>
+            </div>
+            
+            <div class="stat-bar">
+                <span class="stat-label">🧼 Limpieza</span>
+                <div class="stat-progress">
+                    <div class="stat-fill" style="width: 70%"></div>
+                </div>
+                <span class="stat-value">70/100</span>
+            </div>
+            
+            <div class="stat-bar">
+                <span class="stat-label">❤️ Salud</span>
+                <div class="stat-progress">
+                    <div class="stat-fill" style="width: 95%"></div>
+                </div>
+                <span class="stat-value">95/100</span>
+            </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="action-buttons">
+            <button class="action-btn" onclick="feedPet()">
+                <span class="btn-emoji">🍔</span>
+                <span class="btn-label">Alimentar</span>
+            </button>
+            
+            <button class="action-btn" onclick="playWithPet()">
+                <span class="btn-emoji">🎮</span>
+                <span class="btn-label">Jugar</span>
+            </button>
+            
+            <button class="action-btn" onclick="cleanPet()">
+                <span class="btn-emoji">🧼</span>
+                <span class="btn-label">Limpiar</span>
+            </button>
+            
+            <button class="action-btn" onclick="sleepPet()">
+                <span class="btn-emoji">😴</span>
+                <span class="btn-label">Dormir</span>
+            </button>
+            
+            <button class="action-btn" onclick="healPet()">
+                <span class="btn-emoji">💊</span>
+                <span class="btn-label">Medicina</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Sistema de notificaciones
+        const notifications = document.getElementById('notifications');
+        let notificationTimeout;
+
+        function showNotification(message, duration = 3000) {
+            notifications.textContent = message;
+            notifications.style.opacity = '1';
+            
+            clearTimeout(notificationTimeout);
+            notificationTimeout = setTimeout(() => {
+                notifications.style.opacity = '0';
+            }, duration);
+        }
+
+        // Acciones de los botones
+        function feedPet() {
+            showNotification('🍔 ¡Alimentando a tu mascota!');
+            updateStatFill(0, 10); // Hambre
+            updateStatFill(1, 5);  // Felicidad
+        }
+
+        function playWithPet() {
+            showNotification('🎮 ¡Jugando con tu mascota!');
+            updateStatFill(1, 15);  // Felicidad
+            updateStatFill(2, -10); // Energía
+        }
+
+        function cleanPet() {
+            showNotification('🧼 ¡Mascota limpia y feliz!');
+            updateStatFill(3, 20); // Limpieza
+            updateStatFill(1, 5);  // Felicidad
+        }
+
+        function sleepPet() {
+            showNotification('😴 ¡Tu mascota está durmiendo...');
+            updateStatFill(2, 30); // Energía
+            updateStatFill(4, 10); // Salud
+        }
+
+        function healPet() {
+            showNotification('💊 ¡Medicina administrada!');
+            updateStatFill(4, 25); // Salud
+        }
+
+        function updateStatFill(statIndex, change) {
+            const statFills = document.querySelectorAll('.stat-fill');
+            const statValues = document.querySelectorAll('.stat-value');
+            
+            if (statFills[statIndex]) {
+                const currentWidth = parseInt(statFills[statIndex].style.width);
+                const newWidth = Math.max(0, Math.min(100, currentWidth + change));
+                statFills[statIndex].style.width = newWidth + '%';
+                
+                if (statValues[statIndex]) {
+                    statValues[statIndex].textContent = `${newWidth}/100`;
+                }
+            }
+        }
+
+        // Animación inicial de notificación
+        setTimeout(() => {
+            notifications.style.transition = 'opacity 0.5s ease';
+        }, 100);
+    </script>
+</body>
+</html>
