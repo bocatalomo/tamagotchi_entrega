@@ -826,30 +826,6 @@ function App() {
     return <LoginScreen onLoginSuccess={() => {}} />;
   }
 
-  if (showNameInput) {
-    return (
-      <div className="app-container" style={{ justifyContent: 'center', alignItems: 'center' }}>
-        <motion.div
-          style={{ textAlign: 'center', padding: 'var(--spacing-xl)' }}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h1 style={{
-            fontFamily: 'var(--font-pixel)',
-            fontSize: '1.5rem',
-            color: 'var(--color-neon-cyan)',
-            marginBottom: 'var(--spacing-xl)',
-            textShadow: '0 0 20px var(--color-neon-cyan)',
-          }}>
-            🥚 Mi Tamagotchi
-          </h1>
-          <NameInput onSubmit={handleNameSubmit} />
-        </motion.div>
-      </div>
-    );
-  }
-
   return (
     <div className="app-container">
       <AudioControls isMuted={isAudioMuted} onToggleMute={toggleMute} />
@@ -857,9 +833,11 @@ function App() {
 
       <main className="main-content">
         <AnimatePresence mode="wait">
-          {showNameInput ? (
+          {showNameInput && (
             <NameInput key="name-input" onSubmit={handleNameSubmit} />
-          ) : currentScreen === 'home' && pet.stage === 'egg' ? (
+          )}
+
+          {currentScreen === 'home' && pet.stage === 'egg' && (
             <HatchScreen
               key="hatch"
               petName={pet.name}
@@ -877,7 +855,9 @@ function App() {
                 playEggHatch();
               }}
             />
-          ) : (
+          )}
+
+          {currentScreen === 'home' && pet.stage !== 'egg' && (
             <motion.div
               key="home"
               className="screen-container"
