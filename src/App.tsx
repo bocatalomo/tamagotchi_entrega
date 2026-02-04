@@ -831,7 +831,7 @@ function App() {
       <NotificationContainer notifications={notifications} onRemove={() => {}} />
 
       <main className="main-content">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="popLayout">
           {flowState === 'naming' && (
             <motion.div
               key="name-input-screen"
@@ -886,7 +886,7 @@ function App() {
             />
           )}
 
-          {flowState === 'playing' && (
+          {flowState === 'playing' && currentScreen === 'home' && (
             <motion.div
               key="home"
               className="screen-container"
