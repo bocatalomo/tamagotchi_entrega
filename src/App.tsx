@@ -790,6 +790,7 @@ function App() {
         localStorage.removeItem('tamagotchiInventory');
         localStorage.removeItem('tamagotchi_has_seen_hatch');
         setPet(initialPetState);
+        setCurrentScreen('home');
         setFlowState('naming');
       } else {
         addNotification('Error al reiniciar', 'danger');
@@ -863,7 +864,7 @@ function App() {
             </motion.div>
           )}
 
-          {currentScreen === 'home' && pet.stage === 'egg' && (
+          {flowState === 'hatching' && (
             <HatchScreen
               key="hatch"
               petName={pet.name}
@@ -875,6 +876,8 @@ function App() {
                   age: 0,
                 };
                 setPet(updatedPet);
+                setCurrentScreen('home');
+                setFlowState('playing');
                 saveTamagotchi(updatedPet, inventory);
                 localStorage.setItem('tamagotchi_has_seen_hatch', 'true');
                 addNotification(`${name} ha nacido! Bienvenido!`, 'success');
@@ -883,7 +886,7 @@ function App() {
             />
           )}
 
-          {currentScreen === 'home' && pet.stage !== 'egg' && (
+          {flowState === 'playing' && (
             <motion.div
               key="home"
               className="screen-container"
