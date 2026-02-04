@@ -69,7 +69,7 @@ function App() {
   const [inventory, setInventory] = useState<Inventory>(initialInventory);
   const [currentScreen, setCurrentScreen] = useState<'home' | 'shop' | 'stats' | 'play'>('home');
   const [showNameInput, setShowNameInput] = useState(false);
-  const [needsName, setNeedsName] = useState(false);
+  const [hasPet, setHasPet] = useState(false);
   const [message, setMessage] = useState('');
   const [animation, setAnimation] = useState('');
   const [isSleeping, setIsSleeping] = useState(false);
@@ -229,15 +229,14 @@ function App() {
         setPet(loadedPet);
         setInventory(data.inventory);
         setShowNameInput(false);
+        setHasPet(true);
         setIsSleeping(loadedPet.isSleeping || false);
         
         localStorage.setItem('tamagotchiPet', JSON.stringify(loadedPet));
         localStorage.setItem('tamagotchiInventory', JSON.stringify(data.inventory));
       } else {
-        const hasExisting = await hasTamagotchi();
-        if (!hasExisting) {
-          setShowNameInput(true);
-        }
+        setShowNameInput(false);
+        setHasPet(false);
       }
     } catch (error) {
       console.error('Error loading pet from Firestore:', error);
@@ -248,12 +247,15 @@ function App() {
           setPet(JSON.parse(savedPet));
           setInventory(JSON.parse(savedInventory || '{}'));
           setShowNameInput(false);
+          setHasPet(true);
         } catch (e) {
           console.error('Error loading from localStorage backup:', e);
           setShowNameInput(true);
+          setHasPet(false);
         }
       } else {
         setShowNameInput(true);
+        setHasPet(false);
       }
     } finally {
       setIsLoading(false);
@@ -745,7 +747,7 @@ function App() {
       setPet(data.pet);
       setInventory(data.inventory);
       setShowNameInput(false);
-      setNeedsName(false);
+      setHasPet(true);
       localStorage.setItem('tamagotchiPet', JSON.stringify(data.pet));
       localStorage.setItem('tamagotchiInventory', JSON.stringify(data.inventory));
     } catch (error) {
@@ -782,7 +784,7 @@ function App() {
       };
       setPet(newPet);
       setShowNameInput(false);
-      setNeedsName(false);
+      setHasPet(true);
       localStorage.setItem('tamagotchiPet', JSON.stringify(newPet));
     }
   }, []);
@@ -791,7 +793,9 @@ function App() {
     if (window.confirm('¿Reiniciar? Perderás tu tamagotchi actual.')) {
       const success = await deleteTamagotchi();
       if (success) {
-        localStorage.clear();
+        localStorage.removeItem('tamagotchiPet');
+        localStorage.removeItem('tamagotchiInventory');
+        localStorage.removeItem('tamagotchi_has_seen_hatch');
         window.location.reload();
       } else {
         addNotification('Error al reiniciar', 'danger');
@@ -857,9 +861,7 @@ function App() {
 
       <main className="main-content">
         <AnimatePresence mode="wait">
-          {showNameInput ? (
-            <NameInput key="name-input" onSubmit={handleNameSubmit} />
-          ) : currentScreen === 'home' && pet.stage === 'egg' ? (
+          {currentScreen === 'home' && pet.stage === 'egg' ? (
             <HatchScreen
               key="hatch"
               petName={pet.name}
@@ -871,6 +873,7 @@ function App() {
                   age: 0,
                 };
                 setPet(updatedPet);
+                setHasPet(true);
                 saveTamagotchi(updatedPet, inventory);
                 localStorage.setItem('tamagotchi_has_seen_hatch', 'true');
                 addNotification(`${name} ha nacido! Bienvenido!`, 'success');
@@ -965,85 +968,6 @@ function App() {
                   ))}
                 </motion.div>
               )}
-            </motion.div>
-          )}
-
-          {currentScreen === 'shop' && (
-            <motion.div
-              key="shop"
-              className="screen-container"
-              variants={pageVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-            >
-              <ShopScreen
-                pet={pet}
-                inventory={inventory}
-                onBuyItem={(item, price) => {
-                  if (pet.coins < price) {
-                    addNotification('No tienes suficientes monedas', 'warning');
-                    return;
-                  }
-                  setPet(prev => ({ ...prev, coins: prev.coins - price }));
-                  setInventory(prev => ({ ...prev, [item]: prev[item as keyof Inventory] + 1 }));
-                  addNotification(`Has comprado ${item}!`, 'success');
-                  playCoin();
-                }}
-              />
-            </motion.div>
-          )}
-
-          {currentScreen === 'stats' && (
-            <motion.div
-              key="stats"
-              className="screen-container"
-              variants={pageVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-            >
-              <StatsScreen
-                pet={pet}
-                inventory={inventory}
-                onReset={resetGame}
-              />
-            </motion.div>
-          )}
-
-          {currentScreen === 'play' && (
-            <motion.div
-              key="play"
-              className="screen-container"
-              variants={pageVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-            >
-              <PlayScreen
-                petName={pet.name}
-                coins={pet.coins}
-                onClose={() => setCurrentScreen('home')}
-                onWin={(reward) => {
-                  setPet(prev => ({
-                    ...prev,
-                    coins: prev.coins + reward.coins,
-                    exp: prev.exp + reward.exp,
-                    happiness: Math.min(100, prev.happiness + reward.happiness),
-                    energy: Math.max(0, prev.energy - 10),
-                  }));
-                  addNotification(`Victoria! +${reward.coins} monedas`, 'success');
-                  playCoin();
-                }}
-                onLose={() => {
-                  setPet(prev => ({
-                    ...prev,
-                    energy: Math.max(0, prev.energy - 8),
-                    happiness: Math.max(0, prev.happiness - 5),
-                  }));
-                  addNotification('Mejor suerte la próxima vez', 'info');
-                }}
-              />
             </motion.div>
           )}
         </AnimatePresence>
