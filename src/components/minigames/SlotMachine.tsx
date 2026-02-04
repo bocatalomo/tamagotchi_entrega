@@ -1,162 +1,158 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import './SlotMachine.css';
 
-interface SlotMachineProps {
+const symbols = ['🍒', '🍋', '🍊', '🍇', '💎', '7️⃣', '⭐'];
+
+interface Props {
   coins: number;
-  onGameEnd: (won: boolean, reward?: { coins: number; exp: number; happiness: number }) => void;
+  onUpdateCoins: (coinsChange: number) => void;
   onBack: () => void;
 }
 
-const SlotMachine: React.FC<SlotMachineProps> = ({ coins, onGameEnd, onBack }) => {
+export default function SlotMachine({ coins, onUpdateCoins, onBack }: Props) {
   const [bet, setBet] = useState(10);
-  const [slots, setSlots] = useState(['❓', '❓', '❓']);
-  const [isSpinning, setIsSpinning] = useState(false);
-  const [result, setResult] = useState<{ type: string; message: string; amount: number } | null>(null);
+  const [result, setResult] = useState('');
+  const [displayCoins, setDisplayCoins] = useState(coins);
+  const [spinning, setSpinning] = useState(false);
+  const [slots, setSlots] = useState(['🍒', '🍋', '🍊']);
+  const [isJackpot, setIsJackpot] = useState(false);
 
-  const symbols = ['🍒', '🍋', '🍊', '🍇', '💎', '7️⃣', '⭐'];
+  const reel1Ref = useRef<HTMLDivElement>(null);
+  const reel2Ref = useRef<HTMLDivElement>(null);
+  const reel3Ref = useRef<HTMLDivElement>(null);
 
   const spin = () => {
-    if (isSpinning) return;
-    if (bet <= 0) {
-      setResult({ type: 'error', message: 'Debes apostar algo', amount: 0 });
+    if (spinning) return;
+    if (bet > coins) {
+      setResult('No hay suficientes monedas');
       return;
     }
 
-    setIsSpinning(true);
-    setResult(null);
+    onUpdateCoins(-bet);
+    setDisplayCoins(coins - bet);
+    setResult('');
+    setSpinning(true);
+    setIsJackpot(false);
 
-    let spinCount = 0;
-    const spinInterval = setInterval(() => {
-      setSlots([
-        symbols[Math.floor(Math.random() * symbols.length)],
-        symbols[Math.floor(Math.random() * symbols.length)],
-        symbols[Math.floor(Math.random() * symbols.length)]
-      ]);
-      spinCount++;
+    let count = 0;
+    const maxCount = 20;
 
-      if (spinCount >= 20) {
-        clearInterval(spinInterval);
-        
-        const random = Math.random();
-        let finalSlots;
+    const updateReels = () => {
+      if (!reel1Ref.current || !reel2Ref.current || !reel3Ref.current) return;
 
-        if (random < 0.05) {
-          const jackpotSymbol = symbols[5];
-          finalSlots = [jackpotSymbol, jackpotSymbol, jackpotSymbol];
-        } else if (random < 0.20) {
-          const twoOfSymbol = symbols[Math.floor(Math.random() * 4)];
-          const otherSymbol = symbols[Math.floor(Math.random() * symbols.length)];
-          finalSlots = [twoOfSymbol, twoOfSymbol, otherSymbol].sort(() => Math.random() - 0.5);
-        } else {
-          finalSlots = [
-            symbols[Math.floor(Math.random() * symbols.length)],
-            symbols[Math.floor(Math.random() * symbols.length)],
-            symbols[Math.floor(Math.random() * symbols.length)]
-          ];
-        }
+      const s1 = symbols[Math.floor(Math.random() * symbols.length)];
+      const s2 = symbols[Math.floor(Math.random() * symbols.length)];
+      const s3 = symbols[Math.floor(Math.random() * symbols.length)];
 
-        setSlots(finalSlots);
-        setIsSpinning(false);
-        evaluateResult(finalSlots);
+      reel1Ref.current.textContent = s1;
+      reel2Ref.current.textContent = s2;
+      reel3Ref.current.textContent = s3;
+
+      count++;
+
+      if (count < maxCount) {
+        setTimeout(updateReels, 50);
+      } else {
+        finishSpin(s1, s2, s3);
       }
-    }, 100);
+    };
+
+    updateReels();
   };
 
-  const evaluateResult = (finalSlots: string[]) => {
-    const [slot1, slot2, slot3] = finalSlots;
+  const finishSpin = (s1: string, s2: string, s3: string) => {
+    setSlots([s1, s2, s3]);
+    setSpinning(false);
 
-    if (slot1 === slot2 && slot2 === slot3) {
-      const winAmount = bet * 5;
-      setResult({ type: 'jackpot', message: `JACKPOT! Ganaste ${winAmount} monedas`, amount: winAmount });
-      setTimeout(() => onGameEnd(true, { coins: winAmount, exp: 30, happiness: 40 }), 2000);
-      return;
+    if (s1 === s2 && s2 === s3) {
+      const win = bet * 5;
+      setResult(`JACKPOT! +${win} MONEDAS`);
+      onUpdateCoins(win);
+      setDisplayCoins(displayCoins + win);
+      setIsJackpot(true);
+    } else if (s1 === s2 || s2 === s3 || s1 === s3) {
+      const win = Math.floor(bet * 0.8);
+      setResult(`¡BIEN! +${win} MONEDAS`);
+      onUpdateCoins(win);
+      setDisplayCoins(displayCoins + win);
+    } else {
+      setResult(`PERDISTE ${bet} MONEDAS`);
     }
-
-    if (slot1 === slot2 || slot2 === slot3 || slot1 === slot3) {
-      const winAmount = Math.floor(bet * 0.8);
-      setResult({ type: 'win', message: `Bien! Recuperaste ${winAmount} monedas`, amount: winAmount });
-      setTimeout(() => onGameEnd(true, { coins: winAmount, exp: 10, happiness: 15 }), 2000);
-      return;
-    }
-
-    setResult({ type: 'lose', message: `Perdiste ${bet} monedas`, amount: -bet });
-    setTimeout(() => onGameEnd(false, { coins: -bet, exp: 0, happiness: -10 }), 2000);
-  };
-
-  const adjustBet = (amount: number) => {
-    const newBet = bet + amount;
-    if (newBet < 1) return;
-    if (newBet > coins) return;
-    setBet(newBet);
-  };
-
-  const setBetPreset = (amount: number) => {
-    if (amount > coins) return;
-    setBet(amount);
   };
 
   return (
-    <div className="game-screen">
-      <div className="game-header">
-        <button className="back-button" onClick={onBack}>← Volver</button>
-        <h3 className="game-title">🎰 Tragaperras</h3>
-      </div>
-
-      <div className="game-info">
-        <div className="slot-info">
-          <div className="slot-rule">3 iguales = x5</div>
-          <div className="slot-rule">2 iguales = x0.8</div>
-          <div className="slot-rule">Diferente = Pierde todo</div>
+    <div className="slot-machine-wrapper">
+      <div className="slot-header">
+        <button className="back-btn" onClick={onBack}>← Volver</button>
+        <h1 className="slot-title">🎰 TRAGAPERRAS</h1>
+        <div className="coins-display">
+          <span>{displayCoins} 💰</span>
         </div>
       </div>
 
-      <div className="slot-machine">
-        <div className="slot-display">
-          <div className={`slot-reel ${isSpinning ? 'spinning' : ''}`}>
-            <div className="slot-symbol">{slots[0]}</div>
-          </div>
-          <div className={`slot-reel ${isSpinning ? 'spinning' : ''}`}>
-            <div className="slot-symbol">{slots[1]}</div>
-          </div>
-          <div className={`slot-reel ${isSpinning ? 'spinning' : ''}`}>
-            <div className="slot-symbol">{slots[2]}</div>
-          </div>
+      <div className="reels-container">
+        <div className="reel">
+          <div className="reel-emoji" ref={reel1Ref} style={{fontSize: '50px'}}>{slots[0]}</div>
         </div>
-
-        {result && (
-          <div className={`slot-result ${result.type}`}>
-            {result.message}
-          </div>
-        )}
-
-        <div className="slot-controls">
-          <div className="bet-section">
-            <div className="bet-label">Apuesta:</div>
-            <div className="bet-controls">
-              <button className="bet-button" onClick={() => adjustBet(-10)} disabled={isSpinning || bet <= 10}>-10</button>
-              <button className="bet-button" onClick={() => adjustBet(-1)} disabled={isSpinning || bet <= 1}>-1</button>
-              <div className="bet-amount">{bet} 💰</div>
-              <button className="bet-button" onClick={() => adjustBet(1)} disabled={isSpinning || bet >= coins}>+1</button>
-              <button className="bet-button" onClick={() => adjustBet(10)} disabled={isSpinning || bet + 10 > coins}>+10</button>
-            </div>
-          </div>
-
-          <div className="bet-presets">
-            <button className="preset-button" onClick={() => setBetPreset(10)} disabled={isSpinning || coins < 10}>10</button>
-            <button className="preset-button" onClick={() => setBetPreset(25)} disabled={isSpinning || coins < 25}>25</button>
-            <button className="preset-button" onClick={() => setBetPreset(50)} disabled={isSpinning || coins < 50}>50</button>
-            <button className="preset-button" onClick={() => setBetPreset(Math.min(100, coins))} disabled={isSpinning || coins < 10}>{coins < 100 ? 'MAX' : '100'}</button>
-          </div>
-
-          <button className="spin-button" onClick={spin} disabled={isSpinning || bet > coins}>
-            {isSpinning ? 'GIRANDO...' : 'GIRAR 🎰'}
-          </button>
-
-          <div className="coins-display">Monedas disponibles: {coins} 💰</div>
+        <div className="reel">
+          <div className="reel-emoji" ref={reel2Ref} style={{fontSize: '50px'}}>{slots[1]}</div>
+        </div>
+        <div className="reel">
+          <div className="reel-emoji" ref={reel3Ref} style={{fontSize: '50px'}}>{slots[2]}</div>
         </div>
       </div>
+
+      <div className="result-text" style={{
+        padding: '10px',
+        margin: '20px 0',
+        fontWeight: 'bold',
+        color: result.includes('JACKPOT') ? '#f093fb' : result.includes('BIEN') ? '#4ecca3' : result.includes('PERDISTE') ? '#ff6b6b' : 'inherit'
+      }}>
+        {result}
+      </div>
+
+      <div style={{marginBottom: '20px'}}>
+        <span>APUESTA: {bet} </span>
+        <button onClick={() => setBet(Math.max(1, bet - 10))} disabled={spinning}>-10</button>
+        <button onClick={() => setBet(Math.min(coins, bet + 10))} disabled={spinning}>+10</button>
+      </div>
+
+      <button 
+        onClick={spin}
+        disabled={spinning || bet > coins}
+        style={{
+          padding: '15px 40px',
+          fontSize: '18px',
+          background: spinning ? '#ccc' : '#f093fb',
+          border: '3px solid #000',
+          cursor: spinning ? 'not-allowed' : 'pointer'
+        }}
+      >
+        {spinning ? 'GIRANDO...' : 'GIRAR'}
+      </button>
+
+      {isJackpot && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(240, 147, 251, 0.9)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '48px',
+          fontWeight: 'bold',
+          zIndex: 1000
+        }}>
+          🎰 JACKPOT! 🎰
+        </div>
+      )}
+
+      <button onClick={() => onUpdateCoins(100)} style={{marginTop: '15px', background: '#4ecca3'}}>
+        +100 MONEDAS DEBUG
+      </button>
     </div>
   );
-};
-
-export default SlotMachine;
+}
