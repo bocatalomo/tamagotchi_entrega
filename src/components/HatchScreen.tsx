@@ -34,7 +34,7 @@ const HatchScreen = ({ petName, onHatch }: HatchScreenProps) => {
   });
 
   const VELOCITY = 35;
-  const TARGET_VELOCITY = 18;
+  const TARGET_VELOCITY = 25;
   const TARGET_WIDTH = 25;
   const RANDOM_CHANGE = 0.03;
 
