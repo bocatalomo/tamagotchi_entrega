@@ -732,18 +732,6 @@ function App() {
     saveToFirestore();
   }, [clearSleepState, playWake, addNotification, saveToFirestore]);
 
-  const handleHatch = useCallback(() => {
-    setPet(prev => ({
-      ...prev,
-      stage: 'baby',
-      birthDate: Date.now(),
-      age: 0,
-    }));
-    addNotification(`${pet.name} ha nacido! Bienvenido!`, 'success');
-    playEggHatch();
-    saveToFirestore();
-  }, [pet.name, addNotification, playEggHatch, saveToFirestore]);
-
   const handleNameSubmit = useCallback(async (name: string) => {
     try {
       const data = await createTamagotchi({ name: name.trim() });
@@ -917,6 +905,28 @@ function App() {
                 <p className="pet-stage">
                   {pet.stage === 'baby' ? '🐣 BEBÉ' : pet.stage === 'teen' ? '🐥 JOVEN' : '🐱 ADULTO'}
                 </p>
+                {!pet.isAlive ? (
+                  <p style={{
+                    fontFamily: 'var(--font-pixel)',
+                    fontSize: '0.7rem',
+                    color: 'var(--color-text-muted)',
+                    marginTop: 'var(--spacing-xs)'
+                  }}>
+                    💀 Fallecido
+                  </p>
+                ) : (
+                  <p style={{
+                    fontFamily: 'var(--font-pixel)',
+                    fontSize: '0.7rem',
+                    color: pet.mood === 'enfermo' || pet.mood === 'agonizando' ? 'var(--color-danger)' :
+                           pet.mood === 'triste' || pet.mood === 'cansado' || pet.mood === 'hambriento' ? 'var(--color-warning)' :
+                           'var(--color-text-secondary)',
+                    marginTop: 'var(--spacing-xs)',
+                    textTransform: 'capitalize'
+                  }}>
+                    {pet.mood}
+                  </p>
+                )}
               </div>
 
               <StatsDisplay
@@ -1041,6 +1051,7 @@ function App() {
                 petName={pet.name}
                 coins={pet.coins}
                 onClose={() => setCurrentScreen('home')}
+                onOpenMinigames={() => setShowGameModal(true)}
                 onWin={(reward) => {
                   setPet(prev => ({
                     ...prev,
@@ -1380,12 +1391,13 @@ function StatRow({ label, value }: { label: string; value: string | number }) {
   );
 }
 
-function PlayScreen({ petName, coins, onClose, onWin, onLose }: {
+function PlayScreen({ petName, coins, onClose, onWin, onLose, onOpenMinigames }: {
   petName: string;
   coins: number;
   onClose: () => void;
   onWin: (reward: { coins: number; exp: number; happiness: number }) => void;
   onLose: () => void;
+  onOpenMinigames?: () => void;
 }) {
   const [gameResult, setGameResult] = useState<'win' | 'lose' | null>(null);
   const [score, setScore] = useState(0);

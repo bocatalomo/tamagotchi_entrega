@@ -79,7 +79,7 @@ const RockPaperScissors = ({ petName, onGameEnd, onBack }: RockPaperScissorsProp
           setTimeout(() => onGameEnd(true), 1500);
         } else if (newScore.pet === 2) {
           setTimeout(() => onGameEnd(false), 1500);
-        } else if (round < 3) {
+        } else {
           setTimeout(() => {
             setRound(r => r + 1);
             setPlayerChoice(null);
@@ -100,7 +100,7 @@ const RockPaperScissors = ({ petName, onGameEnd, onBack }: RockPaperScissorsProp
         <h3 className="game-title">✊ Piedra, Papel o Tijera</h3>
       </div>
       <div className="game-info">
-        <div className="round-info">Ronda {round}/3 - Mejor de 3</div>
+        <div className="round-info">Mejor de 3 - Ronda {round}</div>
         <div className="score-info">
           <span className="player-score">Tú: {score.player}</span>
           <span className="pet-score">{petName}: {score.pet}</span>
