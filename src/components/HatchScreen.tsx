@@ -90,9 +90,9 @@ const HatchScreen = ({ petName, onHatch }: HatchScreenProps) => {
     const isInside = gameRef.current.pointPosition >= gameRef.current.targetPosition && gameRef.current.pointPosition <= targetEnd;
 
     // Cargar o descargar carga
-    if (isInside && gameRef.current.isHolding) {
+    if (isInside) {
       gameRef.current.chargeLevel += 10 * deltaSeconds;
-    } else if (!isInside) {
+    } else {
       gameRef.current.chargeLevel -= 5 * deltaSeconds;
     }
     gameRef.current.chargeLevel = Math.max(0, Math.min(100, gameRef.current.chargeLevel));
