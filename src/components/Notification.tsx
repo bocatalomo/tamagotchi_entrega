@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence, PanInfo } from 'framer-motion';
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { notificationVariants } from '../utils/animationVariants';
 
 interface NotificationItem {
@@ -17,50 +17,34 @@ const NotificationItem: React.FC<{
   notification: NotificationItem; 
   onRemove: (id: string) => void;
 }> = ({ notification, onRemove }) => {
-  const [isDragging, setIsDragging] = useState(false);
-  const startY = useRef(0);
-
-  const handleDragStart = () => {
-    setIsDragging(true);
-    startY.current = 0;
-  };
-
-  const handleDrag = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    startY.current = info.offset.y;
-  };
-
-  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    if (startY.current < -50) { // Si se desliza hacia arriba más de 50px
-      onRemove(notification.id);
-    } else {
-      setIsDragging(false);
-    }
-  };
-
   return (
     <motion.div
       key={notification.id}
       className={`notification ${notification.type}`}
-      initial={{ opacity: 0, y: -40 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20, transition: { duration: 0.15 } }}
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
       drag="y"
-      dragConstraints={{ top: 0, bottom: 0 }}
-      dragElastic={0.2}
-      onDragStart={handleDragStart}
-      onDrag={handleDrag}
-      onDragEnd={handleDragEnd}
-      style={{ 
-        cursor: isDragging ? 'grabbing' : 'grab',
-        y: isDragging ? startY.current : 0,
-        opacity: isDragging ? Math.max(0.3, 1 - Math.abs(startY.current) / 100) : 1,
+      dragConstraints={{ top: 0, bottom: 100 }}
+      dragElastic={0.3}
+      dragSnapToOrigin={true}
+      onDragEnd={(_, info) => {
+        if (info.offset.y < -80) {
+          onRemove(notification.id);
+        }
       }}
+      whileDrag={{ scale: 1.02, cursor: 'grabbing' }}
       whileTap={{ cursor: 'grabbing' }}
     >
       <div className="notification-content">
         {notification.message}
       </div>
-      <div className="swipe-hint">↑ Desliza para cerrar</div>
+      <motion.div 
+        className="swipe-hint"
+        animate={{ opacity: 0.5 }}
+      >
+        ↑ Desliza hacia arriba
+      </motion.div>
     </motion.div>
   );
 };
