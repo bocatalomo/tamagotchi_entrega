@@ -68,8 +68,7 @@ function App() {
   const [pet, setPet] = useState<PetState>(initialPetState);
   const [inventory, setInventory] = useState<Inventory>(initialInventory);
   const [currentScreen, setCurrentScreen] = useState<'home' | 'shop' | 'stats' | 'play'>('home');
-  const [showNameInput, setShowNameInput] = useState(false);
-  const [needsName, setNeedsName] = useState(false);
+  const [flowState, setFlowState] = useState<'naming' | 'hatching' | 'playing'>('playing');
   const [message, setMessage] = useState('');
   const [animation, setAnimation] = useState('');
   const [isSleeping, setIsSleeping] = useState(false);
@@ -228,16 +227,13 @@ function App() {
         loadedPet.lastUpdate = Date.now();
         setPet(loadedPet);
         setInventory(data.inventory);
-        setShowNameInput(false);
+        setFlowState(loadedPet.stage === 'egg' ? 'hatching' : 'playing');
         setIsSleeping(loadedPet.isSleeping || false);
         
         localStorage.setItem('tamagotchiPet', JSON.stringify(loadedPet));
         localStorage.setItem('tamagotchiInventory', JSON.stringify(data.inventory));
       } else {
-        const hasExisting = await hasTamagotchi();
-        if (!hasExisting) {
-          setShowNameInput(true);
-        }
+        setFlowState('naming');
       }
     } catch (error) {
       console.error('Error loading pet from Firestore:', error);
@@ -245,15 +241,16 @@ function App() {
       const savedInventory = localStorage.getItem('tamagotchiInventory');
       if (savedPet) {
         try {
-          setPet(JSON.parse(savedPet));
+          const parsedPet = JSON.parse(savedPet);
+          setPet(parsedPet);
           setInventory(JSON.parse(savedInventory || '{}'));
-          setShowNameInput(false);
+          setFlowState(parsedPet.stage === 'egg' ? 'hatching' : 'playing');
         } catch (e) {
           console.error('Error loading from localStorage backup:', e);
-          setShowNameInput(true);
+          setFlowState('naming');
         }
       } else {
-        setShowNameInput(true);
+        setFlowState('naming');
       }
     } finally {
       setIsLoading(false);
@@ -276,7 +273,7 @@ function App() {
   }, [pet, inventory, user]);
 
   useEffect(() => {
-    if (showNameInput || !pet.isAlive || pet.stage === 'egg') return;
+    if (flowState === 'naming' || !pet.isAlive || pet.stage === 'egg') return;
 
     const decayInterval = setInterval(() => {
       setPet(prev => {
@@ -404,10 +401,10 @@ function App() {
     }, 30000);
 
     return () => clearInterval(decayInterval);
-  }, [showNameInput, pet.isAlive, pet.stage, addNotification]);
+  }, [flowState, pet.isAlive, pet.stage, addNotification]);
 
   useEffect(() => {
-    if (showNameInput || !pet.isAlive) return;
+    if (flowState === 'naming' || !pet.isAlive) return;
 
     const ageInterval = setInterval(() => {
       setPet(prev => ({
@@ -417,7 +414,7 @@ function App() {
     }, 3600000);
 
     return () => clearInterval(ageInterval);
-  }, [showNameInput, pet.isAlive]);
+  }, [flowState, pet.isAlive]);
 
   const clearSleepState = useCallback(() => {
     if (sleepTimeoutRef.current) {
@@ -473,7 +470,7 @@ function App() {
   }, [playCoin, addNotification]);
 
   useEffect(() => {
-    if (showNameInput || !pet.isAlive || pet.stage === 'egg') return;
+    if (flowState === 'naming' || !pet.isAlive || pet.stage === 'egg') return;
 
     const cleanlinessDropThreshold = 15;
     const previousCleanliness = previousCleanlinessRef.current;
@@ -488,7 +485,7 @@ function App() {
       previousCleanlinessRef.current = currentCleanliness;
       setPoops([]);
     }
-  }, [pet.cleanliness, pet.isAlive, pet.stage, showNameInput, generatePoop]);
+  }, [pet.cleanliness, pet.isAlive, pet.stage, flowState, generatePoop]);
 
   useEffect(() => {
     if (pet.level >= 5 && pet.stage === 'baby') {
@@ -744,8 +741,7 @@ function App() {
       const data = await createTamagotchi({ name: name.trim() });
       setPet(data.pet);
       setInventory(data.inventory);
-      setShowNameInput(false);
-      setNeedsName(false);
+      setFlowState('hatching');
       localStorage.setItem('tamagotchiPet', JSON.stringify(data.pet));
       localStorage.setItem('tamagotchiInventory', JSON.stringify(data.inventory));
     } catch (error) {
@@ -781,8 +777,7 @@ function App() {
         sleepStartEnergy: null,
       };
       setPet(newPet);
-      setShowNameInput(false);
-      setNeedsName(false);
+      setFlowState('hatching');
       localStorage.setItem('tamagotchiPet', JSON.stringify(newPet));
     }
   }, []);
@@ -791,8 +786,11 @@ function App() {
     if (window.confirm('¿Reiniciar? Perderás tu tamagotchi actual.')) {
       const success = await deleteTamagotchi();
       if (success) {
-        localStorage.clear();
-        window.location.reload();
+        localStorage.removeItem('tamagotchiPet');
+        localStorage.removeItem('tamagotchiInventory');
+        localStorage.removeItem('tamagotchi_has_seen_hatch');
+        setPet(initialPetState);
+        setFlowState('naming');
       } else {
         addNotification('Error al reiniciar', 'danger');
       }
@@ -833,7 +831,7 @@ function App() {
 
       <main className="main-content">
         <AnimatePresence mode="wait">
-          {showNameInput && (
+          {flowState === 'naming' && (
             <motion.div
               key="name-input-screen"
               className="screen-container"
