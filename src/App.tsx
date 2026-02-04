@@ -977,7 +977,7 @@ function App() {
             </motion.div>
           )}
 
-          {currentScreen === 'shop' && (
+          {flowState === 'playing' && currentScreen === 'shop' && (
             <motion.div
               key="shop"
               className="screen-container"
@@ -1003,7 +1003,7 @@ function App() {
             </motion.div>
           )}
 
-          {currentScreen === 'stats' && (
+          {flowState === 'playing' && currentScreen === 'stats' && (
             <motion.div
               key="stats"
               className="screen-container"
@@ -1020,7 +1020,7 @@ function App() {
             </motion.div>
           )}
 
-          {currentScreen === 'play' && (
+          {flowState === 'playing' && currentScreen === 'play' && (
             <motion.div
               key="play"
               className="screen-container"
@@ -1058,11 +1058,13 @@ function App() {
         </AnimatePresence>
       </main>
 
-      <BottomNav
-        currentScreen={currentScreen}
-        onNavigate={(screen: 'home' | 'shop' | 'stats' | 'play') => setCurrentScreen(screen)}
-        onShowProfile={() => setShowUserProfile(true)}
-      />
+      {flowState === 'playing' && (
+        <BottomNav
+          currentScreen={currentScreen}
+          onNavigate={(screen: 'home' | 'shop' | 'stats' | 'play') => setCurrentScreen(screen)}
+          onShowProfile={() => setShowUserProfile(true)}
+        />
+      )}
 
       {showGameModal && (
         <Minigames
