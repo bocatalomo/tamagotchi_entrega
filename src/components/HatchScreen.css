@@ -6,8 +6,11 @@
   bottom: 0;
   background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  padding: 24px 16px;
+  padding-bottom: 40px;
   z-index: 10000;
   overflow: hidden;
 }
@@ -18,107 +21,133 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 2rem;
+  flex: 1;
+  gap: 24px;
 }
 
 .hatch-intro .intro-egg {
-  font-size: 8rem;
-  margin-bottom: 2rem;
+  font-size: 6rem;
   filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.5));
+  animation: eggBounce 2s ease-in-out infinite;
+}
+
+@keyframes eggBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
 .hatch-intro h1 {
   font-family: 'Press Start 2P', cursive;
-  font-size: 1.5rem;
+  font-size: 1rem;
   color: #FFD700;
-  margin-bottom: 1rem;
   text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-  line-height: 1.5;
+  line-height: 1.6;
+  max-width: 300px;
 }
 
 .hatch-intro p {
   font-family: 'Press Start 2P', cursive;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   color: #87CEEB;
-  margin-bottom: 2rem;
   line-height: 1.6;
+  max-width: 280px;
 }
 
 .hatch-start-button {
   font-family: 'Press Start 2P', cursive;
-  font-size: 1rem;
-  padding: 1rem 2rem;
+  font-size: 0.9rem;
+  padding: 16px 32px;
   background: linear-gradient(135deg, #FF6B9D, #FF8C00);
   border: none;
   border-radius: 50px;
   color: white;
   cursor: pointer;
-  box-shadow: 0 10px 30px rgba(255, 107, 157, 0.4);
-  transition: all 0.3s ease;
+  box-shadow: 0 8px 24px rgba(255, 107, 157, 0.4);
+  margin-top: 16px;
 }
 
-.hatch-start-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 15px 40px rgba(255, 107, 157, 0.6);
+.hatch-start-button:active {
+  transform: scale(0.95);
 }
 
-.hatch-game {
+/* Progress Bar - Top */
+.hatch-progress-section {
+  width: 100%;
+  max-width: 400px;
+}
+
+.hatch-progress-header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 500px;
-  padding: 2rem;
-  position: relative;
+  margin-bottom: 8px;
 }
 
-.hatch-progress-container {
-  width: 100%;
-  margin-bottom: 2rem;
-  position: relative;
+.hatch-progress-label {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.hatch-progress-percent {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.7rem;
+  color: #FFD700;
 }
 
 .hatch-progress-bar {
   width: 100%;
-  height: 30px;
+  height: 24px;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
+  border-radius: 12px;
   overflow: hidden;
   border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .hatch-progress-fill {
   height: 100%;
+  width: 0%;
   background: linear-gradient(90deg, #87CEEB, #FF6B9D, #FFD700, #98FB98);
-  border-radius: 15px;
-  transition: background-color 0.3s ease;
+  border-radius: 10px;
+  transition: width 0.1s linear;
 }
 
-.hatch-progress-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-family: 'Press Start 2P', cursive;
-  font-size: 0.7rem;
-  color: white;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+/* Game Bar - Middle */
+.hatch-game-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  max-width: 400px;
+  gap: 16px;
 }
 
 .hatch-bar-container {
   width: 100%;
-  margin-bottom: 3rem;
+}
+
+.hatch-game-hint {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  margin-top: 8px;
+}
+
+.hatch-game-hint.active {
+  color: #FFD700;
 }
 
 .hatch-bar {
   position: relative;
   width: 100%;
-  height: 50px;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 25px;
+  height: 56px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 28px;
   overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  touch-action: none;
 }
 
 .hatch-target {
@@ -126,112 +155,169 @@
   top: 0;
   height: 100%;
   background: linear-gradient(90deg,
-    rgba(255, 215, 0, 0.3),
-    rgba(255, 215, 0, 0.5)
+    rgba(255, 215, 0, 0.4),
+    rgba(255, 215, 0, 0.6)
   );
-  border-radius: 5px;
+  border-radius: 8px;
   transition: opacity 0.2s ease;
 }
 
-.hatch-target-border {
-  position: absolute;
-  top: -2px;
-  height: calc(100% + 4px);
-  border: 2px dashed;
-  border-radius: 8px;
-  transition: border-color 0.2s ease;
-  pointer-events: none;
+.hatch-target.active {
+  background: linear-gradient(90deg,
+    rgba(152, 251, 152, 0.5),
+    rgba(152, 251, 152, 0.7)
+  );
 }
 
 .hatch-point {
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 20px;
-  height: 20px;
-  background: white;
+  width: 28px;
+  height: 28px;
+  background: #ff6b6b;
   border-radius: 50%;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 15px rgba(255, 107, 107, 0.6);
   transition: all 0.1s ease;
 }
 
 .hatch-point.inside {
   background: #FFD700;
-  box-shadow: 0 0 20px #FFD700, 0 0 40px #FFD700;
-  transform: translate(-50%, -50%) scale(1.3);
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+  width: 32px;
+  height: 32px;
 }
 
-.hatch-point.outside {
-  background: #ff6b6b;
-  box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
-  transform: translate(-50%, -50%) scale(1);
+/* Timer Section - Separate Bar */
+.hatch-timer-section {
+  width: 100%;
+  max-width: 400px;
+  margin-top: 8px;
 }
 
-.hatch-hint {
+.hatch-timer-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hatch-timer-icon {
+  font-size: 1.2rem;
+}
+
+.hatch-timer-bar-bg {
+  flex: 1;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.hatch-timer-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #87CEEB, #FFD700);
+  border-radius: 6px;
+  transition: width 0.1s linear;
+}
+
+.hatch-timer-text {
   font-family: 'Press Start 2P', cursive;
   font-size: 0.6rem;
   color: rgba(255, 255, 255, 0.6);
-  text-align: center;
-  margin-top: 1rem;
+  min-width: 50px;
+  text-align: right;
+}
+
+/* Egg - Bottom */
+.hatch-egg-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
 .hatch-egg {
-  font-size: 10rem;
+  font-size: 6rem;
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
-  filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.3));
-  transition: filter 0.3s ease;
+  filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.4));
+  transition: transform 0.15s ease, filter 0.15s ease;
 }
 
 .hatch-egg:active {
-  transform: scale(0.95);
+  transform: scale(0.92);
 }
 
-.hatch-timer {
-  position: fixed;
-  right: 2rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 40px;
-  height: 200px;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 20px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  overflow: hidden;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
+.hatch-egg.holding {
+  filter: drop-shadow(0 0 35px rgba(255, 215, 0, 0.7));
+  animation: eggPulse 0.5s ease-in-out infinite;
 }
 
-.hatch-timer-bar {
-  width: 100%;
-  background: linear-gradient(0deg, #87CEEB, #FF6B9D, #FFD700, #98FB98);
-  border-radius: 0 0 18px 18px;
-  transition: background-color 0.3s ease;
+@keyframes eggPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
 }
 
-.hatch-particle {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  pointer-events: none;
+.hatch-hold-hint {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
 }
 
+.hatch-hold-hint.active {
+  color: #FFD700;
+}
+
+/* Celebration */
 .hatch-celebration {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
   width: 100%;
   height: 100%;
   position: relative;
 }
 
+.hatch-flash {
+  position: fixed;
+  inset: 0;
+  background: white;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.hatch-pet-appearing {
+  font-size: 6rem;
+  z-index: 20;
+  filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.6));
+}
+
+.hatch-celebration h1 {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 1rem;
+  color: #FFD700;
+  margin-top: 16px;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+  z-index: 20;
+}
+
 .hatch-burst-particle {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Particles */
+.hatch-particle {
   position: absolute;
   width: 8px;
   height: 8px;
@@ -239,65 +325,47 @@
   pointer-events: none;
 }
 
-.hatch-cracking-egg {
-  font-size: 12rem;
-  z-index: 10;
-}
-
-.hatch-flash {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: white;
-  pointer-events: none;
-  z-index: 100;
-}
-
-.hatch-pet-appearing {
-  font-size: 8rem;
-  z-index: 20;
-  margin-top: -2rem;
-  filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.5));
-}
-
-.hatch-celebration h1 {
-  font-family: 'Press Start 2P', cursive;
-  font-size: 1.5rem;
-  color: #FFD700;
-  margin-top: 1rem;
-  text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
-  z-index: 20;
-}
-
 /* Responsive */
-@media (max-width: 480px) {
-  .hatch-intro .intro-egg {
-    font-size: 5rem;
-  }
-
-  .hatch-intro h1,
-  .hatch-celebration h1 {
-    font-size: 1rem;
-  }
-
+@media (max-height: 700px) {
   .hatch-egg {
-    font-size: 7rem;
+    font-size: 4.5rem;
+  }
+
+  .hatch-intro .intro-egg {
+    font-size: 4rem;
   }
 
   .hatch-bar {
-    height: 40px;
+    height: 48px;
   }
 
   .hatch-point {
-    width: 16px;
-    height: 16px;
+    width: 24px;
+    height: 24px;
   }
 
-  .hatch-timer {
-    right: 1rem;
-    height: 150px;
-    width: 30px;
+  .hatch-point.inside {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 360px) {
+  .hatch-progress-bar {
+    height: 20px;
+  }
+
+  .hatch-bar {
+    height: 48px;
+    border-radius: 24px;
+  }
+
+  .hatch-point {
+    width: 22px;
+    height: 22px;
+  }
+
+  .hatch-egg {
+    font-size: 5rem;
   }
 }
