@@ -1100,8 +1100,12 @@ function App() {
         <Minigames
           petName={pet.name}
           coins={pet.coins}
-          onClose={() => setShowGameModal(false)}
+          onClose={() => {
+            console.log('onClose llamado - cerrando modal');
+            setShowGameModal(false);
+          }}
           onWin={(reward) => {
+            console.log('onWin llamado:', reward);
             setPet(prev => ({
               ...prev,
               coins: prev.coins + reward.coins,
@@ -1112,6 +1116,7 @@ function App() {
             playCoin();
           }}
           onLose={() => {
+            console.log('onLose llamado');
             setPet(prev => ({
               ...prev,
               happiness: Math.max(0, prev.happiness - 5),

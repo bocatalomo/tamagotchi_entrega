@@ -112,23 +112,30 @@ const Minigames = ({ petName, onClose, onWin, onLose, onOpenSkateGame, coins, on
   };
 
   const handleGameEnd = (won: boolean, customReward?: GameReward) => {
+    console.log('handleGameEnd llamado, won:', won);
     if (won && currentGame) {
       const reward = customReward || currentGame.reward as GameReward;
+      console.log('Ganando juego, recompensa:', reward);
       onWin(reward);
       onWinGame();
     } else {
       if (customReward) {
+        console.log('Recompensa personalizada');
         onWin(customReward);
         onWinGame();
       } else {
+        console.log('Perdiendo juego');
         onLose();
       }
     }
+    console.log('Estableciendo estado a menu...');
     setCurrentGame(null);
     setGameState('menu');
+    console.log('Estado después:', null, 'menu');
   };
 
-  const resetGame = () => {
+  const handleBack = () => {
+    console.log('handleBack llamado');
     setCurrentGame(null);
     setGameState('menu');
   };
@@ -216,7 +223,7 @@ const Minigames = ({ petName, onClose, onWin, onLose, onOpenSkateGame, coins, on
             petName={petName}
             coins={coins}
             onGameEnd={handleGameEnd}
-            onBack={resetGame}
+            onBack={handleBack}
             onOpenSkateGame={onOpenSkateGame}
             onUpdateCoins={onUpdateCoins}
           />
