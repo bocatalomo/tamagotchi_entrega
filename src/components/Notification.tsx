@@ -21,15 +21,15 @@ const NotificationItem: React.FC<{
     <motion.div
       key={notification.id}
       className={`notification ${notification.type}`}
-      initial={{ opacity: 0, scale: 0.9, y: -50 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.9, y: -50, transition: { duration: 0.2 } }}
+      initial={{ opacity: 0, y: -50 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -50, transition: { duration: 0.2 } }}
       drag="y"
-      dragConstraints={{ top: 0, bottom: 200 }}
+      dragConstraints={{ top: -100, bottom: 50 }}
       dragElastic={0.1}
       dragSnapToOrigin={false}
       onDragEnd={(_, info) => {
-        if (info.offset.y < -80) {
+        if (info.offset.y > 80) {
           onRemove(notification.id);
         }
       }}
@@ -43,7 +43,7 @@ const NotificationItem: React.FC<{
         className="swipe-hint"
         animate={{ opacity: 0.5 }}
       >
-        ↑ Desliza hacia arriba
+        ↓ Desliza hacia abajo
       </motion.div>
     </motion.div>
   );
