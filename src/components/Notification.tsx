@@ -21,19 +21,19 @@ const NotificationItem: React.FC<{
     <motion.div
       key={notification.id}
       className={`notification ${notification.type}`}
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+      initial={{ opacity: 0, scale: 0.9, y: -50 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.9, y: -50, transition: { duration: 0.2 } }}
       drag="y"
-      dragConstraints={{ top: 0, bottom: 100 }}
-      dragElastic={0.3}
-      dragSnapToOrigin={true}
+      dragConstraints={{ top: 0, bottom: 200 }}
+      dragElastic={0.1}
+      dragSnapToOrigin={false}
       onDragEnd={(_, info) => {
         if (info.offset.y < -80) {
           onRemove(notification.id);
         }
       }}
-      whileDrag={{ scale: 1.02, cursor: 'grabbing' }}
+      whileDrag={{ scale: 1.02, cursor: 'grabbing', zIndex: 1001 }}
       whileTap={{ cursor: 'grabbing' }}
     >
       <div className="notification-content">

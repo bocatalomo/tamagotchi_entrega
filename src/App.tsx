@@ -148,6 +148,14 @@ function App() {
     notificationTimeoutsRef.current.set(id, timeout);
   }, []);
 
+  const removeNotification = useCallback((id: string) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+    if (notificationTimeoutsRef.current.has(id)) {
+      clearTimeout(notificationTimeoutsRef.current.get(id)!);
+      notificationTimeoutsRef.current.delete(id);
+    }
+  }, []);
+
   const showMessage = useCallback((msg: string) => {
     setMessage(msg);
     setTimeout(() => setMessage(''), 4000);
@@ -828,7 +836,7 @@ function App() {
   return (
     <div className="app-container">
       <AudioControls isMuted={isAudioMuted} onToggleMute={toggleMute} />
-      <NotificationContainer notifications={notifications} onRemove={() => {}} />
+      <NotificationContainer notifications={notifications} onRemove={removeNotification} />
 
       <main className="main-content">
         <AnimatePresence mode="popLayout">
