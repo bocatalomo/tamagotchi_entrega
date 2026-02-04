@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '../firebase/config';
 import { PetState, Inventory } from '../types';
 
@@ -199,11 +199,8 @@ export const deleteTamagotchi = async (): Promise<boolean> => {
     if (!userId) return false;
 
     const docRef = doc(db, 'users', userId, 'tamagotchi', 'current');
-    await setDoc(docRef, {
-      pet: null,
-      inventory: null,
-      deletedAt: serverTimestamp(),
-    });
+    await deleteDoc(docRef);
+    
     console.log('✅ Tamagotchi eliminado de Firestore');
     return true;
   } catch (error) {

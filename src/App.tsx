@@ -17,7 +17,7 @@ import { useAuth } from './contexts/AuthContext';
 import { useAudio } from './hooks/useAudio';
 import { pageVariants } from './utils/animationVariants';
 import { audioManager } from './utils/audioManager';
-import { loadTamagotchi, saveTamagotchi, createTamagotchi, hasTamagotchi } from './services/tamagotchiService';
+import { loadTamagotchi, saveTamagotchi, createTamagotchi, hasTamagotchi, deleteTamagotchi } from './services/tamagotchiService';
 import { PetState, Inventory, Poop } from './types';
 
 const initialPetState: PetState = {
@@ -29,7 +29,7 @@ const initialPetState: PetState = {
   energy: 100,
   cleanliness: 100,
   health: 100,
-  stage: 'egg',
+  stage: 'baby',
   level: 1,
   exp: 0,
   isAlive: true,
@@ -236,7 +236,6 @@ function App() {
       } else {
         const hasExisting = await hasTamagotchi();
         if (!hasExisting) {
-          setNeedsName(true);
           setShowNameInput(true);
         }
       }
@@ -251,7 +250,10 @@ function App() {
           setShowNameInput(false);
         } catch (e) {
           console.error('Error loading from localStorage backup:', e);
+          setShowNameInput(true);
         }
+      } else {
+        setShowNameInput(true);
       }
     } finally {
       setIsLoading(false);
@@ -748,17 +750,54 @@ function App() {
       localStorage.setItem('tamagotchiInventory', JSON.stringify(data.inventory));
     } catch (error) {
       console.error('Error creating tamagotchi:', error);
-      setPet(prev => ({ ...prev, name: name.trim(), birthDate: Date.now(), type: 'cat', color: 'white' }));
+      const newPet: PetState = {
+        name: name.trim(),
+        birthDate: Date.now(),
+        type: 'cat',
+        color: 'white',
+        hunger: 100,
+        happiness: 100,
+        energy: 100,
+        cleanliness: 100,
+        health: 100,
+        stage: 'egg',
+        level: 1,
+        exp: 0,
+        isAlive: true,
+        isSick: false,
+        mood: 'contento',
+        dangerLevel: 'normal',
+        coins: 50,
+        age: 0,
+        lastFed: Date.now(),
+        lastPlayed: Date.now(),
+        lastCleaned: Date.now(),
+        lastUpdate: Date.now(),
+        criticalHungerStart: null,
+        criticalHealthStart: null,
+        criticalComboStart: null,
+        isSleeping: false,
+        sleepStartTime: null,
+        sleepStartEnergy: null,
+      };
+      setPet(newPet);
       setShowNameInput(false);
+      setNeedsName(false);
+      localStorage.setItem('tamagotchiPet', JSON.stringify(newPet));
     }
   }, []);
 
-  const resetGame = useCallback(() => {
-    if (window.confirm('Estás seguro de que quieres reiniciar?')) {
-      localStorage.clear();
-      window.location.reload();
+  const resetGame = useCallback(async () => {
+    if (window.confirm('¿Reiniciar? Perderás tu tamagotchi actual.')) {
+      const success = await deleteTamagotchi();
+      if (success) {
+        localStorage.clear();
+        window.location.reload();
+      } else {
+        addNotification('Error al reiniciar', 'danger');
+      }
     }
-  }, []);
+  }, [addNotification]);
 
   const toggleMute = useCallback(() => {
     setIsAudioMuted(prev => !prev);
@@ -818,25 +857,27 @@ function App() {
 
       <main className="main-content">
         <AnimatePresence mode="wait">
-          {currentScreen === 'home' && pet.stage === 'egg' && !localStorage.getItem('tamagotchi_has_seen_hatch') && (
+          {showNameInput ? (
+            <NameInput key="name-input" onSubmit={handleNameSubmit} />
+          ) : currentScreen === 'home' && pet.stage === 'egg' ? (
             <HatchScreen
               key="hatch"
               petName={pet.name}
               onHatch={(name) => {
-                setPet(prev => ({
-                  ...prev,
-                  stage: 'baby',
+                const updatedPet = {
+                  ...pet,
+                  stage: 'baby' as const,
                   birthDate: Date.now(),
                   age: 0,
-                }));
+                };
+                setPet(updatedPet);
+                saveTamagotchi(updatedPet, inventory);
+                localStorage.setItem('tamagotchi_has_seen_hatch', 'true');
                 addNotification(`${name} ha nacido! Bienvenido!`, 'success');
                 playEggHatch();
-                saveToFirestore();
               }}
             />
-          )}
-
-          {currentScreen === 'home' && !(pet.stage === 'egg' && !localStorage.getItem('tamagotchi_has_seen_hatch')) && (
+          ) : (
             <motion.div
               key="home"
               className="screen-container"
@@ -857,7 +898,7 @@ function App() {
               <div style={{ textAlign: 'center' }}>
                 <h2 className="pet-name">{pet.name}</h2>
                 <p className="pet-stage">
-                  {pet.stage === 'egg' ? '🥚 HUEVO' : pet.stage === 'baby' ? '🐣 BEBÉ' : pet.stage === 'teen' ? '🐥 JOVEN' : '🐱 ADULTO'}
+                  {pet.stage === 'baby' ? '🐣 BEBÉ' : pet.stage === 'teen' ? '🐥 JOVEN' : '🐱 ADULTO'}
                 </p>
               </div>
 
