@@ -834,7 +834,35 @@ function App() {
       <main className="main-content">
         <AnimatePresence mode="wait">
           {showNameInput && (
-            <NameInput key="name-input" onSubmit={handleNameSubmit} />
+            <motion.div
+              key="name-input-screen"
+              className="screen-container"
+              style={{
+                position: 'fixed',
+                inset: 0,
+                background: 'var(--color-bg-darkest)',
+                zIndex: 200,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <div style={{ textAlign: 'center', padding: 'var(--spacing-xl)' }}>
+                <h1 style={{
+                  fontFamily: 'var(--font-pixel)',
+                  fontSize: '1.5rem',
+                  color: 'var(--color-neon-cyan)',
+                  marginBottom: 'var(--spacing-xl)',
+                  textShadow: '0 0 20px var(--color-neon-cyan)',
+                }}>
+                  🥚 Mi Tamagotchi
+                </h1>
+                <NameInput onSubmit={handleNameSubmit} />
+              </div>
+            </motion.div>
           )}
 
           {currentScreen === 'home' && pet.stage === 'egg' && (
