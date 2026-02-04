@@ -33,9 +33,10 @@ interface MinigamesProps {
   coins: number;
   onWinGame: () => void;
   onStartGame: () => void;
+  onUpdateCoins: (coinsChange: number) => void;
 }
 
-const Minigames = ({ petName, onClose, onWin, onLose, onOpenSkateGame, coins, onWinGame, onStartGame }: MinigamesProps) => {
+const Minigames = ({ petName, onClose, onWin, onLose, onOpenSkateGame, coins, onWinGame, onStartGame, onUpdateCoins }: MinigamesProps) => {
   const [currentGame, setCurrentGame] = useState<Game | null>(null);
   const [gameState, setGameState] = useState<'menu' | 'playing' | 'result'>('menu');
 
@@ -111,7 +112,6 @@ const Minigames = ({ petName, onClose, onWin, onLose, onOpenSkateGame, coins, on
   };
 
   const handleGameEnd = (won: boolean, customReward?: GameReward) => {
-    setGameState('result');
     if (won && currentGame) {
       const reward = customReward || currentGame.reward as GameReward;
       onWin(reward);
@@ -124,11 +124,49 @@ const Minigames = ({ petName, onClose, onWin, onLose, onOpenSkateGame, coins, on
         onLose();
       }
     }
+    setCurrentGame(null);
+    setGameState('menu');
   };
 
   const resetGame = () => {
     setCurrentGame(null);
     setGameState('menu');
+  };
+
+  interface GameComponentProps {
+    game: Game;
+    petName: string;
+    coins: number;
+    onGameEnd: (won: boolean, customReward?: { coins: number; exp: number; happiness: number; energy?: number }) => void;
+    onBack: () => void;
+    onOpenSkateGame: () => void;
+    onUpdateCoins: (coinsChange: number) => void;
+  }
+
+  const GameComponent = ({ game, petName, coins, onGameEnd, onBack, onUpdateCoins }: GameComponentProps) => {
+    switch (game.id) {
+      case 'rock-paper-scissors':
+        return <RockPaperScissors petName={petName} onGameEnd={onGameEnd} onBack={onBack} />;
+      case 'memory-match':
+        return <MemoryMatch petName={petName} onGameEnd={onGameEnd} onBack={onBack} />;
+      case 'reaction-time':
+        return <ReactionTime petName={petName} onGameEnd={onGameEnd} onBack={onBack} />;
+      case 'guess-number':
+        return <GuessNumber petName={petName} onGameEnd={onGameEnd} onBack={onBack} />;
+      case 'slot-machine':
+        return <SlotMachine coins={coins} onUpdateCoins={onUpdateCoins} onBack={onBack} />;
+      case 'quiz-tamagotchi':
+        return <QuizGame
+          petName={petName}
+          onWin={(reward) => onGameEnd(true, reward)}
+          onLose={() => onGameEnd(false)}
+          onClose={onBack}
+        />;
+      case 'skate-game':
+        return null;
+      default:
+        return null;
+    }
   };
 
   if (gameState === 'menu') {
@@ -180,6 +218,7 @@ const Minigames = ({ petName, onClose, onWin, onLose, onOpenSkateGame, coins, on
             onGameEnd={handleGameEnd}
             onBack={resetGame}
             onOpenSkateGame={onOpenSkateGame}
+            onUpdateCoins={onUpdateCoins}
           />
         </div>
       </div>
@@ -187,41 +226,6 @@ const Minigames = ({ petName, onClose, onWin, onLose, onOpenSkateGame, coins, on
   }
 
   return null;
-};
-
-interface GameComponentProps {
-  game: Game;
-  petName: string;
-  coins: number;
-  onGameEnd: (won: boolean, customReward?: { coins: number; exp: number; happiness: number; energy?: number }) => void;
-  onBack: () => void;
-  onOpenSkateGame: () => void;
-}
-
-const GameComponent = ({ game, petName, coins, onGameEnd, onBack }: GameComponentProps) => {
-  switch (game.id) {
-    case 'rock-paper-scissors':
-      return <RockPaperScissors petName={petName} onGameEnd={onGameEnd} onBack={onBack} />;
-    case 'memory-match':
-      return <MemoryMatch petName={petName} onGameEnd={onGameEnd} onBack={onBack} />;
-    case 'reaction-time':
-      return <ReactionTime petName={petName} onGameEnd={onGameEnd} onBack={onBack} />;
-    case 'guess-number':
-      return <GuessNumber petName={petName} onGameEnd={onGameEnd} onBack={onBack} />;
-    case 'slot-machine':
-      return <SlotMachine coins={coins} onGameEnd={onGameEnd} onBack={onBack} />;
-    case 'quiz-tamagotchi':
-      return <QuizGame
-        petName={petName}
-        onWin={(reward) => onGameEnd(true, reward)}
-        onLose={() => onGameEnd(false)}
-        onClose={onBack}
-      />;
-    case 'skate-game':
-      return null;
-    default:
-      return null;
-  }
 };
 
 export default Minigames;
