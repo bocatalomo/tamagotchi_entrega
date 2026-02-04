@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, deleteDoc, serverTimestamp, getDocs, query, collection, limit } from 'firebase/firestore';
 import { db, auth } from '../firebase/config';
 import { PetState, Inventory } from '../types';
 
@@ -60,7 +60,7 @@ const getTamagotchiRef = () => {
   return doc(db, 'users', userId, 'tamagotchi', 'current');
 };
 
-// Cargar tamagotchi desde Firestore
+// Cargar tamagotchi desde Firestore (siempre desde el servidor, sin caché)
 export const loadTamagotchi = async (): Promise<TamagotchiData | null> => {
   try {
     const userId = auth.currentUser?.uid;

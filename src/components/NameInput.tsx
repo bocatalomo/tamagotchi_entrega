@@ -4,8 +4,12 @@ const NameInput = ({ onSubmit }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const name = e.target.petName.value.trim();
+    console.log('NameInput: Form submit, name:', name);
     if (name) {
+      console.log('NameInput: Calling onSubmit');
       onSubmit(name);
+    } else {
+      console.log('NameInput: Name is empty');
     }
   };
 

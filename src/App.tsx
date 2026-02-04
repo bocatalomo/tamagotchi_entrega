@@ -162,8 +162,10 @@ function App() {
   }, []);
 
   const loadPetFromFirestore = useCallback(async () => {
+    console.log('loadPetFromFirestore: Iniciado');
     try {
       const data = await loadTamagotchi();
+      console.log('loadPetFromFirestore: Datos recibidos:', data ? 'existe' : 'null');
       
       if (data) {
         const loadedPet = { ...data.pet };
@@ -733,15 +735,19 @@ function App() {
   }, [clearSleepState, playWake, addNotification, saveToFirestore]);
 
   const handleNameSubmit = useCallback(async (name: string) => {
+    console.log('handleNameSubmit: Iniciado con nombre:', name);
     try {
+      console.log('handleNameSubmit: Creando tamagotchi...');
       const data = await createTamagotchi({ name: name.trim() });
+      console.log('handleNameSubmit: Tamagotchi creado, datos:', data);
       setPet(data.pet);
       setInventory(data.inventory);
       setFlowState('hatching');
       localStorage.setItem('tamagotchiPet', JSON.stringify(data.pet));
       localStorage.setItem('tamagotchiInventory', JSON.stringify(data.inventory));
+      console.log('handleNameSubmit: Completado, flowState ahora es "hatching"');
     } catch (error) {
-      console.error('Error creating tamagotchi:', error);
+      console.error('handleNameSubmit: Error creando tamagotchi:', error);
       const newPet: PetState = {
         name: name.trim(),
         birthDate: Date.now(),
@@ -779,15 +785,20 @@ function App() {
   }, []);
 
   const resetGame = useCallback(async () => {
+    console.log('resetGame: Iniciando...');
     if (window.confirm('¿Reiniciar? Perderás tu tamagotchi actual.')) {
+      console.log('resetGame: Usuario confirmó');
       const success = await deleteTamagotchi();
+      console.log('resetGame: deleteTamagotchi result:', success);
       if (success) {
+        console.log('resetGame: Limpiando estado...');
         localStorage.removeItem('tamagotchiPet');
         localStorage.removeItem('tamagotchiInventory');
         localStorage.removeItem('tamagotchi_has_seen_hatch');
         setPet(initialPetState);
         setCurrentScreen('home');
         setFlowState('naming');
+        console.log('resetGame: Completado, flowState ahora es "naming"');
       } else {
         addNotification('Error al reiniciar', 'danger');
       }
@@ -1119,6 +1130,12 @@ function App() {
               exp: prev.exp + 2,
             }));
           }}
+          onUpdateCoins={(coinsChange) => {
+            setPet(prev => ({
+              ...prev,
+              coins: prev.coins + coinsChange,
+            }));
+          }}
         />
       )}
 
@@ -1446,19 +1463,37 @@ function PlayScreen({ petName, coins, onClose, onWin, onLose, onOpenMinigames }:
           icon="🎰"
           name="Tragaperras"
           description="Gira y gana!"
-          onClick={() => handleGame(Math.random() > 0.5 ? 'win' : 'lose')}
+          onClick={() => {
+            if (onOpenMinigames) {
+              onOpenMinigames();
+            } else {
+              handleGame(Math.random() > 0.5 ? 'win' : 'lose');
+            }
+          }}
         />
         <MiniGameButton
           icon="🧠"
           name="Memoria"
           description="Encuentra pares"
-          onClick={() => handleGame(Math.random() > 0.4 ? 'win' : 'lose')}
+          onClick={() => {
+            if (onOpenMinigames) {
+              onOpenMinigames();
+            } else {
+              handleGame(Math.random() > 0.4 ? 'win' : 'lose');
+            }
+          }}
         />
         <MiniGameButton
           icon="🛹"
           name="Skate"
           description="Haz tricks!"
-          onClick={() => handleGame(Math.random() > 0.6 ? 'win' : 'lose')}
+          onClick={() => {
+            if (onOpenMinigames) {
+              onOpenMinigames();
+            } else {
+              handleGame(Math.random() > 0.6 ? 'win' : 'lose');
+            }
+          }}
         />
       </div>
 
