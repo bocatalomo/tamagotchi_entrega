@@ -12,6 +12,7 @@
   animation: fadeIn 0.3s ease-out;
   padding: 20px;
   overflow-y: auto;
+  cursor: pointer; /* Indicar que el overlay es clickeable */
 }
 
 .minigame-container {
@@ -26,6 +27,7 @@
   border-radius: 16px;
   position: relative;
   animation: modalSlideIn 0.3s ease-out;
+  cursor: default; /* Restablecer cursor dentro del contenedor */
 }
 
 @keyframes modalSlideIn {
@@ -217,15 +219,53 @@
 .score-info {
   display: flex;
   justify-content: space-around;
-  font-size: 0.75rem;
+  align-items: center;
+  gap: 24px;
+  font-size: 1.2rem;  /* Aumentado de 0.75rem (+60%) */
+  padding: 12px 20px;  /* Más espacio alrededor */
+  background: rgba(30, 30, 50, 0.6);  /* Fondo sutil */
+  border-radius: 12px;
+  border: 2px solid rgba(0, 217, 255, 0.3);  /* Borde cyan sutil */
+  position: relative;  /* Para el separador */
+}
+
+/* Separador visual entre puntuaciones */
+.score-info::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 60%;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(0, 217, 255, 0.5),
+    transparent
+  );
 }
 
 .player-score {
   color: #00ff88;
+  font-weight: bold;  /* Texto más grueso */
+  text-shadow: 
+    0 0 10px rgba(0, 255, 136, 0.6),
+    0 0 20px rgba(0, 255, 136, 0.3);  /* Efecto neón verde */
+  letter-spacing: 0.05em;  /* Mejora legibilidad */
+  z-index: 1;  /* Por encima del separador */
+  position: relative;
 }
 
 .pet-score {
   color: #ff6b9d;
+  font-weight: bold;  /* Texto más grueso */
+  text-shadow: 
+    0 0 10px rgba(255, 107, 157, 0.6),
+    0 0 20px rgba(255, 107, 157, 0.3);  /* Efecto neón rosa */
+  letter-spacing: 0.05em;  /* Mejora legibilidad */
+  z-index: 1;  /* Por encima del separador */
+  position: relative;
 }
 
 .rps-battle {
@@ -1042,5 +1082,368 @@
 
   .result-main {
     font-size: 1rem;
+  }
+
+  /* Ajustes del marcador de victorias en móvil */
+  .score-info {
+    font-size: 1rem;  /* Ligeramente más pequeño en móvil */
+    padding: 10px 16px;
+    gap: 16px;
+  }
+
+  .player-score,
+  .pet-score {
+    font-size: 1rem;
+  }
+}
+
+/* ============================================
+   PIEDRA, PAPEL O TIJERA - MEJORAS
+   ============================================ */
+
+/* Animación para cuando el jugador elige */
+.rps-choice.chosen {
+  animation: choicePop 0.4s ease-out;
+  border-color: #00ff88;
+  box-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
+}
+
+@keyframes choicePop {
+  0% { 
+    transform: scale(0.8); 
+    opacity: 0.5;
+  }
+  50% { 
+    transform: scale(1.15); 
+  }
+  100% { 
+    transform: scale(1); 
+    opacity: 1;
+  }
+}
+
+/* Estado de "pensando" más pronunciado */
+.rps-choice.thinking {
+  animation: thinking 0.8s ease-in-out infinite;
+  border-color: #ffd700;
+}
+
+@keyframes thinking {
+  0%, 100% { 
+    transform: scale(1) rotate(0deg); 
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+  }
+  25% { 
+    transform: scale(1.05) rotate(-5deg); 
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+  }
+  75% { 
+    transform: scale(1.05) rotate(5deg); 
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+  }
+}
+
+/* Mensaje de estado durante el juego */
+.rps-status {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #00d9ff;
+  padding: 12px;
+  font-family: 'Press Start 2P', cursive;
+  animation: fadeIn 0.3s ease-out;
+  text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================
+   PANTALLA DE VICTORIA/DERROTA
+   ============================================ */
+
+.rps-game-over {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  padding: 20px;
+}
+
+.game-over-content {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 4px solid #00d9ff;
+  border-radius: 20px;
+  padding: 32px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  animation: gameOverSlideIn 0.5s ease-out;
+  box-shadow: 0 0 40px rgba(0, 217, 255, 0.3);
+}
+
+.game-over-content.victory {
+  border-color: #00ff88;
+  box-shadow: 0 0 40px rgba(0, 255, 136, 0.4);
+}
+
+.game-over-content.defeat {
+  border-color: #ff6b6b;
+  box-shadow: 0 0 40px rgba(255, 107, 107, 0.3);
+}
+
+@keyframes gameOverSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.game-over-icon {
+  font-size: 5rem;
+  margin-bottom: 16px;
+  animation: iconBounce 0.6s ease-out;
+}
+
+@keyframes iconBounce {
+  0% { transform: scale(0) rotate(-180deg); }
+  50% { transform: scale(1.2) rotate(10deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.game-over-title {
+  font-size: 1.5rem;
+  color: #fff;
+  margin-bottom: 24px;
+  font-family: 'Press Start 2P', cursive;
+  line-height: 1.6;
+}
+
+.game-over-content.victory .game-over-title {
+  color: #00ff88;
+  text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+}
+
+.game-over-content.defeat .game-over-title {
+  color: #ff6b6b;
+  text-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+}
+
+/* Marcador final */
+.final-score {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 32px;
+  padding: 20px;
+  background: rgba(45, 45, 68, 0.6);
+  border-radius: 12px;
+  border: 2px solid #3d3d5c;
+}
+
+.score-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.score-label {
+  font-size: 0.7rem;
+  color: #888;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.score-value {
+  font-size: 2.5rem;
+  color: #00d9ff;
+  font-weight: bold;
+  text-shadow: 0 0 15px rgba(0, 217, 255, 0.6);
+}
+
+.score-divider {
+  font-size: 2rem;
+  color: #555;
+}
+
+/* Sección de recompensas */
+.rewards-section {
+  margin-bottom: 28px;
+}
+
+.rewards-title {
+  font-size: 1rem;
+  color: #ffd700;
+  margin-bottom: 16px;
+  font-family: 'Press Start 2P', cursive;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.rewards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(45, 45, 68, 0.4);
+  padding: 16px;
+  border-radius: 12px;
+  border: 2px solid #3d3d5c;
+}
+
+.reward-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: #fff;
+  animation: rewardPop 0.4s ease-out backwards;
+}
+
+.reward-item:nth-child(1) { animation-delay: 0.1s; }
+.reward-item:nth-child(2) { animation-delay: 0.2s; }
+.reward-item:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes rewardPop {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.reward-icon {
+  font-size: 1.5rem;
+}
+
+.reward-value {
+  font-weight: bold;
+  color: #00ff88;
+}
+
+/* Botones de la pantalla de fin */
+.game-over-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.game-button {
+  padding: 14px 24px;
+  font-size: 0.8rem;
+  font-family: 'Press Start 2P', cursive;
+  border: 3px solid;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  flex: 1;
+  max-width: 180px;
+}
+
+.game-button.primary {
+  background: linear-gradient(135deg, #00d9ff 0%, #0099cc 100%);
+  color: #000;
+  border-color: #00d9ff;
+  box-shadow: 0 4px 15px rgba(0, 217, 255, 0.4);
+}
+
+.game-button.primary:hover {
+  background: linear-gradient(135deg, #00ffff 0%, #00aadd 100%);
+  box-shadow: 0 6px 20px rgba(0, 217, 255, 0.6);
+  transform: translateY(-2px);
+}
+
+.game-button.secondary {
+  background: linear-gradient(135deg, #2d2d44 0%, #1f1f35 100%);
+  color: #fff;
+  border-color: #3d3d5c;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.game-button.secondary:hover {
+  background: linear-gradient(135deg, #3d3d5c 0%, #2d2d44 100%);
+  border-color: #00d9ff;
+  box-shadow: 0 6px 20px rgba(0, 217, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Responsive para pantalla de game over */
+@media (max-width: 600px) {
+  .game-over-content {
+    padding: 24px 16px;
+  }
+
+  .game-over-icon {
+    font-size: 3.5rem;
+  }
+
+  .game-over-title {
+    font-size: 1.1rem;
+  }
+
+  .score-value {
+    font-size: 2rem;
+  }
+
+  .rewards-title {
+    font-size: 0.85rem;
+  }
+
+  .game-over-actions {
+    flex-direction: column;
+  }
+
+  .game-button {
+    max-width: 100%;
+  }
+}
+
+/* ============================================
+   ESTILOS PARA INDICADOR DE ESTADO DE IA
+   ============================================ */
+
+.ai-status {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.ai-status.online {
+  background: linear-gradient(135deg, rgba(0, 230, 118, 0.2), rgba(0, 200, 100, 0.15));
+  border: 2px solid #00e676;
+  color: #00ff88;
+  text-shadow: 0 0 8px rgba(0, 230, 118, 0.5);
+  box-shadow: 0 0 15px rgba(0, 230, 118, 0.2);
+  animation: aiPulse 2s ease-in-out infinite;
+}
+
+.ai-status.offline {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.2), rgba(255, 152, 0, 0.15));
+  border: 2px solid #ffc107;
+  color: #ffeb3b;
+  text-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
+  box-shadow: 0 0 15px rgba(255, 193, 7, 0.2);
+}
+
+@keyframes aiPulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(0, 230, 118, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(0, 230, 118, 0.4);
   }
 }

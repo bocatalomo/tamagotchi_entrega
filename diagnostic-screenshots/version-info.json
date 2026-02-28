@@ -1,0 +1,22 @@
+{
+  "hasResultPanel": false,
+  "hasSlotMachineV2CSS": true,
+  "loadedScripts": [
+    "",
+    "http://localhost:5175/@vite/client",
+    "http://localhost:5175/src/main.tsx"
+  ],
+  "loadedStyles": [
+    "https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap",
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ]
+}

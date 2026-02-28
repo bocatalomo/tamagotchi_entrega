@@ -1,3 +1,14 @@
+/**
+ * ⚠️ DEPRECADO: Este contexto ya no se usa en la aplicación.
+ * La gestión del estado se realiza directamente en App.tsx con:
+ * - useState para el estado local
+ * - useAutoSave para persistencia automática en Firestore
+ * - calculateOfflineDecay para decay offline
+ * 
+ * Se mantiene solo por compatibilidad con componentes antiguos.
+ * TODO: Eliminar este archivo cuando se confirme que no se usa en ningún lado.
+ */
+
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { PetState, Inventory } from '../types';
 import { getInitialPetState } from '../hooks/usePetUtils';

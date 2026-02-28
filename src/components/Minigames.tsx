@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './Minigames.css';
 import RockPaperScissors from './minigames/RockPaperScissors';
 import MemoryMatch from './minigames/MemoryMatch';
 import ReactionTime from './minigames/ReactionTime';
 import GuessNumber from './minigames/GuessNumber';
 import SlotMachine from './minigames/SlotMachine';
+import SlotMachineV2 from './minigames/SlotMachineV2';
 import QuizGame from './minigames/QuizGame';
 
 interface GameReward {
@@ -43,10 +44,10 @@ const Minigames = ({ petName, onClose, onWin, onLose, onOpenSkateGame, coins, on
   const games: Game[] = [
     {
       id: 'rock-paper-scissors',
-      name: 'Piedra, Papel o Tijera',
-      emoji: '✊',
-      description: 'Juega contra tu mascota',
-      difficulty: 'Fácil',
+      name: 'Piedra, Papel o Tijera IA',
+      emoji: '🤖',
+      description: 'Juega contra IA entrenada con ML',
+      difficulty: 'Difícil',
       reward: { coins: 8, exp: 15, happiness: 25 }
     },
     {
@@ -75,9 +76,17 @@ const Minigames = ({ petName, onClose, onWin, onLose, onOpenSkateGame, coins, on
     },
     {
       id: 'slot-machine',
-      name: 'Tragaperras',
+      name: 'Tragaperras Classic',
       emoji: '🎰',
-      description: 'Apuesta y gana monedas',
+      description: 'Versión clásica de slots',
+      difficulty: 'Medio',
+      reward: { coins: 'Variable', exp: 'Variable', happiness: 'Variable' }
+    },
+    {
+      id: 'slot-machine-v2',
+      name: 'Super Slot Machine',
+      emoji: '💎',
+      description: '¡Tragaperras ESPECTACULAR con efectos!',
       difficulty: 'Medio',
       reward: { coins: 'Variable', exp: 'Variable', happiness: 'Variable' }
     },
@@ -140,6 +149,57 @@ const Minigames = ({ petName, onClose, onWin, onLose, onOpenSkateGame, coins, on
     setGameState('menu');
   };
 
+  /**
+   * Maneja el clic en el overlay (fondo oscuro)
+   * Cierra el modal si se hace clic fuera del contenedor
+   */
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Solo cerrar si el clic fue directamente en el overlay (no en hijos)
+    if (e.target === e.currentTarget) {
+      // Si hay un juego en progreso, pedir confirmación
+      if (gameState === 'playing') {
+        const confirmed = window.confirm(
+          '¿Salir del juego? Perderás el progreso actual.'
+        );
+        if (confirmed) {
+          console.log('Usuario confirmó salir durante juego activo');
+          onClose();
+        }
+      } else {
+        // Si está en menú, cerrar directamente
+        console.log('Cerrando desde menú (clic en overlay)');
+        onClose();
+      }
+    }
+  };
+
+  /**
+   * Maneja la tecla ESC para cerrar el modal
+   */
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        // Si hay un juego en progreso, pedir confirmación
+        if (gameState === 'playing') {
+          const confirmed = window.confirm(
+            '¿Salir del juego? Perderás el progreso actual.'
+          );
+          if (confirmed) {
+            console.log('Usuario confirmó salir con ESC durante juego activo');
+            onClose();
+          }
+        } else {
+          // Si está en menú, cerrar directamente
+          console.log('Cerrando con ESC desde menú');
+          onClose();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [gameState, onClose]);
+
   interface GameComponentProps {
     game: Game;
     petName: string;
@@ -161,7 +221,9 @@ const Minigames = ({ petName, onClose, onWin, onLose, onOpenSkateGame, coins, on
       case 'guess-number':
         return <GuessNumber petName={petName} onGameEnd={onGameEnd} onBack={onBack} />;
       case 'slot-machine':
-        return <SlotMachine coins={coins} onUpdateCoins={onUpdateCoins} onBack={onBack} />;
+        return <SlotMachineV2 coins={coins} onUpdateCoins={onUpdateCoins} onBack={onBack} />;
+      case 'slot-machine-v2':
+        return <SlotMachineV2 coins={coins} onUpdateCoins={onUpdateCoins} onBack={onBack} />;
       case 'quiz-tamagotchi':
         return <QuizGame
           petName={petName}
@@ -178,8 +240,8 @@ const Minigames = ({ petName, onClose, onWin, onLose, onOpenSkateGame, coins, on
 
   if (gameState === 'menu') {
     return (
-      <div className="minigame-overlay">
-        <div className="minigame-container">
+      <div className="minigame-overlay" onClick={handleOverlayClick}>
+        <div className="minigame-container" onClick={(e) => e.stopPropagation()}>
           <div className="minigame-header">
             <h2 className="minigame-title">🎮 Mini-Juegos</h2>
             <button className="minigame-close" onClick={onClose}>✕</button>
@@ -216,8 +278,8 @@ const Minigames = ({ petName, onClose, onWin, onLose, onOpenSkateGame, coins, on
 
   if (gameState === 'playing' && currentGame) {
     return (
-      <div className="minigame-overlay">
-        <div className="minigame-container">
+      <div className="minigame-overlay" onClick={handleOverlayClick}>
+        <div className="minigame-container" onClick={(e) => e.stopPropagation()}>
           <GameComponent
             game={currentGame}
             petName={petName}

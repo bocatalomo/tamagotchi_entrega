@@ -1,172 +1,174 @@
-# AGENTS.md - Tamagotchi App Development Guide
+# AGENTS.md
 
-## Overview
-This is a React 19 + TypeScript + Vite PWA project for a virtual pet game. The app features a pixel-art retro aesthetic, persistence via localStorage, and Firebase authentication.
+## Purpose
+Guidance for agentic coding in this repo. Keep changes aligned with existing patterns and the retro, pixel-art game aesthetic.
 
-## Build Commands
+## Environment
+- App: React 19 + TypeScript + Vite PWA
+- UI: Framer Motion animations, Tone.js audio
+- Storage: localStorage persistence
+- Auth: Firebase (auth only)
 
+## Cursor/Copilot Rules
+- No .cursor/rules/, .cursorrules, or .github/copilot-instructions.md found in this repo.
+
+## Commands
 ```bash
-# Development server with hot reload
+# Dev server (http://localhost:5173)
 npm run dev
 
-# Build for production (outputs to /dist)
+# Production build
 npm run build
 
-# Type check + build combined
+# Type check + build (recommended before PRs)
 npm run build:check
 
-# Preview production build locally
+# Preview production build
 npm run preview
 
-# Run linter on all files
+# Lint all files (ESLint 9 flat config)
 npm run lint
 
 # TypeScript type checking only
 npm run typecheck
 
-# Run tests (uses Vitest with jsdom)
+# Tests (Vitest)
 npm run test
-
-# Run tests with UI dashboard
 npm run test:ui
-
-# Run tests with coverage report
 npm run test:coverage
 
-# Run a single test file
-npm run test -- <file-pattern>
+# Single test file (non-watch)
+npm run test -- --run <file-or-glob>
+
+# Tests matching a pattern
+npm run test -- <pattern>
 ```
 
-**Single test example:**
+## Test Examples
 ```bash
-npm run test -- src/components/PixelPet.test.tsx
 npm run test -- --run src/hooks/usePetState.test.ts
+npm run test -- PixelPet
+npm run test:coverage -- --reporter=html
 ```
 
-## Project Structure
-
-```
+## Repo Structure
+```text
 src/
-├── components/     # React components (TSX)
-├── contexts/       # React Context providers
-├── hooks/          # Custom React hooks
-├── types/          # TypeScript type definitions
-├── utils/          # Utility functions
-├── firebase/       # Firebase configuration
-├── App.tsx         # Main app component
-├── main.tsx        # Entry point
-└── styles/         # Global styles
+components/     UI components (TSX)
+components/minigames/  Minigame components
+components/skategame/  Skate game physics
+contexts/       Context providers (GameContext, AuthContext)
+hooks/          Custom hooks
+types/          Shared types
+utils/          Utilities (audio, animation, etc.)
+constants/      Game constants
+reducers/       Reducers (petReducer)
+services/       Service layer
+firebase/       Firebase config
+stateMachine/   State machine logic
+App.tsx         App root
+main.tsx        Entry point
+index.css       Global styles
 ```
 
-## Code Style Guidelines
+## Code Style
 
 ### TypeScript
-- Use explicit types for function parameters and return values
-- Interfaces for objects (use `interface` not `type` for objects)
-- Use `as const` for literal type assertions
-- Strict mode is disabled in tsconfig - noUnusedLocals/params are allowed
-- Path alias: `@/*` maps to `src/*` (e.g., `@/components/Button`)
+- Prefer explicit parameter and return types for exported functions.
+- Use `interface` for object shapes; `type` for unions and primitives.
+- Use `as const` for literal enums and readonly tuples.
+- Path alias: `@/*` maps to `src/*`.
+- Strict mode is disabled; still avoid `any` and implicit `any`.
 
-### React Components
-- Use functional components with TypeScript
-- Default export for page-level components
-- Named exports for reusable components
-- Use `.tsx` extension for all component files
-- Props interfaces should be named `<ComponentName>Props`
+### React
+- Function components only.
+- Default export for page-level components; named exports for reusable components.
+- Props interfaces named `<ComponentName>Props`.
+- Keep render logic clear and flat; extract large blocks to helpers or subcomponents.
 
 ### Hooks
-- Prefix custom hooks with `use` (e.g., `usePetState`, `useGameLoop`)
-- Extract reusable logic into hooks
-- Group related hooks in `src/hooks/index.ts`
-- Use `useCallback` for functions passed as props
-- Use `useMemo` for expensive computations
+- Custom hooks must start with `use`.
+- Favor `useCallback` for prop callbacks and `useMemo` for expensive derived values.
+- Clean up timers/intervals in `useEffect` return functions.
 
 ### State Management
-- Local state with `useState` for component-level state
-- `useReducer` for complex state logic (see GameContext)
-- Context API for app-wide state (AuthContext, GameContext)
-- Always handle `null` in context consumers (throw error or provide defaults)
+- `useState` for local UI state.
+- `useReducer` for complex state transitions (see GameContext).
+- Context consumers must handle `null`/missing providers (throw or guard).
 
 ### Imports
-```typescript
-// React imports (alphabetical)
-import { useCallback, useEffect, useMemo, useState } from 'react';
+- Group imports: react -> third-party -> absolute -> relative -> styles.
+- Alphabetize within each group.
+- Keep path depth shallow; prefer `@/` alias for app modules.
 
-// Relative imports (ordered by depth, then alphabetical)
-import './Component.css';
-import { SomeType } from '../types';
-import { helperFunc } from '../../utils';
+Example:
+```ts
+import { useEffect, useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
 
-// Absolute imports (alphabetical)
-import Navigation from './components/Navigation';
-import { PetState } from './types';
+import { PetState } from '@/types/pet';
+import { clamp } from '@/utils/math';
+
+import './PixelPet.css';
 ```
 
-### Naming Conventions
-- **Components**: PascalCase (e.g., `HomeScreen`, `PixelPet`)
-- **Hooks**: camelCase with `use` prefix (e.g., `usePetSleep`)
-- **Variables/functions**: camelCase (e.g., `handleNameSubmit`, `isSleeping`)
-- **Constants**: SCREAMING_SNAKE_CASE (e.g., `MAX_ENERGY`, `DECAY_RATE`)
-- **Types**: PascalCase (e.g., `PetState`, `GameReward`)
-- **Files**: kebab-case for non-components, PascalCase for components/hooks
+### Naming
+- Components: PascalCase (`PixelPet`).
+- Hooks: camelCase with `use` prefix (`usePetState`).
+- Functions/vars: camelCase (`handleSleepToggle`).
+- Constants: SCREAMING_SNAKE_CASE (`MAX_ENERGY`).
+- Types: PascalCase (`GameReward`).
+- Files: PascalCase for components/hooks; kebab-case for utilities.
 
-### CSS/Styling
-- Use CSS modules or component-scoped CSS
-- Classes follow BEM-like naming: `block__element--modifier`
-- Pixel-art aesthetic: 4px borders, blocky shadows
-- Use CSS variables for theme colors
-- Mobile-first responsive design
+### Styling
+- Co-locate styles with components (e.g., `Button.tsx` + `Button.css`).
+- Use CSS variables for theme colors.
+- Prefer pixel-art cues: 4px borders, blocky shadows, crisp edges.
+- Follow BEM-like class naming: `block__element--modifier`.
+- Mobile-first layout; verify small screens.
 
 ### Error Handling
-- Use `console.error` with descriptive messages for async errors
-- Wrap `JSON.parse` in try-catch blocks (see GameContext:151-162)
-- Validate localStorage data on load with fallbacks
-- Display user-friendly error messages via the `message` state
+- Wrap `JSON.parse` in try/catch and provide defaults.
+- Log async errors with `console.error` and a descriptive message.
+- Surface user-friendly errors via UI state (Spanish, see below).
 
-### Spanish UI Text
-- UI strings are in Spanish (user-facing text)
-- Code comments can be in Spanish or English
-- Error messages should be user-friendly in Spanish
-- Console logs for debugging can be in English
+### Localization
+- UI strings are in Spanish.
+- Error messages shown to users should be in Spanish.
+- Console logs/debugging can be in English.
 
 ### File Organization
-- One component per file (except very small helpers)
-- Co-locate styles with components (e.g., `Button.tsx` + `Button.css`)
-- Index files for barrel exports (hooks/index.ts, types/index.ts)
-- Keep large files under 1000 lines when possible
+- One component per file (small helpers ok inline).
+- Use `index.ts` barrels sparingly for stable surfaces (hooks, types).
+- Keep files under ~1000 lines when possible.
 
 ### Performance
-- Memoize expensive computations with `useMemo`
-- Memoize callback functions with `useCallback`
-- Clean up intervals/timeouts in `useEffect` cleanup functions
-- Use `React.memo` for components that receive same props frequently
+- Avoid re-renders with memoization where appropriate.
+- Clean up intervals and event listeners.
+- Use `React.memo` for stable, frequent components.
 
-### Testing
-- Tests use Vitest + React Testing Library
-- Setup file: `./src/test/setup.ts` (configured in vitest.config.ts)
-- Test files: `<component>.test.tsx` or `<hook>.test.ts`
-- Pattern: `describe('ComponentName', () => { it('should...', ...); })`
+## Testing
+- Vitest + React Testing Library.
+- Setup file: `src/test/setup.ts`.
+- Test naming: `<component>.test.tsx` / `<hook>.test.ts`.
+- Prefer testing behavior over implementation details.
 
-### PWA Configuration
-- Configured in `vite.config.js` with `vite-plugin-pwa`
-- Icons: `icon-192.png` and `icon-512.png` in `/public`
-- Manifest generated automatically with PWA plugin
-- Workbox caching for fonts and static assets
+## PWA Notes
+- PWA configured in `vite.config.js` (vite-plugin-pwa).
+- Icons in `public/` (`icon-192.png`, `icon-512.png`).
+- Workbox caches fonts and static assets.
 
-### Firebase
-- Config in `src/firebase/config.ts`
-- Currently used for authentication only
-- AuthContext manages user session state
+## Firebase
+- Config at `src/firebase/config.ts`.
+- Auth only; state stored in AuthContext.
 
-### Key Constants
-- Decay interval: 30 seconds
-- Sleep duration: 5 minutes (300000ms)
-- Energy recovery: gradual during sleep
+## Game Constants (for context)
+- Decay interval: 30s
+- Sleep duration: 5 minutes
 - Max stat value: 100
 - Coins per poop cleaned: 1
 
-### Development Tips
-- The app uses localStorage - clear it to reset progress
-- Run `npm run lint` before committing
-- TypeScript errors won't block dev server but will show in console
-- Use `npm run build` to catch production issues early
+## Development Tips
+- localStorage stores game state; clear it to reset.
+- Lint before commits; build to catch production issues.
+- TypeScript errors do not block dev server but show in console.

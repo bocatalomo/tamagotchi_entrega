@@ -15,8 +15,10 @@ import LoginScreen from './components/LoginScreen';
 import HatchScreen from './components/HatchScreen';
 import { useAuth } from './contexts/AuthContext';
 import { useAudio } from './hooks/useAudio';
+import { useAutoSave } from './hooks/useAutoSave';
 import { pageVariants } from './utils/animationVariants';
 import { audioManager } from './utils/audioManager';
+import { calculateOfflineDecay } from './utils/decayCalculator';
 import { loadTamagotchi, saveTamagotchi, createTamagotchi, hasTamagotchi, deleteTamagotchi } from './services/tamagotchiService';
 import { PetState, Inventory, Poop } from './types';
 
@@ -65,6 +67,7 @@ interface Notification {
 }
 
 function App() {
+  const authBypass = import.meta.env.VITE_DISABLE_AUTH === '1' && import.meta.env.DEV;
   const [pet, setPet] = useState<PetState>(initialPetState);
   const [inventory, setInventory] = useState<Inventory>(initialInventory);
   const [currentScreen, setCurrentScreen] = useState<'home' | 'shop' | 'stats' | 'play'>('home');
@@ -109,6 +112,18 @@ function App() {
   } = useAudio({ muted: isAudioMuted });
 
   const { user } = useAuth();
+
+  // ✨ Auto-guardado cada 30 segundos en Firestore
+  const { saveNow, lastSaveTime } = useAutoSave(pet, inventory, {
+    disabled: !user && !authBypass, // Solo guardar si hay usuario autenticado
+    onSaveSuccess: () => {
+      console.log('✅ Auto-save completado');
+    },
+    onSaveError: (error) => {
+      console.error('❌ Error en auto-save:', error);
+      // No mostrar notificación para no molestar al usuario
+    },
+  });
 
   useEffect(() => {
     const initAudioOnInteraction = async () => {
@@ -162,125 +177,72 @@ function App() {
   }, []);
 
   const loadPetFromFirestore = useCallback(async () => {
-    console.log('loadPetFromFirestore: Iniciado');
+    console.log('🔄 loadPetFromFirestore: Iniciado');
     try {
       const data = await loadTamagotchi();
-      console.log('loadPetFromFirestore: Datos recibidos:', data ? 'existe' : 'null');
+      console.log('🔄 loadPetFromFirestore: Datos recibidos:', data ? 'existe' : 'null');
       
       if (data) {
         const loadedPet = { ...data.pet };
         
+        // ✨ Calcular tiempo transcurrido desde la última actualización
         const timeElapsed = Date.now() - (loadedPet.lastUpdate || Date.now());
-        const minutesElapsed = timeElapsed / (1000 * 60);
-        loadedPet.age = Math.floor((Date.now() - loadedPet.birthDate) / (1000 * 60 * 60 * 24));
+        console.log(`⏱️ Tiempo offline: ${Math.floor(timeElapsed / 1000 / 60)} minutos`);
 
-        if (!loadedPet.isSleeping && loadedPet.stage !== 'egg' && loadedPet.isAlive) {
-          const decayRate = minutesElapsed / 0.5;
-          loadedPet.hunger = Math.max(0, loadedPet.hunger - (2 * decayRate));
-          loadedPet.happiness = Math.max(0, loadedPet.happiness - (1.5 * decayRate));
-          loadedPet.energy = Math.max(0, loadedPet.energy - (1 * decayRate));
-          loadedPet.cleanliness = Math.max(0, loadedPet.cleanliness - (0.8 * decayRate));
-
-          if (loadedPet.cleanliness < 20) {
-            const healthDecay = loadedPet.hunger < 30 ? (3 * decayRate) : (1.5 * decayRate);
-            loadedPet.health = Math.max(0, loadedPet.health - healthDecay);
-          } else if (loadedPet.cleanliness > 50 && loadedPet.health < 100) {
-            loadedPet.health = Math.min(100, loadedPet.health + (0.5 * decayRate));
+        // ✨ Aplicar decay offline usando el nuevo calculador centralizado
+        const decayResult = calculateOfflineDecay(loadedPet, timeElapsed);
+        
+        if (decayResult.died) {
+          console.log(`💀 El tamagotchi murió mientras estaba offline (razón: ${decayResult.deathReason})`);
+          addNotification(
+            `Tu tamagotchi murió mientras estabas fuera (${decayResult.deathReason === 'starvation' ? 'hambre' : decayResult.deathReason === 'health' ? 'salud' : 'combo crítico'})`,
+            'danger'
+          );
+          if (decayResult.deathReason) {
+            playDeath();
           }
-
-          if (loadedPet.hunger === 0) {
-            loadedPet.health = Math.max(0, loadedPet.health - (2 * decayRate));
+        } else if (timeElapsed > 60000) { // Más de 1 minuto offline
+          // Mostrar notificación de estado al regresar
+          if (decayResult.pet.dangerLevel === 'critico' || decayResult.pet.dangerLevel === 'agonizante') {
+            addNotification('¡Tu tamagotchi está en peligro! Cuídalo pronto', 'danger');
+            playCritical();
+          } else if (decayResult.pet.hunger < 30 || decayResult.pet.happiness < 40) {
+            addNotification('Tu tamagotchi te ha extrañado', 'warning');
           }
-
-          if (loadedPet.health === 0 && !loadedPet.criticalHealthStart) {
-            loadedPet.criticalHealthStart = loadedPet.lastUpdate || Date.now();
-          } else if (loadedPet.health > 0) {
-            loadedPet.criticalHealthStart = null;
-          }
-
-          const now = Date.now();
-          if (loadedPet.criticalHungerStart && (now - loadedPet.criticalHungerStart) >= 7200000) {
-            loadedPet.isAlive = false;
-          }
-          if (loadedPet.criticalHealthStart && (now - loadedPet.criticalHealthStart) >= 1800000) {
-            loadedPet.isAlive = false;
-          }
-
-          let dangerLevel: 'normal' | 'alerta' | 'critico' | 'agonizante' = 'normal';
-          if (loadedPet.hunger === 0 || loadedPet.health === 0) {
-            dangerLevel = 'agonizante';
-          } else if (loadedPet.hunger < 10 || loadedPet.health < 10) {
-            dangerLevel = 'critico';
-          } else if (loadedPet.hunger < 30 || loadedPet.health < 30) {
-            dangerLevel = 'alerta';
-          }
-          loadedPet.dangerLevel = dangerLevel;
-
-          let mood: PetState['mood'] = 'contento';
-          let isSick = false;
-          if (dangerLevel === 'agonizante') {
-            mood = 'agonizando';
-            isSick = true;
-          } else if (dangerLevel === 'critico') {
-            mood = 'enfermo';
-            isSick = true;
-          } else if (loadedPet.health < 30 || loadedPet.cleanliness < 20) {
-            mood = 'enfermo';
-            isSick = true;
-          } else if (loadedPet.happiness > 80 && loadedPet.energy > 70 && loadedPet.hunger > 70) {
-            mood = 'juguetón';
-          }
-          loadedPet.mood = mood;
-          loadedPet.isSick = isSick;
         }
 
-        loadedPet.lastUpdate = Date.now();
-        setPet(loadedPet);
+        // Actualizar estado con el pet procesado
+        setPet(decayResult.pet);
         setInventory(data.inventory);
-        setFlowState(loadedPet.stage === 'egg' ? 'hatching' : 'playing');
-        setIsSleeping(loadedPet.isSleeping || false);
+        setFlowState(decayResult.pet.stage === 'egg' ? 'hatching' : 'playing');
+        setIsSleeping(decayResult.pet.isSleeping || false);
         
-        localStorage.setItem('tamagotchiPet', JSON.stringify(loadedPet));
-        localStorage.setItem('tamagotchiInventory', JSON.stringify(data.inventory));
+        console.log('✅ Pet cargado y decay aplicado correctamente');
       } else {
+        console.log('📝 No hay tamagotchi, mostrar pantalla de creación');
         setFlowState('naming');
       }
     } catch (error) {
-      console.error('Error loading pet from Firestore:', error);
-      const savedPet = localStorage.getItem('tamagotchiPet');
-      const savedInventory = localStorage.getItem('tamagotchiInventory');
-      if (savedPet) {
-        try {
-          const parsedPet = JSON.parse(savedPet);
-          setPet(parsedPet);
-          setInventory(JSON.parse(savedInventory || '{}'));
-          setFlowState(parsedPet.stage === 'egg' ? 'hatching' : 'playing');
-        } catch (e) {
-          console.error('Error loading from localStorage backup:', e);
-          setFlowState('naming');
-        }
-      } else {
-        setFlowState('naming');
-      }
+      console.error('❌ Error loading pet from Firestore:', error);
+      addNotification('Error al cargar tu tamagotchi. Verifica tu conexión.', 'danger');
+      setFlowState('naming');
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [addNotification, playDeath, playCritical]);
+
+
 
   useEffect(() => {
-    if (user) {
+    // Solo cargar si hay usuario autenticado (o authBypass en desarrollo)
+    if (user || authBypass) {
       loadPetFromFirestore();
     } else {
       setIsLoading(false);
     }
-  }, [user, loadPetFromFirestore]);
+  }, [user, authBypass, loadPetFromFirestore]);
 
-  useEffect(() => {
-    if (pet.name && user) {
-      localStorage.setItem('tamagotchiPet', JSON.stringify(pet));
-      localStorage.setItem('tamagotchiInventory', JSON.stringify(inventory));
-    }
-  }, [pet, inventory, user]);
+  // 🔥 ELIMINADO: Ya no guardamos en localStorage, solo en Firestore con auto-save
 
   useEffect(() => {
     if (flowState === 'naming' || !pet.isAlive || pet.stage === 'egg') return;
@@ -560,13 +522,17 @@ function App() {
     setTimeout(() => setAnimation(''), 2000);
   }, [pet.isAlive, inventory.food, clearSleepState, addNotification, playFeed]);
 
-  const saveToFirestore = useCallback(() => {
-    if (user) {
-      saveTamagotchi(pet, inventory).catch(err => {
-        console.error('Error saving to Firestore:', err);
-      });
+  // ✨ Función para guardar inmediatamente (acciones importantes del usuario)
+  const saveToFirestore = useCallback(async () => {
+    if (user || authBypass) {
+      try {
+        await saveTamagotchi(pet, inventory);
+        console.log('💾 Guardado inmediato exitoso');
+      } catch (err) {
+        console.error('❌ Error guardando inmediatamente:', err);
+      }
     }
-  }, [pet, inventory, user]);
+  }, [pet, inventory, user, authBypass]);
 
   const sleep = useCallback(() => {
     if (!pet.isAlive) {
@@ -743,9 +709,8 @@ function App() {
       setPet(data.pet);
       setInventory(data.inventory);
       setFlowState('hatching');
-      localStorage.setItem('tamagotchiPet', JSON.stringify(data.pet));
-      localStorage.setItem('tamagotchiInventory', JSON.stringify(data.inventory));
       console.log('handleNameSubmit: Completado, flowState ahora es "hatching"');
+      // ✅ Ya guardado en Firestore por createTamagotchi
     } catch (error) {
       console.error('handleNameSubmit: Error creando tamagotchi:', error);
       const newPet: PetState = {
@@ -780,25 +745,26 @@ function App() {
       };
       setPet(newPet);
       setFlowState('hatching');
-      localStorage.setItem('tamagotchiPet', JSON.stringify(newPet));
+      // ✅ El auto-save se encargará de guardarlo
     }
   }, []);
 
   const resetGame = useCallback(async () => {
-    console.log('resetGame: Iniciando...');
+    console.log('🔄 resetGame: Iniciando...');
     if (window.confirm('¿Reiniciar? Perderás tu tamagotchi actual.')) {
-      console.log('resetGame: Usuario confirmó');
+      console.log('✅ resetGame: Usuario confirmó');
       const success = await deleteTamagotchi();
-      console.log('resetGame: deleteTamagotchi result:', success);
+      console.log('🗑️ resetGame: deleteTamagotchi result:', success);
       if (success) {
-        console.log('resetGame: Limpiando estado...');
-        localStorage.removeItem('tamagotchiPet');
-        localStorage.removeItem('tamagotchiInventory');
-        localStorage.removeItem('tamagotchi_has_seen_hatch');
+        console.log('🧹 resetGame: Limpiando estado...');
+        // ✅ Ya no usamos localStorage, solo limpiamos el estado local
         setPet(initialPetState);
+        setInventory(initialInventory);
+        setPoops([]);
         setCurrentScreen('home');
         setFlowState('naming');
-        console.log('resetGame: Completado, flowState ahora es "naming"');
+        console.log('✅ resetGame: Completado, flowState ahora es "naming"');
+        addNotification('Tamagotchi eliminado. Puedes crear uno nuevo.', 'info');
       } else {
         addNotification('Error al reiniciar', 'danger');
       }
@@ -828,7 +794,7 @@ function App() {
     );
   }
 
-  if (!user) {
+  if (!user && !authBypass) {
     return <LoginScreen onLoginSuccess={() => {}} />;
   }
 
@@ -885,8 +851,8 @@ function App() {
                 setPet(updatedPet);
                 setCurrentScreen('home');
                 setFlowState('playing');
+                // ✅ Guardar inmediatamente este evento importante
                 saveTamagotchi(updatedPet, inventory);
-                localStorage.setItem('tamagotchi_has_seen_hatch', 'true');
                 addNotification(`${name} ha nacido! Bienvenido!`, 'success');
                 playEggHatch();
               }}
@@ -1101,8 +1067,9 @@ function App() {
           petName={pet.name}
           coins={pet.coins}
           onClose={() => {
-            console.log('onClose llamado - cerrando modal');
+            console.log('onClose llamado - cerrando modal y volviendo a home');
             setShowGameModal(false);
+            setCurrentScreen('home'); // Volver a la pantalla principal
           }}
           onWin={(reward) => {
             console.log('onWin llamado:', reward);

@@ -253,6 +253,82 @@ class AudioManager {
     this.synth.triggerAttackRelease('C4', '4n', now + 0.6);
   }
 
+  // ========================================
+  // SLOT MACHINE SOUNDS
+  // ========================================
+
+  playSlotLever(): void {
+    if (!this.metal || !this.membrane || this.isMuted) return;
+    const now = Tone.now();
+    this.metal.triggerAttackRelease('16n', now);
+    this.membrane.triggerAttackRelease('C2', '32n', now + 0.05);
+  }
+
+  playSlotSpin(): void {
+    if (!this.noise || this.isMuted) return;
+    if (!this.noise) return;
+    this.noise.triggerAttackRelease('2n');
+  }
+
+  playReelStop(): void {
+    if (!this.metal || this.isMuted) return;
+    this.metal.triggerAttackRelease('32n', 150);
+  }
+
+  playSlotWin(): void {
+    if (!this.synth || this.isMuted) return;
+    const now = Tone.now();
+    this.synth.triggerAttackRelease('E5', '16n', now);
+    this.synth.triggerAttackRelease('G5', '16n', now + 0.08);
+    this.synth.triggerAttackRelease('B5', '16n', now + 0.16);
+    this.synth.triggerAttackRelease('E6', '8n', now + 0.24);
+  }
+
+  playSlotJackpot(): void {
+    if (!this.synth || !this.membrane || this.isMuted) return;
+    const now = Tone.now();
+    
+    // Fanfarria épica
+    this.synth.triggerAttackRelease('C5', '8n', now);
+    this.synth.triggerAttackRelease('E5', '8n', now + 0.1);
+    this.synth.triggerAttackRelease('G5', '8n', now + 0.2);
+    this.synth.triggerAttackRelease('C6', '8n', now + 0.3);
+    
+    this.membrane.triggerAttackRelease('C2', '4n', now);
+    
+    // Segunda ola
+    this.synth.triggerAttackRelease('E6', '8n', now + 0.5);
+    this.synth.triggerAttackRelease('G6', '8n', now + 0.6);
+    this.synth.triggerAttackRelease('C7', '4n', now + 0.7);
+    
+    // Campanas continuas
+    for (let i = 0; i < 8; i++) {
+      this.synth.triggerAttackRelease('E6', '32n', now + 0.9 + (i * 0.1));
+      this.synth.triggerAttackRelease('G6', '32n', now + 0.95 + (i * 0.1));
+    }
+  }
+
+  playSlotLose(): void {
+    if (!this.synth || this.isMuted) return;
+    const now = Tone.now();
+    this.synth.triggerAttackRelease('G3', '8n', now);
+    this.synth.triggerAttackRelease('E3', '8n', now + 0.15);
+    this.synth.triggerAttackRelease('C3', '4n', now + 0.3);
+  }
+
+  playSlotTick(): void {
+    if (!this.synth || this.isMuted) return;
+    this.synth.triggerAttackRelease('C6', '64n');
+  }
+
+  playSlotCoinDrop(): void {
+    if (!this.metal || this.isMuted) return;
+    const now = Tone.now();
+    for (let i = 0; i < 5; i++) {
+      this.metal.triggerAttackRelease('64n', 100 + (i * 50), now + (i * 0.05));
+    }
+  }
+
   setMuted(muted: boolean): void {
     this.isMuted = muted;
     if (this.masterVolume) {

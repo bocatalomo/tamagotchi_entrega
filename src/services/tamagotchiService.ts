@@ -122,6 +122,12 @@ export const createTamagotchi = async (options: CreateTamagotchiOptions): Promis
       throw new Error('Usuario no autenticado');
     }
 
+    // ⚠️ VALIDACIÓN: Verificar si ya existe un tamagotchi
+    const existingTamagotchi = await hasTamagotchi();
+    if (existingTamagotchi) {
+      throw new Error('Ya tienes un tamagotchi. Solo puedes tener uno a la vez.');
+    }
+
     const pet = createInitialPetState(options);
     const inventory = createInitialInventory();
 
