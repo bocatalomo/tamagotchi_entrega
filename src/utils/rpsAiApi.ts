@@ -24,7 +24,9 @@ import type {
 // CONFIGURACIÓN
 // ============================================
 
-const API_URL = import.meta.env.VITE_AI_API_URL || 'http://localhost:5001';
+// En producción usa rutas relativas (/api/*), en desarrollo usa servidor local
+const API_URL = import.meta.env.VITE_AI_API_URL || 
+  (import.meta.env.PROD ? '' : 'http://localhost:5001');
 const TIMEOUT_MS = 3000;
 const IS_DEV = import.meta.env.DEV;
 
